@@ -12,7 +12,7 @@ import PatientList from "./component/PatientList";
 import ProcedureSelection from "./pages/ProcedureSelection";
 import AdultDentistry from "./pages/AdultDentistry";
 import PrescriptionForm from "./pages/PrescriptionForm";
-import Pediatric_Dentistry from "./pages/Pediatric_Dentistry";
+import PediatricDentistry from "./pages/PediatricDentistry";
 import LoginForm from "./pages/LoginForm";
 
 // Function to get the user role
@@ -50,7 +50,7 @@ function App() {
           <Route path="patient-list" element={<PatientList />} />
           <Route path="procedure-selection/:id" element={<ProcedureSelection />} />
           <Route path="procedure-adult/:id" element={<AdultDentistry />} />
-          <Route path="procedure-pediatric/:id" element={<Pediatric_Dentistry />} />
+          <Route path="procedure-pediatric/:id" element={<PediatricDentistry />} />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
         </Route>

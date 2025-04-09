@@ -1,182 +1,302 @@
-
 import React, { useState } from "react";
-const FirstPediatricDentistry = () => {
+import { useNavigate } from "react-router-dom";
+
+const toothNames = [
+    "Upper Right Second Molar",
+    "Upper Right First Molar",
+    "Upper Right Canine (Cuspid)",
+    "Upper Right Lateral Incisor",
+    "Upper Right Lateral Incisor",
+    "Upper Left Central Incisor",
+    "Upper Left Lateral Incisor  ",
+    " Upper Left Canine (Cuspid)",
+    "Upper Left First Molar",
+    "Upper Left Second Molar",
+    "Lower Left Second Molar)",
+    "Lower Left First Molar",
+    "Lower Left Canine (Cuspid)",
+    "Lower Left Lateral Incisor",
+    "Lower Left Central Incisor",
+    "Lower Right Central Incisor",
+    "Lower Right Lateral Incisor",
+    "Lower Right Canine (Cuspid)",
+    "Lower Right First Molar",
+    "Lower Right Second Molar"
+];
+
+const teethData = toothNames.map((name, index) => ({
+    id: index + 1,
+    label: name,
+}));
+
+const FirstAdultDentistryForm = ({
+    id,
+    saved,
+    setSaved,
+    records,
+    setRecords,
+    patient,
+    selectedTeeth,
+    showTreatment,
+    setSelectedTeeth,
+    formData,
+    handleNext,
+    setFormData,
+}) => {
+    const navigate = useNavigate();
+
+    const handleDelete = (index) => {
+        const updatedRecords = [...records];
+        updatedRecords.splice(index, 1);
+        setRecords(updatedRecords);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleCheckboxChange = (toothId) => {
+        setSelectedTeeth((prev) => {
+            const updated = { ...prev, [toothId]: !prev[toothId] };
+            const selectedNames = teethData
+                .filter((tooth) => updated[tooth.id])
+                .map((tooth) => tooth.label)
+                .join(", ");
+            setFormData((form) => ({ ...form, toothName: selectedNames }));
+            return updated;
+        });
+    };
+
+    const handleSave = () => {
+        const { toothName, dentalCondition, complaint, examination, advice } = formData;
+
+        if (!toothName || !dentalCondition || !complaint || !examination || !advice) {
+            return;
+        }
+
+        setRecords([...records, formData]);
+        setFormData({
+            toothName: "",
+            dentalCondition: "",
+            complaint: "",
+            examination: "",
+            advice: ""
+        });
+        setSelectedTeeth({});
+        setSaved(true);
+    };
 
     return (
-        <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="p-4 ml-10">
+            <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
 
-            <div className="w-full overflow-x-auto p-4 mt-3">
-                <table className="w-full text-left">
-                    <tbody>
-                        <tr>
-                            <td className="px-4 py-2 font-medium">UHID</td>
-                            <td className="px-4 py-2 font-medium">Name</td>
-                            <td className="px-4 py-2 font-medium">Contact</td>
-                            <td className="px-4 py-2 font-medium">Age</td>
-                        </tr>
-                        <tr>
-                            <td className="px-4 py-2 font-medium">BP</td>
-                            <td className="px-4 py-2 font-medium">Medical History</td>
-                            <td className="px-4 py-2 font-medium">Allergies</td>
-                            <td className="px-4 py-2 font-medium">Weight</td>
-                        </tr>
-                    </tbody>
-                </table>
+            {/* Patient Info */}
+            <div className="grid grid-cols-4 gap-2 text-xl mb-6">
+                <div><strong>UHID:</strong> {patient?.uhid}</div>
+                <div><strong>Name:</strong> {patient?.name}</div>
+                <div><strong>Contact:</strong> {patient?.contact}</div>
+                <div><strong>Age:</strong> {patient?.age}</div>
+                <div><strong>BP:</strong> {patient?.bp}</div>
+                <div><strong>Medical History:</strong> {patient?.medicalHistory}</div>
+                <div><strong>Allergies:</strong> {patient?.allergies}</div>
+                <div><strong>Weight:</strong> {patient?.weight}</div>
             </div>
 
-            {/* Teeth Images */}
-            <div className="bg-white p-6 rounded-xl shadow-md mt-10">
-                <div className="grid grid-cols-5 md:grid-cols-10 gap-4 justify-items-center">
-                    {teethData.map((tooth) => (
-                        <div
-                            key={tooth.id}
-                            className={`cursor-pointer p-5 rounded-2xl shadow-lg border-4 transition-transform duration-300 ease-in-out
-                  ${selectedTeeth.includes(tooth) ? "bg-blue-100 border-blue-500" : "bg-white border-gray-200 hover:scale-105 hover:border-blue-500"}`}
-                            onClick={() => handleToothClick(tooth)}
-                        >
-                            <img
-                                src={tooth.image}
-                                alt={tooth.name}
-                                className="w-28 h-28 object-contain mx-auto mb-2"
+            <h2 className="text-3xl font-bold mb-4">Select Teeth</h2>
+
+            {/* Top 16 Teeth Row */}
+            {/* Top 10 Teeth Row */}
+            <div className="overflow-x-auto mb-6">
+                <div className="grid grid-cols-10 gap-2">
+                    {teethData.slice(0, 10).map((tooth) => (
+                        <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
+                            <div className="bg-white p-1 rounded">
+                                <img
+                                    src={`/pediatricTeeth/tooth${tooth.id}.png`}
+                                    alt={tooth.label}
+                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
+                                />
+                            </div>
+                            <span className="text-xs text-center">{tooth.label}</span>
+                            <input
+                                type="checkbox"
+                                checked={selectedTeeth[tooth.id] || false}
+                                onChange={() => handleCheckboxChange(tooth.id)}
                             />
-                            <p className="text-center text-sm font-semibold text-gray-600">{tooth.id}</p>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Selected Tooth Preview */}
-            {selectedTeeth.length > 0 && (
-                <div className="flex flex-wrap justify-center mb-12 gap-6">
-                    {selectedTeeth.map((tooth) => (
-                        <div key={tooth.id} className="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center">
-                            <img src={tooth.image} alt={tooth.name} className="w-32 h-32 object-contain" />
-                            <h2 className="text-xl font-bold text-gray-700 mt-4">{tooth.name}</h2>
-                            <p className="text-gray-500">Tooth ID: {tooth.id}</p>
+            {/* Bottom 10 Teeth Row */}
+            <div className="overflow-x-auto mb-6">
+                <div className="grid grid-cols-10 gap-2">
+                    {teethData.slice(10).map((tooth) => (
+                        <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
+                            <div className="bg-white p-1 rounded">
+                                <img
+                                    src={`/pediatricTeeth/tooth${tooth.id}.png`}
+                                    alt={tooth.label}
+                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
+                                />
+                            </div>
+                            <span className="text-xs text-center">{tooth.label}</span>
+                            <input
+                                type="checkbox"
+                                checked={selectedTeeth[tooth.id] || false}
+                                onChange={() => handleCheckboxChange(tooth.id)}
+                            />
                         </div>
                     ))}
                 </div>
-            )}
+            </div>
 
-            {/* Form Section */}
-            {/* ... baaki tumhara form waise ka waise chhod diya jaise diya tha ... */}
-            <div className="flex flex-col items-center bg-white p-10 rounded-2xl shadow-lg space-y-8 mt-10">
-                <div className="flex flex-wrap justify-center gap-10 w-full max-w-6xl">
-                    <div className="flex flex-col w-80">
-                        <label className="text-gray-700 font-medium mb-2">Teeth Name</label>
-                        <input
-                            type="text"
-                            value={selectedTeeth.map((tooth) => tooth.name).join(", ")}
-                            readOnly
-                            className="bg-gray-100 rounded-lg px-4 py-3 w-full text-gray-700 text-lg"
-                            placeholder="Select teeth"
-                        />
 
-                    </div>
+            {/* Form Fields */}
+            <div className="mt-6 grid grid-cols-5 gap-4">
+                <div>
+                    <label>Tooth Name*</label>
+                    <input
+                        name="toothName"
+                        value={formData.toothName}
+                        onChange={handleChange}
+                        className="border rounded px-2 py-1 w-full"
+                        required
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label>Dental Condition*</label>
+                    <select
+                        name="dentalCondition"
+                        value={formData.dentalCondition}
+                        onChange={handleChange}
+                        className="border rounded px-2 py-1 w-full"
+                        required
+                    >
+                        <option value="">Select</option>
+                        <option value="Cavity">Cavity</option>
+                        <option value="Gingivitis">Gingivitis</option>
+                        <option value="Tooth Decay">Tooth Decay</option>
+                        <option value="Broken Tooth">Broken Tooth</option>
+                        <option value="Staining">Staining</option>
+                        <option value="Impacted Tooth">Impacted Tooth</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Chief Complaint*</label>
+                    <input
+                        name="complaint"
+                        value={formData.complaint}
+                        onChange={handleChange}
+                        className="border rounded px-2 py-1 w-full"
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Examination*</label>
+                    <input
+                        name="examination"
+                        value={formData.examination}
+                        onChange={handleChange}
+                        className="border rounded px-2 py-1 w-full"
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Advice*</label>
+                    <input
+                        name="advice"
+                        value={formData.advice}
+                        onChange={handleChange}
+                        className="border rounded px-2 py-1 w-full"
+                        required
+                    />
+                </div>
+            </div>
 
-                    <div className="flex flex-col w-80">
-                        <label className="text-gray-700 font-medium mb-2">Dental Condition</label>
-                        <select
-                            className="bg-gray-100 rounded-lg px-4 py-3 w-full text-gray-700 text-lg"
-                            value={dentalCondition}
-                            onChange={(e) => setDentalCondition(e.target.value)}
+            {/* Buttons: Save and Back */}
+            <div className="mt-4 flex justify-between">
+                {!saved ? (
+                    <>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="bg-gray-500 text-white px-6 py-2 rounded shadow"
                         >
-                            <option value="">Select</option>
-                            <option value="Cavity">Cavity</option>
-                            <option value="Infection">Infection</option>
-                            <option value="Swelling">Swelling</option>
-                        </select>
+                            Back
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+                        >
+                            Save
+                        </button>
+                    </>
+                ) : (
+                    <div className="ml-auto">
+                        <button
+                            onClick={handleSave}
+                            className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+                        >
+                            Save
+                        </button>
                     </div>
-
-                    <div className="flex flex-col w-80">
-                        <label className="text-gray-700 font-medium mb-2">Chief Complaint</label>
-                        <textarea
-                            className="bg-gray-100 rounded-lg px-4 py-3 w-full h-20 resize-none text-gray-700 text-lg"
-                            placeholder="Text Area"
-                            value={chiefComplaint}
-                            onChange={(e) => setChiefComplaint(e.target.value)}
-                        ></textarea>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-10 w-full max-w-5xl">
-                    <div className="flex flex-col w-96">
-                        <label className="text-gray-700 font-medium mb-2">Examination</label>
-                        <textarea
-                            className="bg-gray-100 rounded-lg px-4 py-3 w-full h-20 resize-none text-gray-700 text-lg"
-                            placeholder="Text Area"
-                            value={examination}
-                            onChange={(e) => setExamination(e.target.value)}
-                        ></textarea>
-                    </div>
-
-                    <div className="flex flex-col w-96">
-                        <label className="text-gray-700 font-medium mb-2">Advice</label>
-                        <textarea
-                            className="bg-gray-100 rounded-lg px-4 py-3 w-full h-20 resize-none text-gray-700 text-lg"
-                            placeholder="Text Area"
-                            value={advice}
-                            onChange={(e) => setAdvice(e.target.value)}
-                        ></textarea>
-                    </div>
-                </div>
-
-                <button
-                    type="button"
-                    className="mt-6 bg-blue-600 text-white font-bold text-lg px-10 py-4 rounded-full hover:bg-blue-700 transition"
-                    onClick={handleSave}
-                >
-                    Save
-                </button>
+                )}
             </div>
 
-            <div className="overflow-x-auto mt-20 px-4">
-                <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                    <thead className="bg-gray-200">
-                        <tr>
-                            {["Teeth Name", "Dental Condition", "Chief Complaint", "Advice", "Examination", "Action"].map((header) => (
-                                <th key={header} className="border-b p-4 text-base font-semibold text-gray-700 text-center">
-                                    {header}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white">
-                        {savedData.length === 0 ? (
+
+            {/* Saved Table */}
+            {records.length > 0 && (
+                <div className="mt-8">
+                    <h3 className="text-2xl mb-4">Saved Records</h3>
+                    <table className="w-full border text-lg">
+                        <thead className="bg-gray-100">
                             <tr>
-                                <td colSpan="5" className="text-center py-6 text-gray-400">No Data Saved</td>
+                                <th className="border px-4 py-2">Tooth Name</th>
+                                <th className="border px-4 py-2">Dental Condition</th>
+                                <th className="border px-4 py-2">Chief Complaint</th>
+                                <th className="border px-4 py-2">Examination</th>
+                                <th className="border px-4 py-2">Advice</th>
+                                <th className="border px-4 py-2">Delete</th>
                             </tr>
-                        ) : (
-                            savedData.map((data, index) => (
-                                <tr key={index} className="text-center hover:bg-gray-50 transition-all">
-                                    <td className="p-4">{data.teethName}</td>
-                                    <td className="p-4">{data.dentalCondition}</td>
-                                    <td className="p-4">{data.chiefComplaint}</td>
-                                    <td className="p-4">{data.advice}</td>
-                                    <td className="p-4">{data.examination}</td>
-                                    <td className="p-4">{data.action}
-                                        <button onClick={() => handleDelete(index)} className="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-500 text-base transition-all"> {/* ⬅️ px-4 py-2 and text-base */}
-                                            Delete
-                                        </button>
-                                    </td>
-
-                                    <td className="border-b p-4">
-
-
+                        </thead>
+                        <tbody>
+                            {records.map((rec, index) => (
+                                <tr key={index}>
+                                    <td className="border px-4 py-2">{rec.toothName}</td>
+                                    <td className="border px-4 py-2">{rec.dentalCondition}</td>
+                                    <td className="border px-4 py-2">{rec.complaint}</td>
+                                    <td className="border px-4 py-2">{rec.examination}</td>
+                                    <td className="border px-4 py-2">{rec.advice}</td>
+                                    <td className="border px-4 py-2">
+                                        <button onClick={() => handleDelete(index)} className="text-red-600 hover:underline">Delete</button>
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-                <div className="flex justify-end mt-6">
-                    <button className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 text-base transition-all"> {/* ⬅️ px-6 py-3 and text-base */}
-                        Next
-                    </button>
-                </div>
-            </div>
+                            ))}
+                        </tbody>
+                    </table>
 
+                    {/* Navigation Buttons */}
+                    <div className="mt-6 flex justify-between">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="bg-gray-500 text-white px-6 py-2 rounded shadow"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            className="bg-green-600 text-white px-6 py-2 rounded shadow"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}
-export default FirstPediatricDentistry;
+};
+
+export default FirstAdultDentistryForm;
