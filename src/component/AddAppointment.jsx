@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-
+import axios from "axios";
 const AddAppointment = () => {
   const [selectedMedicalHistory, setSelectedMedicalHistory] = useState([]);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
@@ -11,6 +11,7 @@ const AddAppointment = () => {
 
   const [formData, setFormData] = useState({
     patientType: "",
+    appId:"",
     patientName: "",
     gender: "",
     mobileNumber: "",
@@ -100,10 +101,13 @@ const AddAppointment = () => {
     return `${hours}:${minutes}`;
   };
 
-  const handleBookAppointment = () => {
+
+
+  // Inside handleBookAppointment:
+  const handleBookAppointment = async () => {
     const currentTime = getCurrentTime();
     setAppointmentTime(currentTime);
-
+  
     const finalData = {
       ...formData,
       appointmentTime: currentTime,
@@ -111,9 +115,19 @@ const AddAppointment = () => {
       selectedAllergies,
       paymentMode,
     };
-
-    console.log("Appointment Data:", finalData);
+  
+    try {
+      const response = await axios.post("http://localhost:5000/api/addAppointment", finalData);
+    ;
+      console.log("Appointment booked successfully", response.data);
+      alert("Appointment booked successfully!");
+      // Optionally reset form or redirect
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      alert("Failed to book appointment");
+    }
   };
+  
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
@@ -131,7 +145,10 @@ const AddAppointment = () => {
             <option>Insurance Patient</option>
           </select>
         </div>
-
+        <div>
+          <label className="block text-sm font-medium text-gray-600">Appointment Id</label>
+          <input name="appId" onChange={handleChange} type="text" className="w-full p-3 border rounded-xl" placeholder="Enter app Id" />
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-600">Patient Name</label>
           <input name="patientName" onChange={handleChange} type="text" className="w-full p-3 border rounded-xl" placeholder="Enter Full Name" />

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import axios from "axios";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const patients = [
@@ -8,6 +9,7 @@ const patients = [
 
 const PatientList = () => {
     const [search, setSearch] = useState("");
+
     const navigate = useNavigate(); // Hook to navigate between pages
 
     const filteredPatients = useMemo(() => {
@@ -15,6 +17,15 @@ const PatientList = () => {
             patient.Name.toLowerCase().includes(search.trim().toLowerCase())
         );
     }, [search]);
+ 
+    //get all paitent list 
+  async function fetchPatientDetails(){
+        const response = await axios.get("http://localhost:5000/api/patients/getAllPatients")
+        console.log("paitent",response.data)
+    }
+    useEffect(()=>{
+        fetchPatientDetails()
+    } ,[])
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
