@@ -1,135 +1,106 @@
 import React, { useState, useRef, useEffect } from "react";
-
-const appointments = [
-  {
-    id: 1,
-    name: "Aniket",
-    contact: "123-456-7890",
-    address: "indore",
-    doctor: "Dr. Smith",
-    time: "10:00 AM",
-    opdAmount: "3000",
-    payAmount: "3000",
-    status: "Paid",
-  },
-  {
-    id: 2,
-    name: "Rahul",
-    contact: "987-654-3210",
-    address: "bhopal",
-    doctor: "Dr. Shrivastav",
-    time: "11:30 AM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    name: "Ajay",
-    contact: "0000000000",
-    address: "Gwalior",
-    doctor: "Dr. Pandey",
-    time: "11:30 AM",
-    opdAmount: "5000",
-    payAmount: "2000",
-    status: "Pending",
-  },
-  {
-    id: 4,
-    name: "Anshuman",
-    contact: "999999999",
-    address: "bhopal",
-    doctor: "Dr. Shrivastav",
-    time: "11:00 AM",
-    opdAmount: "5000",
-    payAmount: "5000",
-    status: "Paid",
-  },
-  {
-    id: 5,
-    name: "aakash",
-    contact: "3333333333",
-    address: "Betul",
-    doctor: "Dr.Polomii",
-    time: "1:30 pM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  },{
-    id: 6,
-    name: "Natik",
-    contact: "9879996210",
-    address: "bhopal",
-    doctor: "Dr. Shrivastav",
-    time: "2:30 pM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  },
-  {
-    id: 7,
-    name: "Rahul",
-    contact: "98065463210",
-    address: "Panipat",
-    doctor: "Dr.Narendra",
-    time: "11:30 AM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  },
-  {
-    id: 8,
-    name: "Ashwarya",
-    contact: "9835403210",
-    address: "bhopal",
-    doctor: "Dr.Aatrye Dutta",
-    time: "11:30 AM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  },
-  {
-    id: 9,
-    name: "Ram",
-    contact: "9816540210",
-    address: "Sagar",
-    doctor: "Dr.Tripathi",
-    time: "11:30 AM",
-    opdAmount: "5000",
-    payAmount: "2500",
-    status: "Pending",
-  }
-];
+import axios from "axios";
 
 const AdminAppointmentList = () => {
+  const [appointments, setAppointments] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
 
-  // Close dropdown if clicked outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setDropdownOpen(null);
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
+  const handleCheckIn = async (id) => {
+    try {
+console.log(id)
+      // Step 1: Get the appointment details
+      const { data } = await axios.get(`http://localhost:5000/api/getbyid/${id}`);
+      console.log(data)
+      const appointmentData = data?.appointment;
+  
+      if (!appointmentData) {
+        alert("Appointment not found!");
+        return;
+      }
+  
+      // Step 2: Delete the appointment
+      await axios.delete(`http://localhost:5000/api/delete/${id}`);
+  
+      // Step 3: Add to patient records
+      const patientPayload = {
+        name: appointmentData.patientName,
+        contact: appointmentData.mobileNumber,
+        address: appointmentData.address,
+        doctor: appointmentData.doctorName,
+        time: appointmentData.appointmentTime,
+        opdAmount: appointmentData.opdAmount,
+        payAmount: appointmentData.payAmount,
+        status: "Checked In",
+        // Add any other fields your patient API expects
+      };
+  
+      await axios.post("http://localhost:5000/api/patients/create", appointmentData);
+  
+      alert("Patient checked in successfully!");
+      fetchAppointments(); // Refresh the list
+    } catch (error) {
+      console.error("Check-in process failed:", error);
+      alert("Check-in failed. Try again.");
+    }
+  };
+  
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch appointments
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/appointmentList");
+      setAppointments(response.data.appointmentList || []);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
 
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id);
   };
 
-  // Filter appointments based on search input
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this appointment?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/delete/${id}`);
+        fetchAppointments(); // Refresh list after deletion
+      } catch (error) {
+        console.error("Error deleting appointment:", error);
+      }
+    }
+  };
+
+  const handleEdit = (appointment) => {
+    // You can open a modal or redirect to an edit form
+    console.log("Edit appointment:", appointment);
+    // e.g., navigate(`/edit-appointment/${appointment._id}`);
+  };
+
   const filteredAppointments = appointments.filter((app) =>
     Object.values(app).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   return (
-    <div className="mx-auto overflow-x-hidden ">
+    <div className="mx-auto overflow-x-hidden">
       <h2 className="text-2xl font-bold mb-4 text-gray-700 text-center">Appointment List</h2>
 
       {/* Search Bar */}
@@ -155,47 +126,63 @@ const AdminAppointmentList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAppointments.map((app) => (
-              <tr key={app.id} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
-                <td className="py-2 px-4">{app.id}</td>
-                <td className="py-2 px-4">{app.name}</td>
-                <td className="py-2 px-4">{app.contact}</td>
-                <td className="py-2 px-4">{app.address}</td>
-                <td className="py-2 px-4">{app.doctor}</td>
-                <td className="py-2 px-4">{app.time}</td>
-                <td className="py-2 px-4">{app.opdAmount}</td>
-                <td className="py-2 px-4">{app.payAmount}</td>
+            {filteredAppointments.map((app, index) => (
+              <tr key={app._id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
+                <td className="py-2 px-4">{index + 1}</td>
+                <td className="py-2 px-4">{app.patientName || "N/A"}</td>
+                <td className="py-2 px-4">{app.mobileNumber || "N/A"}</td>
+                <td className="py-2 px-4">{app.address || "N/A"}</td>
+                <td className="py-2 px-4">{app.doctorName || "N/A"}</td>
+                <td className="py-2 px-4">{app.appointmentTime || "N/A"}</td>
+                <td className="py-2 px-4">{app.opdAmount || "N/A"}</td>
+                <td className="py-2 px-4">{app.payAmount || app.opdAmount || "N/A"}</td>
                 <td className={`py-2 px-4 font-semibold ${app.status === "Paid" ? "text-green-600" : "text-red-600"}`}>
-                  {app.status}
+                  {app.status || "N/A"}
                 </td>
                 <td className="py-2 px-4 relative">
-                  {/* Actions Button */}
                   <button
                     className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 focus:outline-none"
-                    onClick={() => toggleDropdown(app.id)}
+                    onClick={() => toggleDropdown(app._id || index)}
                   >
                     Actions ▼
                   </button>
 
-                  {/* Dropdown Menu */}
-                  {dropdownOpen === app.id && (
+                  {dropdownOpen === (app._id || index) && (
                     <div
                       ref={dropdownRef}
                       className="absolute z-10 mt-2 w-36 bg-white shadow-lg rounded-md border"
                       style={{ transform: "translateY(0%)", right: "0" }}
                     >
                       <ul className="text-left">
-                        {["Edit", "View", "Check In"].map((action) => (
-                          <li key={action}>
-                            <button
-                              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
-                            >
-                              {action}
-                            </button>
-                          </li>
-                        ))}
                         <li>
-                          <button className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600">
+                          <button
+                            onClick={() => handleEdit(app)}
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
+                          >
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
+                          >
+                            View
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => handleCheckIn(app._id)}
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
+                          >
+                            Check In
+                          </button>
+                        </li>
+
+                        <li>
+                          <button
+                            onClick={() => handleDelete(app._id)}
+                            className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600"
+                          >
                             Delete
                           </button>
                         </li>

@@ -2,12 +2,13 @@ import axios from "axios";
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const patients = [
-    { App_id: "001", UHID: "U12345", Name: "Ajay Verma", Age: 45, Weight: "70kg", MedicalHistory: "Diabetes, Hypertension", Allergies: "Penicillin", BP: "130/90" },
-    { App_id: "002", UHID: "U67890", Name: "Ram", Age: 38, Weight: "65kg", MedicalHistory: "Asthma", Allergies: "None", BP: "120/80" },
-];
+// const patients = [
+//     { App_id: "001", UHID: "U12345", Name: "Ajay Verma", Age: 45, Weight: "70kg", MedicalHistory: "Diabetes, Hypertension", Allergies: "Penicillin", BP: "130/90" },
+//     { App_id: "002", UHID: "U67890", Name: "Ram", Age: 38, Weight: "65kg", MedicalHistory: "Asthma", Allergies: "None", BP: "120/80" },
+// ];
 
 const PatientList = () => {
+    const [patients, setPatients] = useState([]);
     const [search, setSearch] = useState("");
 
     const navigate = useNavigate(); // Hook to navigate between pages
@@ -20,7 +21,7 @@ const PatientList = () => {
  
     //get all paitent list 
   async function fetchPatientDetails(){
-        const response = await axios.get("http://localhost:5000/api/patients/getAllPatients")
+        const response = await axios.get("http://localhost:5000/api/patients/getall")
         console.log("paitent",response.data)
     }
     useEffect(()=>{

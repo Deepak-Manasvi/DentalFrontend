@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AddAppointment = () => {
+  const navigate = useNavigate();
   const [selectedMedicalHistory, setSelectedMedicalHistory] = useState([]);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [paymentMode, setPaymentMode] = useState("Cash");
@@ -10,6 +12,8 @@ const AddAppointment = () => {
 
   const [isMedicalDropdownOpen, setIsMedicalDropdownOpen] = useState(false);
   const [isAllergyDropdownOpen, setIsAllergyDropdownOpen] = useState(false);
+
+  const role =localStorage.getItem("role")
 
   const [formData, setFormData] = useState({
     patientType: "",
@@ -28,6 +32,7 @@ const AddAppointment = () => {
     doctorName: "",
     transactionId: "",
     status: "",
+    opdAmount:""
   });
 
   const medicalDropdownRef = useRef();
@@ -154,6 +159,7 @@ const AddAppointment = () => {
       const response = await axios.post("http://localhost:5000/api/addAppointment", finalData);
       console.log("Appointment booked successfully", response.data);
       alert("Appointment booked successfully!");
+      navigate(`/${role}/appointment-list`)
     } catch (error) {
       console.error("Error booking appointment:", error);
       alert("Failed to book appointment");
@@ -173,13 +179,19 @@ const AddAppointment = () => {
       onChange={handleChange}
       required
       className="w-full p-3 border rounded-xl bg-white"
+
+      // "General Patient",
+      //   "Emergency Patient",
+      //   "Regular Patient",
+      //   "Corporate Patient",
+      //   "Insurance Patient",
     >
       <option value="" disabled selected hidden>Patient Type</option>
-      <option value="general">General Patient</option>
-      <option value="emergency">Emergency Patient</option>
-      <option value="regular">Regular Patient</option>
-      <option value="corporate">Corporate Patient</option>
-      <option value="insurance">Insurance Patient</option>
+      <option value="General Patient">General Patient</option>
+      <option value="Emergency Patient">Emergency Patient</option>
+      <option value="Regular Patient">Regular Patient</option>
+      <option value="Corporate Patient">Corporate Patient</option>
+      <option value="Insurance Patient">Insurance Patient</option>
     </select>
     {errors.patientType && (
       <p className="text-red-500 text-sm mt-1">{errors.patientType}</p>
@@ -453,9 +465,11 @@ const AddAppointment = () => {
     <label className="block text-sm font-medium text-gray-600">OPD Amount</label>
     <input
       type="text"
+      name="opdAmount"
+      onChange={handleChange}
       className="w-full p-3 border rounded-xl bg-gray-100"
       placeholder="Auto fetch"
-      disabled
+      // disabled
     />
   </div>
 
