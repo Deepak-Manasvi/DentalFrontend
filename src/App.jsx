@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./component/Dashbaord";
 import AddAppointment from "./component/AddAppointment";
+import EditAppointment from "./component/EditAppointment";
 import AdminLayout from "./component/AdminLayout";
 import AdminAppointmentList from "./component/AdminAppointmentList";
 import PatientList from "./component/PatientList";
@@ -54,6 +55,7 @@ function App() {
         <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
+          <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
           <Route path="procedure-selection/:id" element={<ProcedureSelection />} />
