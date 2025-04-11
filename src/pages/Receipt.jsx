@@ -5,7 +5,7 @@ const Receipt = () => {
   const navigate = useNavigate(); 
 
   const handleViewReceipt = () => {
-    navigate('/ViewReceipt');   
+    navigate('/reception/ViewReceipt');   
   };
 
   return (
