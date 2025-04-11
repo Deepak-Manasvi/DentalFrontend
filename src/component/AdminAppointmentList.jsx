@@ -27,27 +27,6 @@ const AdminAppointmentList = () => {
         return;
       }
 
-      // Step 2: Delete the appointment
-      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/delete/${id}`);
-
-      // Step 3: Add to patient records
-      const patientPayload = {
-        name: appointmentData.patientName,
-        contact: appointmentData.mobileNumber,
-        address: appointmentData.address,
-        doctor: appointmentData.doctorName,
-        time: appointmentData.appointmentTime,
-        opdAmount: appointmentData.opdAmount,
-        payAmount: appointmentData.payAmount,
-        status: "Checked In",
-        // Add any other fields your patient API expects
-      };
-
-      await axios.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/patients/create`,
-        appointmentData
-      );
-
       alert("Patient checked in successfully!");
       fetchAppointments(); // Refresh the list
     } catch (error) {
