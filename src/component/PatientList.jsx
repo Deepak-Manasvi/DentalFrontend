@@ -34,55 +34,65 @@ const PatientList = () => {
   }, []);
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4">
-        Patient List
-      </h1>
-      <div className="mb-4 flex justify-end">
+    <div className="mx-auto overflow-x-hidden">
+      {/* Header and Search Bar - Fixed */}
+      <div className="mb-4 mt-4 flex justify-between">
+        <h2 className="text-2xl font-bold mb-4 text-gray-700 text-center">
+          Patient List
+        </h2>
         <input
           type="text"
-          placeholder="Search by Name..."
+          placeholder="Search patients..."
+          className="p-2 border rounded w-1/3"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-1/2 md:w-1/3 p-2 border rounded shadow-md focus:outline-none focus:ring focus:ring-blue-300"
-          aria-label="Search patients by name"
         />
       </div>
-      <div className="relative overflow-x-auto">
-        <div className="max-h-[70vh] overflow-y-auto">
-          <table className="w-full bg-white border-collapse">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-blue-900 text-white">
-                <th className="p-2">App ID</th>
-                <th className="p-2">UHID</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Age</th>
-                <th className="p-2">Weight</th>
-                <th className="p-2">Medical History</th>
-                <th className="p-2">Allergies</th>
-                <th className="p-2">SPO2</th>
-                <th className="p-2">Blood Group</th>
-                <th className="p-2">Action</th>
-              </tr>
-            </thead>
+
+      {/* Table with scrollable body */}
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="w-full min-w-max border-collapse">
+          <thead className="bg-blue-900 text-white">
+            <tr className="text-sm md:text-base">
+              <th className="py-2 px-4 text-left">App ID</th>
+              <th className="py-2 px-4 text-left">UHID</th>
+              <th className="py-2 px-4 text-left">Name</th>
+              <th className="py-2 px-4 text-left">Age</th>
+              <th className="py-2 px-4 text-left">Weight</th>
+              <th className="py-2 px-4 text-left">Medical History</th>
+              <th className="py-2 px-4 text-left">Allergies</th>
+              <th className="py-2 px-4 text-left">SPO2</th>
+              <th className="py-2 px-4 text-left">Blood Group</th>
+              <th className="py-2 px-4 text-left">Action</th>
+            </tr>
+          </thead>
+        </table>
+
+        {/* Scrollable tbody container */}
+        <div className="h-screen overflow-y-auto">
+          <table className="w-full min-w-max border-collapse">
             <tbody>
-              {filteredPatients.map((patient) => (
+              {filteredPatients.map((patient, index) => (
                 <tr
-                  key={patient._id}
-                  className="text-center hover:bg-gray-100 transition"
+                  key={patient._id || index}
+                  className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
                 >
-                  <td className="border p-2">{patient.appId}</td>
-                  <td className="border p-2">{patient.uhid}</td>
-                  <td className="border p-2">{patient.patientName}</td>
-                  <td className="border p-2">{patient.age}</td>
-                  <td className="border p-2">{patient.weight}kg</td>
-                  <td className="border p-2">
-                    {patient.medicalHistory.join(", ")}
+                  <td className="py-2 px-4">{patient.appId || "N/A"}</td>
+                  <td className="py-2 px-4">{patient.uhid || "N/A"}</td>
+                  <td className="py-2 px-4">{patient.patientName || "N/A"}</td>
+                  <td className="py-2 px-4">{patient.age || "N/A"}</td>
+                  <td className="py-2 px-4">
+                    {(patient.weight || "N/A") + (patient.weight ? "kg" : "")}
                   </td>
-                  <td className="border p-2">{patient.allergies.join(", ")}</td>
-                  <td className="border p-2">{patient.spo2}</td>
-                  <td className="border p-2">{patient.bloodGroup}</td>
-                  <td className="border p-2">
+                  <td className="py-2 px-4">
+                    {patient.medicalHistory?.join(", ") || "N/A"}
+                  </td>
+                  <td className="py-2 px-4">
+                    {patient.allergies?.join(", ") || "N/A"}
+                  </td>
+                  <td className="py-2 px-4">{patient.spo2 || "N/A"}</td>
+                  <td className="py-2 px-4">{patient.bloodGroup || "N/A"}</td>
+                  <td className="py-2 px-4">
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <button
                         className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600"
