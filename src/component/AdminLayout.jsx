@@ -46,7 +46,7 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-72" : "ml-0"
+        className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-58" : "ml-0"
           }`}
       >
         {/* Navbar */}

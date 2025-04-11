@@ -1,18 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import AppointmentDetails from "./AppointmentDetails";
 
 const AdminAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAppointment, setShowAppointment] = useState(false);
+  const [appointmentData, setAppointmentData] = useState({});
   const dropdownRef = useRef(null);
 
+  const navigate = useNavigate();
   const handleCheckIn = async (id) => {
     try {
-      console.log(id)
+      console.log(id);
       // Step 1: Get the appointment details
-      const { data } = await axios.patch(`${import.meta.env.VITE_APP_BASE_URL}/appointments/updateCheckIn/${id}`);
-      console.log(data)
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateCheckIn/${id}`
+      );
+      console.log(data);
       const appointmentData = data?.appointment;
 
       if (!appointmentData) {
@@ -36,7 +43,10 @@ const AdminAppointmentList = () => {
         // Add any other fields your patient API expects
       };
 
-      await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/patients/create`, appointmentData);
+      await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/patients/create`,
+        appointmentData
+      );
 
       alert("Patient checked in successfully!");
       fetchAppointments(); // Refresh the list
@@ -45,7 +55,6 @@ const AdminAppointmentList = () => {
       alert("Check-in failed. Try again.");
     }
   };
-
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -65,7 +74,9 @@ const AdminAppointmentList = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+      );
       setAppointments(response.data.appointmentList || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -88,9 +99,8 @@ const AdminAppointmentList = () => {
   };
 
   const handleEdit = (appointment) => {
-    // You can open a modal or redirect to an edit form
     console.log("Edit appointment:", appointment);
-    // e.g., navigate(`/edit-appointment/${appointment._id}`);
+    navigate(`/admin/edit-appointment/${appointment._id}`);
   };
 
   const filteredAppointments = appointments.filter((app) =>
@@ -101,10 +111,18 @@ const AdminAppointmentList = () => {
 
   return (
     <div className="mx-auto overflow-x-hidden">
-      <h2 className="text-2xl font-bold mb-4 text-gray-700 text-center">Appointment List</h2>
-
       {/* Search Bar */}
-      <div className="mb-4 w-[90%] mt-10 flex justify-end">
+
+      <AppointmentDetails
+        setShowAppointment={setShowAppointment}
+        showAppointment={showAppointment}
+        appointmentData={appointmentData}
+      />
+
+      <div className="mb-4 mt-4 flex justify-between">
+        <h2 className="text-2xl font-bold mb-4 text-gray-700 text-center">
+          Appointment List
+        </h2>
         <input
           type="text"
           placeholder="Search patients..."
@@ -114,20 +132,34 @@ const AdminAppointmentList = () => {
         />
       </div>
 
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="w-full min-w-max border-collapse">
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg h-screen ">
+        <table className="w-full min-w-max border-collapse ">
           <thead className="bg-blue-900 text-white">
             <tr className="text-sm md:text-base">
-              {["ID", "Name", "Contact", "Address", "Doctor", "Time", "OPD Amount", "Pay Amount", "Status", "Action"].map(
-                (header) => (
-                  <th key={header} className="py-2 px-4 text-left">{header}</th>
-                )
-              )}
+              {[
+                "ID",
+                "Name",
+                "Contact",
+                "Address",
+                "Doctor",
+                "Time",
+                "OPD Amount",
+                "Pay Amount",
+                "Status",
+                "Action",
+              ].map((header) => (
+                <th key={header} className="py-2 px-4 text-left">
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {filteredAppointments.map((app, index) => (
-              <tr key={app._id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
+              <tr
+                key={app._id || index}
+                className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
+              >
                 <td className="py-2 px-4">{index + 1}</td>
                 <td className="py-2 px-4">{app.patientName || "N/A"}</td>
                 <td className="py-2 px-4">{app.mobileNumber || "N/A"}</td>
@@ -135,8 +167,14 @@ const AdminAppointmentList = () => {
                 <td className="py-2 px-4">{app.doctorName || "N/A"}</td>
                 <td className="py-2 px-4">{app.appointmentTime || "N/A"}</td>
                 <td className="py-2 px-4">{app.opdAmount || "N/A"}</td>
-                <td className="py-2 px-4">{app.payAmount || app.opdAmount || "N/A"}</td>
-                <td className={`py-2 px-4 font-semibold ${app.status === "Paid" ? "text-green-600" : "text-red-600"}`}>
+                <td className="py-2 px-4">
+                  {app.payAmount || app.opdAmount || "N/A"}
+                </td>
+                <td
+                  className={`py-2 px-4 font-semibold ${
+                    app.status === "Paid" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
                   {app.status || "N/A"}
                 </td>
                 <td className="py-2 px-4 relative">
@@ -150,7 +188,7 @@ const AdminAppointmentList = () => {
                   {dropdownOpen === (app._id || index) && (
                     <div
                       ref={dropdownRef}
-                      className="absolute z-10 mt-2 w-36 bg-white shadow-lg rounded-md border"
+                      className="absolute z-100 mt-2 w-36 bg-white shadow-lg rounded-md border"
                       style={{ transform: "translateY(0%)", right: "0" }}
                     >
                       <ul className="text-left">
@@ -164,6 +202,10 @@ const AdminAppointmentList = () => {
                         </li>
                         <li>
                           <button
+                            onClick={() => {
+                              setShowAppointment(true);
+                              setAppointmentData(app);
+                            }}
                             className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
                           >
                             View
