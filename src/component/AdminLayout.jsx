@@ -88,7 +88,7 @@ const AdminLayout = () => {
 
 
         {/* Page Content */}
-        <div className="flex-1 p-6 mt-[80px] min-h-screen overflow-y-auto">
+        <div className="flex-1 p-4 mt-[80px]  overflow-y-auto">
           <Outlet />
         </div>
       </div>

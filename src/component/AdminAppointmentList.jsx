@@ -11,7 +11,7 @@ const AdminAppointmentList = () => {
     try {
       console.log(id)
       // Step 1: Get the appointment details
-      const { data } = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/getbyid/${id}`);
+      const { data } = await axios.patch(`${import.meta.env.VITE_APP_BASE_URL}/appointments/updateCheckIn/${id}`);
       console.log(data)
       const appointmentData = data?.appointment;
 
@@ -65,7 +65,7 @@ const AdminAppointmentList = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointmentList`);
+      const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`);
       setAppointments(response.data.appointmentList || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);

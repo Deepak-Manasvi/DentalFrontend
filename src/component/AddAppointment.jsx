@@ -13,16 +13,18 @@ const AddAppointment = () => {
   const [isMedicalDropdownOpen, setIsMedicalDropdownOpen] = useState(false);
   const [isAllergyDropdownOpen, setIsAllergyDropdownOpen] = useState(false);
 
-  const role = localStorage.getItem("role")
+  const role = localStorage.getItem("role");
 
   const [formData, setFormData] = useState({
     patientType: "",
     appId: "",
     patientName: "",
-    gender: "",
+    gender: "Male",
     mobileNumber: "",
     age: "",
     address: "",
+    medicalHistory: [], // Add this array for medical history
+    allergies: [], // Add this array for allergies
     weight: "",
     systolic: "",
     diastolic: "",
@@ -32,29 +34,52 @@ const AddAppointment = () => {
     doctorName: "",
     transactionId: "",
     status: "",
-    opdAmount: ""
+    paymentMode: "Cash",
+    opdAmount: "",
   });
 
   const medicalDropdownRef = useRef();
   const allergyDropdownRef = useRef();
 
   const medicalHistoryOptions = [
-    "Diabetes", "Hypertension", "Asthma", "Arthritis",
-    "Liver Disease", "Kidney Disease", "Cancer", "HIV",
-    "Depression", "Thyroid Disease", "Anxiety", "Cardiovascular Disease", "None"
+    "Diabetes",
+    "Hypertension",
+    "Asthma",
+    "Arthritis",
+    "Liver Disease",
+    "Kidney Disease",
+    "Cancer",
+    "HIV",
+    "Depression",
+    "Thyroid Disease",
+    "Anxiety",
+    "Cardiovascular Disease",
+    "None",
   ];
 
   const allergyOptions = [
-    "Penicillin", "Aspirin & NSAIDs", "Local Anesthesia", "Opioid",
-    "Latex", "Metal", "Pollen & Dust", "None"
+    "Penicillin",
+    "Aspirin & NSAIDs",
+    "Local Anesthesia",
+    "Opioid",
+    "Latex",
+    "Metal",
+    "Pollen & Dust",
+    "None",
   ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (medicalDropdownRef.current && !medicalDropdownRef.current.contains(event.target)) {
+      if (
+        medicalDropdownRef.current &&
+        !medicalDropdownRef.current.contains(event.target)
+      ) {
         setIsMedicalDropdownOpen(false);
       }
-      if (allergyDropdownRef.current && !allergyDropdownRef.current.contains(event.target)) {
+      if (
+        allergyDropdownRef.current &&
+        !allergyDropdownRef.current.contains(event.target)
+      ) {
         setIsAllergyDropdownOpen(false);
       }
     };
@@ -62,21 +87,60 @@ const AddAppointment = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleMedicalDropdown = () => setIsMedicalDropdownOpen(!isMedicalDropdownOpen);
-  const toggleAllergyDropdown = () => setIsAllergyDropdownOpen(!isAllergyDropdownOpen);
+  const toggleMedicalDropdown = () =>
+    setIsMedicalDropdownOpen(!isMedicalDropdownOpen);
+  const toggleAllergyDropdown = () =>
+    setIsAllergyDropdownOpen(!isAllergyDropdownOpen);
 
   const handleMedicalHistorySelect = (condition) => {
-    setSelectedMedicalHistory((prev) =>
-      prev.includes(condition) ? prev.filter((item) => item !== condition) : [...prev, condition]
-    );
+    // Check if the condition is already selected
+    if (selectedMedicalHistory.includes(condition)) {
+      // If selected, remove it
+      const updatedMedicalHistory = selectedMedicalHistory.filter(
+        (item) => item !== condition
+      );
+      setSelectedMedicalHistory(updatedMedicalHistory);
+      // Update formData
+      setFormData({
+        ...formData,
+        medicalHistory: updatedMedicalHistory,
+      });
+    } else {
+      // If not selected, add it
+      const updatedMedicalHistory = [...selectedMedicalHistory, condition];
+      setSelectedMedicalHistory(updatedMedicalHistory);
+      // Update formData
+      setFormData({
+        ...formData,
+        medicalHistory: updatedMedicalHistory,
+      });
+    }
   };
 
   const handleAllergySelect = (allergy) => {
-    setSelectedAllergies((prev) =>
-      prev.includes(allergy) ? prev.filter((item) => item !== allergy) : [...prev, allergy]
-    );
+    // Check if the allergy is already selected
+    if (selectedAllergies.includes(allergy)) {
+      // If selected, remove it
+      const updatedAllergies = selectedAllergies.filter(
+        (item) => item !== allergy
+      );
+      setSelectedAllergies(updatedAllergies);
+      // Update formData
+      setFormData({
+        ...formData,
+        allergies: updatedAllergies,
+      });
+    } else {
+      // If not selected, add it
+      const updatedAllergies = [...selectedAllergies, allergy];
+      setSelectedAllergies(updatedAllergies);
+      // Update formData
+      setFormData({
+        ...formData,
+        allergies: updatedAllergies,
+      });
+    }
   };
-
   const handlePaymentModeChange = (e) => {
     setPaymentMode(e.target.value);
   };
@@ -100,12 +164,24 @@ const AddAppointment = () => {
   const validateForm = () => {
     const newErrors = {};
     const requiredFields = [
-      "patientType", "appId", "patientName", "gender", "mobileNumber",
-      "age", "address", "weight", "systolic", "diastolic", "spo2",
-      "bloodGroup", "appointmentDate", "doctorName", "status"
+      "patientType",
+      "appId",
+      "patientName",
+      "gender",
+      "mobileNumber",
+      "age",
+      "address",
+      "weight",
+      "systolic",
+      "diastolic",
+      "spo2",
+      "bloodGroup",
+      "appointmentDate",
+      "doctorName",
+      "status",
     ];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!formData[field]) newErrors[field] = "This field is required.";
     });
 
@@ -117,7 +193,10 @@ const AddAppointment = () => {
       newErrors.age = "Enter a valid age.";
     }
 
-    if (formData.weight && (isNaN(formData.weight) || Number(formData.weight) <= 0)) {
+    if (
+      formData.weight &&
+      (isNaN(formData.weight) || Number(formData.weight) <= 0)
+    ) {
       newErrors.weight = "Enter a valid weight.";
     }
 
@@ -129,12 +208,16 @@ const AddAppointment = () => {
       newErrors.diastolic = "Enter a valid number.";
     }
 
-    if (formData.spo2 && (isNaN(formData.spo2) || formData.spo2 < 0 || formData.spo2 > 100)) {
+    if (
+      formData.spo2 &&
+      (isNaN(formData.spo2) || formData.spo2 < 0 || formData.spo2 > 100)
+    ) {
       newErrors.spo2 = "SPO2 should be between 0 and 100.";
     }
 
     if (paymentMode !== "Cash" && !formData.transactionId) {
-      newErrors.transactionId = "Transaction ID is required for non-cash payments.";
+      newErrors.transactionId =
+        "Transaction ID is required for non-cash payments.";
     }
 
     setErrors(newErrors);
@@ -142,6 +225,7 @@ const AddAppointment = () => {
   };
 
   const handleBookAppointment = async () => {
+    console.log("bookstart");
     if (!validateForm()) return;
 
     const currentTime = getCurrentTime();
@@ -150,43 +234,53 @@ const AddAppointment = () => {
     const finalData = {
       ...formData,
       appointmentTime: currentTime,
-      selectedMedicalHistory,
-      selectedAllergies,
+
       paymentMode,
     };
 
+    console.log(finalData, "finalData");
+    console.log(appointmentTime, ":asdfads");
     try {
-      const response = await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/addAppointment`, finalData);
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/addAppointment`,
+        finalData
+      );
       console.log("Appointment booked successfully", response.data);
       alert("Appointment booked successfully!");
-      navigate(`/${role}/appointment-list`)
+      navigate(`/${role}/appointment-list`);
     } catch (error) {
       console.error("Error booking appointment:", error);
       alert("Failed to book appointment");
     }
   };
 
+  console.log(formData, "formData");
   return (
-    <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
-
-      <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">Patient Details</h2>
+    <div className=" mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+      <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
+        Patient Details
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-600">Patient Type</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Patient Type <span className="text-red-500">*</span>
+          </label>
           <select
             name="patientType"
             onChange={handleChange}
             required
             className="w-full p-3 border rounded-xl bg-white"
 
-          // "General Patient",
-          //   "Emergency Patient",
-          //   "Regular Patient",
-          //   "Corporate Patient",
-          //   "Insurance Patient",
+            // "General Patient",
+            //   "Emergency Patient",
+            //   "Regular Patient",
+            //   "Corporate Patient",
+            //   "Insurance Patient",
           >
-            <option value="" disabled selected hidden>Patient Type</option>
+            <option value="" disabled selected hidden>
+              Patient Type
+            </option>
             <option value="General Patient">General Patient</option>
             <option value="Emergency Patient">Emergency Patient</option>
             <option value="Regular Patient">Regular Patient</option>
@@ -199,14 +293,16 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Appointment Id</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Appointment Id<span className="text-red-500">*</span>
+          </label>
           <input
             name="appId"
             onChange={handleChange}
             type="text"
             required
             className="w-full p-3 border rounded-xl"
-            placeholder="Enter app Id"
+            placeholder="Enter Appointment Id"
           />
           {errors.appId && (
             <p className="text-red-500 text-sm mt-1">{errors.appId}</p>
@@ -214,7 +310,9 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Patient Name</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Patient Name<span className="text-red-500">*</span>
+          </label>
           <input
             name="patientName"
             onChange={handleChange}
@@ -229,15 +327,17 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Gender</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Gender<span className="text-red-500">*</span>
+          </label>
           <select
             name="gender"
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
           >
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
           </select>
           {errors.gender && (
             <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
@@ -245,11 +345,14 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Mobile Number</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Mobile Number<span className="text-red-500">*</span>
+          </label>
           <input
             name="mobileNumber"
             onChange={handleChange}
             type="number"
+            placeholder="Enter Mobile Number"
             className="w-full p-3 border rounded-xl"
           />
           {errors.mobileNumber && (
@@ -258,11 +361,14 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Age</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Age<span className="text-red-500">*</span>
+          </label>
           <input
             name="age"
             onChange={handleChange}
             type="number"
+            placeholder="Enter Age"
             className="w-full p-3 border rounded-xl"
           />
           {errors.age && (
@@ -271,11 +377,14 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Address</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Address<span className="text-red-500">*</span>
+          </label>
           <input
             name="address"
             onChange={handleChange}
             type="text"
+            placeholder="Enter Address"
             className="w-full p-3 border rounded-xl"
           />
           {errors.address && (
@@ -284,24 +393,32 @@ const AddAppointment = () => {
         </div>
       </div>
 
-
-      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">Health Details</h2>
+      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
+        Health Details
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="relative w-full max-w-md" ref={medicalDropdownRef}>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Medical History</label>
+        <div className="relative w-full" ref={medicalDropdownRef}>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Medical History
+          </label>
           <div
             className="border rounded-xl p-3 min-h-[48px] bg-white cursor-pointer flex flex-wrap gap-2 items-center"
             onClick={toggleMedicalDropdown}
           >
             {selectedMedicalHistory.length > 0 ? (
               selectedMedicalHistory.map((condition) => (
-                <span key={condition} className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full">
+                <span
+                  key={condition}
+                  className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full"
+                >
                   {condition}
                 </span>
               ))
             ) : (
-              <span className="text-gray-400">Select medical conditions...</span>
+              <span className="text-gray-400">
+                Select medical conditions...
+              </span>
             )}
           </div>
           {errors.medicalHistory && (
@@ -313,7 +430,11 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition) ? "bg-blue-50 font-semibold" : ""}`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedMedicalHistory.includes(condition)
+                      ? "bg-blue-50 font-semibold"
+                      : ""
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -328,15 +449,20 @@ const AddAppointment = () => {
           )}
         </div>
 
-        <div className="relative w-full max-w-md" ref={allergyDropdownRef}>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Allergies</label>
+        <div className="relative w-full" ref={allergyDropdownRef}>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Allergies
+          </label>
           <div
             className="border rounded-xl p-3 min-h-[48px] bg-white cursor-pointer flex flex-wrap gap-2 items-center"
             onClick={toggleAllergyDropdown}
           >
             {selectedAllergies.length > 0 ? (
               selectedAllergies.map((allergy) => (
-                <span key={allergy} className="bg-red-100 text-red-700 text-sm px-2 py-1 rounded-full">
+                <span
+                  key={allergy}
+                  className="bg-red-100 text-red-700 text-sm px-2 py-1 rounded-full"
+                >
                   {allergy}
                 </span>
               ))
@@ -353,7 +479,11 @@ const AddAppointment = () => {
                 <div
                   key={allergy}
                   onClick={() => handleAllergySelect(allergy)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedAllergies.includes(allergy) ? "bg-red-50 font-semibold" : ""}`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedAllergies.includes(allergy)
+                      ? "bg-red-50 font-semibold"
+                      : ""
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -369,18 +499,40 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Weight</label>
-          <input name="weight" onChange={handleChange} type="number" className="w-full p-3 border rounded-xl" />
+          <label className="block text-sm font-medium text-gray-600">
+            Weight<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="weight"
+            onChange={handleChange}
+            type="number"
+            className="w-full p-3 border rounded-xl"
+            placeholder="Enter weight"
+          />
           {errors.weight && (
             <p className="text-red-500 text-sm mt-1">{errors.weight}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Blood Pressure</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Blood Pressure<span className="text-red-500">*</span>
+          </label>
           <div className="flex gap-3">
-            <input name="systolic" onChange={handleChange} type="number" className="w-1/2 p-3 border rounded-xl" placeholder="Systolic" />
-            <input name="diastolic" onChange={handleChange} type="number" className="w-1/2 p-3 border rounded-xl" placeholder="Diastolic" />
+            <input
+              name="systolic"
+              onChange={handleChange}
+              type="number"
+              className="w-1/2 p-3 border rounded-xl"
+              placeholder="Systolic"
+            />
+            <input
+              name="diastolic"
+              onChange={handleChange}
+              type="number"
+              className="w-1/2 p-3 border rounded-xl"
+              placeholder="Diastolic"
+            />
           </div>
           {(errors.systolic || errors.diastolic) && (
             <p className="text-red-500 text-sm mt-1">
@@ -390,11 +542,14 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">SPO2</label>
+          <label className="block text-sm font-medium text-gray-600">
+            SPO2<span className="text-red-500">*</span>
+          </label>
           <input
             name="spo2"
             type="number"
             onChange={handleChange}
+            placeholder="Enter SPO2"
             className="w-full p-3 border rounded-xl"
           />
           {errors.spo2 && (
@@ -403,13 +558,23 @@ const AddAppointment = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Blood Group</label>
-          <select name="bloodGroup" onChange={handleChange} className="w-full p-3 border rounded-xl">
+          <label className="block text-sm font-medium text-gray-600">
+            Blood Group<span className="text-red-500">*</span>
+          </label>
+          <select
+            name="bloodGroup"
+            onChange={handleChange}
+            className="w-full p-3 border rounded-xl"
+          >
             <option value="">Select</option>
-            <option>A+</option>
-            <option>B+</option>
-            <option>O+</option>
-            <option>AB+</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
           </select>
           {errors.bloodGroup && (
             <p className="text-red-500 text-sm mt-1">{errors.bloodGroup}</p>
@@ -417,11 +582,15 @@ const AddAppointment = () => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">Appointment Details</h2>
+      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
+        Appointment Details
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-600">Appointment Date</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Appointment Date<span className="text-red-500">*</span>
+          </label>
           <input
             name="appointmentDate"
             onChange={handleChange}
@@ -429,27 +598,33 @@ const AddAppointment = () => {
             className="w-full p-3 border rounded-xl"
           />
           {errors.appointmentDate && (
-            <p className="text-red-500 text-sm mt-1">{errors.appointmentDate}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.appointmentDate}
+            </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Appointment Time</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Appointment Time
+          </label>
           <input
             type="time"
             className="w-full p-3 border rounded-xl"
             value={appointmentTime}
             readOnly
           />
-
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Doctor Name</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Doctor Name<span className="text-red-500">*</span>
+          </label>
           <input
             name="doctorName"
             onChange={handleChange}
             type="text"
+            placeholder="Enter Doctor"
             className="w-full p-3 border rounded-xl"
           />
           {errors.doctorName && (
@@ -458,26 +633,33 @@ const AddAppointment = () => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">Payment Details</h2>
+      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
+        Payment Details
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-600">OPD Amount</label>
+          <label className="block text-sm font-medium text-gray-600">
+            OPD Amount
+          </label>
           <input
-            type="text"
+            type="Number"
             name="opdAmount"
             onChange={handleChange}
             className="w-full p-3 border rounded-xl bg-gray-100"
             placeholder="Auto fetch"
-          // disabled
+            // disabled
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Payment Mode</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Payment Mode
+          </label>
           <select
             className="w-full p-3 border rounded-xl"
             value={paymentMode}
+            name="paymentMode"
             onChange={handlePaymentModeChange}
           >
             <option value="Cash">Cash</option>
@@ -491,29 +673,36 @@ const AddAppointment = () => {
 
         {paymentMode !== "Cash" && (
           <div>
-            <label className="block text-sm font-medium text-gray-600">Transaction ID</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Transaction ID
+            </label>
             <input
               name="transactionId"
               onChange={handleChange}
               type="text"
+              placeholder="Enter TransactionId"
               className="w-full p-3 border rounded-xl"
             />
             {errors.transactionId && (
-              <p className="text-red-500 text-sm mt-1">{errors.transactionId}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.transactionId}
+              </p>
             )}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-600">Status</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Status<span className="text-red-500">*</span>
+          </label>
           <select
             name="status"
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
           >
-            <option value="">Status</option>
-            <option>Paid</option>
-            <option>Due</option>
+            <option>Select Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Due">Due</option>
           </select>
           {errors.status && (
             <p className="text-red-500 text-sm mt-1">{errors.status}</p>
@@ -521,15 +710,15 @@ const AddAppointment = () => {
         </div>
       </div>
 
-      <div className="mt-10 flex justify-center gap-6">
+      <div className="mt-10 flex justify-between gap-6">
+        <button className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition text-lg">
+          Cancel
+        </button>
         <button
           className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
           onClick={handleBookAppointment}
         >
           Book Appointment
-        </button>
-        <button className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition text-lg">
-          Cancel
         </button>
       </div>
     </div>
