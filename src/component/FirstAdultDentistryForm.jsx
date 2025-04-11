@@ -59,6 +59,8 @@ const FirstAdultDentistryForm = ({
     const handleSave = () => {
         const { toothName, dentalCondition, complaint, examination, advice } = formData;
 
+        console.log(formData);
+
         if (!toothName || !dentalCondition || !complaint || !examination || !advice) {
             return;
         }
