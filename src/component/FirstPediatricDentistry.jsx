@@ -9,7 +9,7 @@ const toothNames = [
     "Upper Right Lateral Incisor",
     "Upper Left Central Incisor",
     "Upper Left Lateral Incisor  ",
-    " Upper Left Canine (Cuspid)",
+    "Upper Left Canine (Cuspid)",
     "Upper Left First Molar",
     "Upper Left Second Molar",
     "Lower Left Second Molar)",

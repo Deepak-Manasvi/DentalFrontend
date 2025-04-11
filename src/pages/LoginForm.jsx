@@ -12,11 +12,9 @@ export default function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-
     try {
       const res = await axios.post(
-        "http://localhost:3500/api/user/userLogin",
+        `${import.meta.env.VITE_APP_BASE_URL}/user/userLogin`,
         {
           email,
           password,

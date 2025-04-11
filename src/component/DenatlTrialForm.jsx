@@ -39,31 +39,31 @@ const DentalTrialForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.termsAccepted || !formData.consentGiven) {
       alert("Please accept terms and consent to proceed.");
       return;
     }
-  
+
     try {
       setFormData((prevData) => ({
         ...prevData,
         isApproved: true,
         sessionStartDate: new Date(),
       }));
-  
+
       const response = await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/api/admins/sendOTP`,
         formData
       );
-  
+
       alert("Trial session request submitted. Admin will approve it.");
     } catch (error) {
       console.error("Error submitting trial request:", error);
       alert("Failed to submit trial request. Please try again.");
     }
   };
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}

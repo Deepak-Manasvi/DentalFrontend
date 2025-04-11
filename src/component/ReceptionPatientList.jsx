@@ -67,8 +67,8 @@ const Modal = ({ isOpen, onClose, content, patient }) => {
 };
 
 const ReceptionPatientList = () => {
-    
-const navigate = useNavigate()
+
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("");
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,

@@ -1,17 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";  
+import { useNavigate } from "react-router-dom";
 
 const Receipt = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleViewReceipt = () => {
-    navigate('/reception/ViewReceipt');   
+    navigate('/reception/ViewReceipt');
   };
 
   return (
     <div className="max-w-5xl mx-auto p-12 border-2 border-gray-300 rounded-3xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] bg-gradient-to-br from-white to-gray-100 mt-16">
-      
-     
       {/* Header */}
       <div className="flex justify-between text-lg mb-10">
         <div className="space-y-4">

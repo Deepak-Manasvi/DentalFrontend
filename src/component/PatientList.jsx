@@ -18,15 +18,15 @@ const PatientList = () => {
             patient.Name.toLowerCase().includes(search.trim().toLowerCase())
         );
     }, [search]);
- 
+
     //get all paitent list 
-  async function fetchPatientDetails(){
-        const response = await axios.get("http://localhost:3500/api/patients/getAllPatients")
-        console.log("paitent",response.data)
+    async function fetchPatientDetails() {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/patients/getAllPatients`)
+        console.log("paitent", response.data)
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchPatientDetails()
-    } ,[])
+    }, [])
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
@@ -74,9 +74,9 @@ const PatientList = () => {
                                     >
                                         Start Procedure
                                     </button>
-                                    <button 
-                                    className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 w-full md:w-auto"
-                                    onClick={() => navigate(`/admin/PrescriptionForm/${patient.App_id}`)}
+                                    <button
+                                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 w-full md:w-auto"
+                                        onClick={() => navigate(`/admin/PrescriptionForm/${patient.App_id}`)}
                                     >
                                         Prescription
                                     </button>

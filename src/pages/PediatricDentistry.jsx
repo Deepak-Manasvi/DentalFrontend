@@ -24,7 +24,7 @@ export default function PediatricDentistry({ patient }) {
     const location = useLocation();
     const examinationData = location.state?.records || [];
 
-    
+
     useEffect(() => {
         console.log("Received ID from route:", id);
     }, [id]);
@@ -36,31 +36,31 @@ export default function PediatricDentistry({ patient }) {
     return (
         showTreatment ? <FirstPediatricDentistry
 
-        id={id}
-        saved={saved}
-        setSaved={setSaved}
-        records={records}
-        setRecords={setRecords}
-        patient={patient}
-        selectedTeeth={selectedTeeth}
-        showTreatment={showTreatment}
-        setSelectedTeeth={setSelectedTeeth}
-        formData={formData}
-        handleNext= {handleNext}
-        setFormData={setFormData}
+            id={id}
+            saved={saved}
+            setSaved={setSaved}
+            records={records}
+            setRecords={setRecords}
+            patient={patient}
+            selectedTeeth={selectedTeeth}
+            showTreatment={showTreatment}
+            setSelectedTeeth={setSelectedTeeth}
+            formData={formData}
+            handleNext={handleNext}
+            setFormData={setFormData}
 
         /> : <TreatmentProcedure
 
-        id={id}
-        finalProcedures={finalProcedures}
-        setFinalProcedures={setFinalProcedures}
-        finalTreatmentRecords={finalTreatmentRecords}
-        examinationData={examinationData}
-        records={records}
-        setRecords={setRecords}
-        setFinalTreatmentRecords={setFinalTreatmentRecords}
-        setShowTreatment={setShowTreatment}
-         />
+            id={id}
+            finalProcedures={finalProcedures}
+            setFinalProcedures={setFinalProcedures}
+            finalTreatmentRecords={finalTreatmentRecords}
+            examinationData={examinationData}
+            records={records}
+            setRecords={setRecords}
+            setFinalTreatmentRecords={setFinalTreatmentRecords}
+            setShowTreatment={setShowTreatment}
+        />
 
     );
 }

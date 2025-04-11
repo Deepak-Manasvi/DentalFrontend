@@ -9,20 +9,20 @@ const AdminAppointmentList = () => {
 
   const handleCheckIn = async (id) => {
     try {
-console.log(id)
+      console.log(id)
       // Step 1: Get the appointment details
-      const { data } = await axios.get(`http://localhost:5000/api/getbyid/${id}`);
+      const { data } = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/getbyid/${id}`);
       console.log(data)
       const appointmentData = data?.appointment;
-  
+
       if (!appointmentData) {
         alert("Appointment not found!");
         return;
       }
-  
+
       // Step 2: Delete the appointment
-      await axios.delete(`http://localhost:5000/api/delete/${id}`);
-  
+      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/delete/${id}`);
+
       // Step 3: Add to patient records
       const patientPayload = {
         name: appointmentData.patientName,
@@ -35,9 +35,9 @@ console.log(id)
         status: "Checked In",
         // Add any other fields your patient API expects
       };
-  
-      await axios.post("http://localhost:5000/api/patients/create", appointmentData);
-  
+
+      await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/patients/create`, appointmentData);
+
       alert("Patient checked in successfully!");
       fetchAppointments(); // Refresh the list
     } catch (error) {
@@ -45,7 +45,7 @@ console.log(id)
       alert("Check-in failed. Try again.");
     }
   };
-  
+
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -65,7 +65,7 @@ console.log(id)
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/appointmentList");
+      const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointmentList`);
       setAppointments(response.data.appointmentList || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -79,7 +79,7 @@ console.log(id)
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/delete/${id}`);
+        await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/delete/${id}`);
         fetchAppointments(); // Refresh list after deletion
       } catch (error) {
         console.error("Error deleting appointment:", error);

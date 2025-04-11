@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./component/Dashbaord";
 import AddAppointment from "./component/AddAppointment";
 import AdminLayout from "./component/AdminLayout";
-
 import AdminAppointmentList from "./component/AdminAppointmentList";
 import PatientList from "./component/PatientList";
 import ProcedureSelection from "./pages/ProcedureSelection";
@@ -50,10 +49,7 @@ function App() {
             )
           }
         />
-
-
         {/* Public Routes */}
-
         {/* Admin Routes (Protected) */}
         <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
