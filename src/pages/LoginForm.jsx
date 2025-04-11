@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -15,7 +16,14 @@ export default function LoginForm() {
 
 
     try {
-      const res = await axios.post("http://localhost:5000/api/login", { email, password ,role});
+      const res = await axios.post(
+        "http://localhost:5000/api/user/userLogin",
+        {
+          email,
+          password,
+          role,
+        }
+      );
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", role);
 
