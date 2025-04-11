@@ -6,6 +6,7 @@ const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
+  const userRole = localStorage.getItem("role")
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -28,7 +29,7 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen ">
       {/* Sidebar */}
-      <AdminSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <AdminSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} userRole={userRole} />
 
       {/* Main Content */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-72" : "ml-0"}`}>
@@ -40,7 +41,7 @@ const AdminLayout = () => {
             </button>
           )}
           <span className="flex-1 mx-110">{currentTime.toLocaleString()}</span>
-          <span className="text-3xl font-bold mx-auto md:mx-0">Welcome, Admin</span>
+          <span className="text-3xl font-bold mx-auto md:mx-0">Welcome, {userRole}</span>
         </div>
 
         {/* Page Content */}

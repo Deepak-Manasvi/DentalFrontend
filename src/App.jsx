@@ -15,8 +15,10 @@ import PrescriptionForm from "./pages/PrescriptionForm";
 import PediatricDentistry from "./pages/PediatricDentistry";
 import LoginForm from "./pages/LoginForm";
 
+let userRole;
 // Function to get the user role
 const getUserRole = () => {
+  userRole=localStorage.getItem("role");
   return localStorage.getItem("role");
 };
 
@@ -24,6 +26,12 @@ const getUserRole = () => {
 const AdminRoute = ({ element }) => {
   return getUserRole() === "admin" ? element : <Navigate to="/" />;
 };
+
+// Protected Route for Reception Role
+const ReceptionRoute = ({ element }) => {
+  return getUserRole() === "reception" ? element : <Navigate to="/" />;
+};
+
 
 function App() {
   return (
@@ -33,9 +41,16 @@ function App() {
         <Route
           path="/"
           element={
-            getUserRole() === "admin" ? <Navigate to="/admin/dashboard" /> : <LoginForm/>
+            getUserRole() === "admin" ? (
+              <Navigate to="/admin/dashboard" />
+            ) : getUserRole() === "reception" ? (
+              <Navigate to="/reception/dashboard" />
+            ) : (
+              <LoginForm />
+            )
           }
         />
+
 
         {/* Public Routes */}
         <Route path="/pricing" element={<Pricing />} />
@@ -43,7 +58,7 @@ function App() {
         <Route path="/dental-trial-form" element={<DentalTrialForm />} />
 
         {/* Admin Routes (Protected) */}
-          <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
+        <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
@@ -54,6 +69,12 @@ function App() {
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
         </Route>
+
+      <Route path="/reception" element={<ReceptionRoute element={<AdminLayout  />} />}>
+        {/* <Route path="dashboard" element={<ReceptionDashboard />} />
+        <Route path="book-appointment" element={<BookAppointment />} />
+        <Route path="view-appointments" element={<ViewAppointments />} /> */}
+      </Route>
       </Routes>
     </div>
   );

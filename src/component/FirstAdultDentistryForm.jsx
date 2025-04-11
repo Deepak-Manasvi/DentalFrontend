@@ -100,7 +100,7 @@ const FirstAdultDentistryForm = ({
                         <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
                             <div className="bg-white p-1 rounded">
                                 <img
-                                    src={`/teeth/tooth${tooth.id}.png`}
+                                    src={`/adultdentistryTooth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
                                     className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
                                 />
@@ -123,7 +123,7 @@ const FirstAdultDentistryForm = ({
                         <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
                             <div className="bg-white p-1 rounded">
                                 <img
-                                    src={`/teeth/tooth${tooth.id}.png`}
+                                    src={`/adultdentistryTooth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
                                     className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
                                 />
