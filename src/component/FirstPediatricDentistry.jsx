@@ -95,8 +95,8 @@ const FirstAdultDentistryForm = ({
             {/* Patient Info */}
             <div className="grid grid-cols-4 gap-2 text-xl mb-6">
                 <div><strong>UHID:</strong> {patient?.uhid}</div>
-                <div><strong>Name:</strong> {patient?.name}</div>
-                <div><strong>Contact:</strong> {patient?.contact}</div>
+                <div><strong>Name:</strong> {patient?.patientName}</div>
+                <div><strong>Contact:</strong> {patient?.mobileNumber}</div>
                 <div><strong>Age:</strong> {patient?.age}</div>
                 <div><strong>BP:</strong> {patient?.bp}</div>
                 <div><strong>Medical History:</strong> {patient?.medicalHistory}</div>
