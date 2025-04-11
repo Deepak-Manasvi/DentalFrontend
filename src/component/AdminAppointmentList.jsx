@@ -56,7 +56,10 @@ const AdminAppointmentList = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
       );
-      setAppointments(response.data.appointmentList || []);
+      const checkInPatients = response.data.appointmentList.filter(
+        (patient) => patient.isPatient === false
+      );
+      setAppointments(checkInPatients || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
@@ -69,8 +72,11 @@ const AdminAppointmentList = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {
       try {
-        await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/delete/${id}`);
+        await axios.delete(
+          `${import.meta.env.VITE_APP_BASE_URL}/appointments/delete/${id}`
+        );
         fetchAppointments(); // Refresh list after deletion
+        alert("Deleted Appointment");
       } catch (error) {
         console.error("Error deleting appointment:", error);
       }

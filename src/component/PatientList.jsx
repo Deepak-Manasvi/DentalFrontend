@@ -20,7 +20,7 @@ const PatientList = () => {
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
       );
       const checkInPatients = response.data.appointmentList.filter(
-        (patient) => patient.IsPatient === true
+        (patient) => patient.isPatient === true
       );
       setPatients(checkInPatients);
       console.log("Filtered Patients", checkInPatients);
