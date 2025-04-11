@@ -156,7 +156,7 @@ const AddAppointment = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/addAppointment", finalData);
+      const response = await axios.post("http://localhost:3500/api/addAppointment", finalData);
       console.log("Appointment booked successfully", response.data);
       alert("Appointment booked successfully!");
       navigate(`/${role}/appointment-list`)

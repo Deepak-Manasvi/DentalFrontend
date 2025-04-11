@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -17,7 +16,7 @@ export default function LoginForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/user/userLogin",
+        "http://localhost:3500/api/user/userLogin",
         {
           email,
           password,

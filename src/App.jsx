@@ -18,7 +18,7 @@ import ViewReceipt from "./component/ViewReceipt";
 let userRole;
 // Function to get the user role
 const getUserRole = () => {
-  userRole=localStorage.getItem("role");
+  userRole = localStorage.getItem("role");
   return localStorage.getItem("role");
 };
 
@@ -67,14 +67,14 @@ function App() {
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
         </Route>
 
-      <Route path="/reception" element={<ReceptionRoute element={<AdminLayout  />} />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="add-appointment" element={<AddAppointment />} />
-        <Route path="appointment-list" element={<AdminAppointmentList/>}/>
-        <Route path="patient-list" element={<ReceptionPatientList />} />
-        <Route path="receipt" element={< Receipt/>}/>
-        <Route path="ViewReceipt" element={< ViewReceipt/>}/>
-      </Route>
+        <Route path="/reception" element={<ReceptionRoute element={<AdminLayout />} />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="add-appointment" element={<AddAppointment />} />
+          <Route path="appointment-list" element={<AdminAppointmentList />} />
+          <Route path="patient-list" element={<ReceptionPatientList />} />
+          <Route path="receipt" element={< Receipt />} />
+          <Route path="ViewReceipt" element={< ViewReceipt />} />
+        </Route>
       </Routes>
     </div>
   );

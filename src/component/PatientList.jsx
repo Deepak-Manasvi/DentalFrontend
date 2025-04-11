@@ -21,7 +21,7 @@ const PatientList = () => {
  
     //get all paitent list 
   async function fetchPatientDetails(){
-        const response = await axios.get("http://localhost:5000/api/patients/getall")
+        const response = await axios.get("http://localhost:3500/api/patients/getAllPatients")
         console.log("paitent",response.data)
     }
     useEffect(()=>{
