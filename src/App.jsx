@@ -68,7 +68,7 @@ function App() {
         </Route>
 
       <Route path="/reception" element={<ReceptionRoute element={<AdminLayout  />} />}>
-        {/* <Route path="dashboard" element={<ReceptionDashboard />} /> */}
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="add-appointment" element={<AddAppointment />} />
         <Route path="appointment-list" element={<AdminAppointmentList/>}/>
         <Route path="patient-list" element={<ReceptionPatientList />} />
