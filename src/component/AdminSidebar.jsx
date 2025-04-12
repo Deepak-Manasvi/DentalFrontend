@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
@@ -9,6 +9,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
   };
+  const navigate = useNavigate();
 
   return (
     <>
@@ -45,7 +46,18 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
         {/* Sidebar Sections */}
         <div className="mt-6">
-          <span>Dashboard</span>
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => navigate("dashboard-card")}
+          >
+            <span>Dashboard</span>
+            {openSection === "dashboard" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+
           <div
             className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
             onClick={() => toggleSection("appointment")}
