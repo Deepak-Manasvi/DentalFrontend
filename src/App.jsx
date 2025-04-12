@@ -58,20 +58,29 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
-          <Route path="procedure-selection/:id" element={<ProcedureSelection />} />
+          <Route
+            path="procedure-selection/:id"
+            element={<ProcedureSelection />}
+          />
           <Route path="procedure-adult/:id" element={<AdultDentistry />} />
-          <Route path="procedure-pediatric/:id" element={<PediatricDentistry />} />
+          <Route
+            path="procedure-pediatric/:id"
+            element={<PediatricDentistry />}
+          />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
+          <Route path="patient-list" element={<ReceptionPatientList />} />
+          <Route path="receipt" element={<Receipt />} />
+          <Route path="ViewReceipt" element={<ViewReceipt />} />
         </Route>
 
-        <Route path="/reception" element={<ReceptionRoute element={<AdminLayout />} />}>
+        <Route
+          path="/reception"
+          element={<ReceptionRoute element={<AdminLayout />} />}
+        >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
-          <Route path="patient-list" element={<ReceptionPatientList />} />
-          <Route path="receipt" element={< Receipt />} />
-          <Route path="ViewReceipt" element={< ViewReceipt />} />
         </Route>
       </Routes>
     </div>

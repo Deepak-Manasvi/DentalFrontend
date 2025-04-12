@@ -30,11 +30,12 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
         )}
       </div>
 
-
       {/* Sidebar */}
       <div
         className={`fixed  top-0 left-0 h-full bg-blue-900 text-white text-xl p-4 shadow-lg z-50 transition-transform duration-300 
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+          ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0`}
       >
         {/* Sidebar Header */}
         <div className="flex items-center gap-3 pb-6 border-b border-gray-500">
@@ -49,18 +50,27 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
             onClick={() => toggleSection("appointment")}
           >
             <span>Appointment</span>
-            {openSection === "appointment" ? <MdKeyboardArrowDown /> : <MdKeyboardArrowRight />}
+            {openSection === "appointment" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
           </div>
           {openSection === "appointment" && (
             <div className="ml-4">
-              <Link to={`/${userRole}/add-appointment`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/add-appointment`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Add Appointment
               </Link>
-              <Link to={`/${userRole}/appointment-list`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/appointment-list`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Appointment List
               </Link>
             </div>
-
           )}
 
           <div
@@ -68,14 +78,24 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
             onClick={() => toggleSection("patients")}
           >
             <span>Patients</span>
-            {openSection === "patients" ? <MdKeyboardArrowDown /> : <MdKeyboardArrowRight />}
+            {openSection === "patients" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
           </div>
           {openSection === "patients" && (
             <div className="ml-4">
-              <Link to={`/${userRole}/patient-list`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/patient-list`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Patient List
               </Link>
-              <Link to={`/${userRole}/patient-history`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/patient-history`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Patient History
               </Link>
             </div>
@@ -86,15 +106,143 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
             onClick={() => toggleSection("services")}
           >
             <span>Services</span>
-            {openSection === "services" ? <MdKeyboardArrowDown /> : <MdKeyboardArrowRight />}
+            {openSection === "services" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
           </div>
           {openSection === "services" && (
             <div className="ml-4">
-              <Link to={`/${userRole}/add-services`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/add-services`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Add Services
               </Link>
-              <Link to={`/${userRole}/manage-services`} className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/manage-services`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Manage Services
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("dentist")}
+          >
+            <span>Dentist</span>
+            {openSection === "dentist" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "dentist" && (
+            <div className="ml-4">
+              <Link
+                to={`/${userRole}/dentist-list`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Add Dentist
+              </Link>
+              <Link
+                to={`/${userRole}/dentist-history`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Manage Dentist
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("staff")}
+          >
+            <span>Staff</span>
+            {openSection === "staff" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "staff" && (
+            <div className="ml-4">
+              <Link
+                to={`/${userRole}/staff-list`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Add Staff
+              </Link>
+              <Link
+                to={`/${userRole}/staff-history`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Manage Staff
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("billing")}
+          >
+            <span>Billing</span>
+            {openSection === "billing" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "billing" && (
+            <div className="ml-4">
+              <Link to="patient-list" className="block p-2 hover:bg-blue-700">
+                Receipt
+              </Link>
+              <Link to="ViewReceipt" className="block p-2 hover:bg-blue-700">
+                Receipt List
+              </Link>
+              <Link
+                to="Invoice"
+                className="block p-2 hover:bg-blue-700"
+              >
+                Generate Invoice
+              </Link>
+              <Link
+                to={`/${userRole}/invoice-history`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Invoice List
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("report")}
+          >
+            <span>Report</span>
+            {openSection === "report" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "report" && (
+            <div className="ml-4">
+              <Link
+                to={`/${userRole}/report-list`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Revenue Report
+              </Link>
+              <Link
+                to={`/${userRole}/report-history`}
+                className="block p-2 hover:bg-blue-700"
+              >
+                Patient Report
               </Link>
             </div>
           )}

@@ -78,7 +78,7 @@ const ReceptionPatientList = () => {
 
   const handleReceipt = (patient) => {
     console.log("get")
-    navigate("/reception/receipt", { state: { patient } }); // 👈 Send patient data via state
+    navigate("/admin/receipt", { state: { patient } }); // 👈 Send patient data via state
   };
 
   const openModal = (type, patient) => {
