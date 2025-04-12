@@ -33,8 +33,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
       {/* Sidebar */}
       <div
         className={`fixed  top-0 left-0 h-full bg-blue-900 text-white text-xl p-4 shadow-lg z-50 transition-transform duration-300 
-          ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0`}
       >
         {/* Sidebar Header */}
@@ -199,13 +198,13 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "staff" && (
             <div className="ml-4">
               <Link
-                to=""
+                to={`/${userRole}/add-staff`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Add Staff
               </Link>
               <Link
-                to=""
+               to={`/${userRole}/edit-staff/:staffId`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Staff

@@ -16,6 +16,8 @@ import ViewReceipt from "./component/ViewReceipt";
 import Invoice from "./component/Invoice";
 import AddBranches from "./component/AddBranches";
 import ManageBranches from "./component/ManageBranches";
+import AddStaff from "./component/AddStaff";
+import ManageStaff from "./component/ManageStaff";
 
 let userRole;
 // Function to get the user role
@@ -60,22 +62,18 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
-          <Route
-            path="procedure-selection/:id"
-            element={<ProcedureSelection />}
-          />
+          <Route path="procedure-selection/:id"element={<ProcedureSelection />}/>
           <Route path="procedure-adult/:id" element={<AdultDentistry />} />
-          <Route
-            path="procedure-pediatric/:id"
-            element={<PediatricDentistry />}
-          />
+          <Route path="procedure-pediatric/:id" element={<PediatricDentistry />}/>
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
-          <Route path="add-Branches" element={<AddBranches/>}/>
-          <Route path="manage-branches" element={<ManageBranches/>}/>
+          <Route path="add-Branches" element={<AddBranches />} />
+          <Route path="manage-branches" element={<ManageBranches />} />
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+          <Route path="add-staff" element={<AddStaff />} />
+          <Route path="edit-staff/:staffId" element={<ManageStaff />} />
         </Route>
 
         <Route
