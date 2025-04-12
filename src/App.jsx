@@ -14,6 +14,8 @@ import LoginForm from "./pages/LoginForm";
 import ReceptionPatientList from "./component/ReceptionPatientList";
 import ViewReceipt from "./component/ViewReceipt";
 import Invoice from "./component/Invoice";
+import AddBranches from "./component/AddBranches";
+import ManageBranches from "./component/ManageBranches";
 
 let userRole;
 // Function to get the user role
@@ -69,6 +71,8 @@ function App() {
           />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
+          <Route path="add-Branches" element={<AddBranches/>}/>
+          <Route path="manage-branches" element={<ManageBranches/>}/>
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />

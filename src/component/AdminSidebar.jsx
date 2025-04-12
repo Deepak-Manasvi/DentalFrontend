@@ -143,13 +143,13 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "branches" && (
             <div className="ml-4">
               <Link
-                to=""
+                to={`/${userRole}/add-branches`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Add Branches
               </Link>
               <Link
-                to=""
+                to={`/${userRole}/manage-branches`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Branches
