@@ -9,8 +9,8 @@ const AddServices = ({ onSaveService }) => {
   const serviceTypes = [
     { id: 1, title: "Chief Complaint", icon: "🩺" },
     { id: 2, title: "Examination", icon: "🔍" },
-    { id: 3, title: "Treatment", icon: "💊" },
-    { id: 4, title: "Procedure Medicine", icon: "💉" },
+    { id: 3, title: "Treatment Procedure", icon: "💊" },
+    { id: 4, title: "Medicine", icon: "💉" },
   ];
 
   const handleCardClick = (serviceTitle) => {

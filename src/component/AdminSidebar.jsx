@@ -33,7 +33,8 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
       {/* Sidebar */}
       <div
         className={`fixed  top-0 left-0 h-full bg-blue-900 text-white text-xl p-4 shadow-lg z-50 transition-transform duration-300 
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0`}
       >
         {/* Sidebar Header */}
@@ -44,6 +45,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
         {/* Sidebar Sections */}
         <div className="mt-6">
+          <span>Dashboard</span>
           <div
             className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
             onClick={() => toggleSection("appointment")}
@@ -138,14 +140,16 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "branches" && (
             <div className="ml-4">
-              <Link 
-              to={`/${userRole}/add-branches`}
-              className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/add-branches`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Add Branches
               </Link>
-              <Link 
-               to={`/${userRole}/manage-branches/:branchesId`}
-              className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/manage-branches/:branchesId`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Manage Branches
               </Link>
             </div>
@@ -164,10 +168,10 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "dentist" && (
             <div className="ml-4">
-              <Link to="" className="block p-2 hover:bg-blue-700">
+              <Link to="add-dentist" className="block p-2 hover:bg-blue-700">
                 Add Dentist
               </Link>
-              <Link to="" className="block p-2 hover:bg-blue-700">
+              <Link to="manage-dentist" className="block p-2 hover:bg-blue-700">
                 Manage Dentist
               </Link>
             </div>
@@ -186,14 +190,16 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "staff" && (
             <div className="ml-4">
-              <Link 
-              to={`/${userRole}/add-staff`}
-              className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/add-staff`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Add Staff
               </Link>
-              <Link 
-              to={`/${userRole}/edit-staff/:staffId`}
-              className="block p-2 hover:bg-blue-700">
+              <Link
+                to={`/${userRole}/edit-staff/:staffId`}
+                className="block p-2 hover:bg-blue-700"
+              >
                 Manage Staff
               </Link>
             </div>
@@ -248,6 +254,28 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
               </Link>
               <Link to="" className="block p-2 hover:bg-blue-700">
                 Patient Report
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("setting")}
+          >
+            <span>Setting</span>
+            {openSection === "setting" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "setting" && (
+            <div className="ml-4">
+              <Link to="setting" className="block p-2 hover:bg-blue-700">
+                Clinic Configuration
+              </Link>
+              <Link to="" className="block p-2 hover:bg-blue-700">
+                User profile
               </Link>
             </div>
           )}
