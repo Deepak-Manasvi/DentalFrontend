@@ -209,7 +209,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                 Add Staff
               </Link>
               <Link
-                to={`/${userRole}/edit-staff/:staffId`}
+                to={`/${userRole}/manage-staff`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Staff

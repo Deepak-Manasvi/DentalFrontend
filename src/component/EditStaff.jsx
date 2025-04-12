@@ -1,9 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-export default function AddStaff() {
+export default function EditStaff() {
+  const { id } = useParams();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -14,6 +16,40 @@ export default function AddStaff() {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch staff data when component mounts
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/staff/getstaffById/${id}`
+        );
+
+        // Update form with existing staff data
+        const staffData = response.data.data.staff;
+        setFormData({
+          name: staffData.name || "",
+          username: staffData.username || "",
+          // Password field is left empty for security reasons
+          password: staffData.password,
+          address: staffData.address || "",
+          email: staffData.email || "",
+          contactNumber: staffData.contactNumber || "",
+        });
+
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch staff data. Please try again.");
+        setLoading(false);
+        console.error("Error fetching staff data:", err);
+      }
+    };
+
+    fetchStaffData();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +57,13 @@ export default function AddStaff() {
       ...prev,
       [name]: value,
     }));
+    // Clear error for this field when the user makes changes
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   const validate = () => {
@@ -28,11 +71,12 @@ export default function AddStaff() {
 
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.username.trim()) newErrors.username = "Username is required";
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
+
+    // Only validate password if it's provided (optional during edit)
+    if (formData.password.trim() && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
+
     if (!formData.address.trim()) newErrors.address = "Address is required";
 
     if (!formData.email.trim()) {
@@ -51,48 +95,76 @@ export default function AddStaff() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     if (validate()) {
       try {
-        const res = await axios.post(
-          `${import.meta.env.VITE_APP_BASE_URL}/staff/createstaff`,
-          formData
+        // Create data object, only include password if provided
+        const updateData = {
+          name: formData.name,
+          username: formData.username,
+          address: formData.address,
+          email: formData.email,
+          contactNumber: formData.contactNumber,
+        };
+
+        // Only include password in update if user entered one
+        if (formData.password.trim()) {
+          updateData.password = formData.password;
+        }
+
+        const res = await axios.patch(
+          `${import.meta.env.VITE_APP_BASE_URL}/staff/updatestaffById/${id}`,
+          updateData
         );
 
-        if (res.status === 200 || res.status === 201) {
-          alert("Staff added successfully!");
-          navigate("/admin/manage-staff"); // Corrected URL (always use lowercase for path)
+        if (res.status === 200) {
+          alert("Staff updated successfully!");
+          navigate("/admin/manage-staff");
         } else {
-          alert("Failed to add staff. Please try again.");
+          alert("Failed to update staff. Please try again.");
         }
       } catch (error) {
-        console.error("Error adding staff:", error);
-        alert("An error occurred while adding staff. Please try again.");
+        console.error("Error updating staff:", error);
+        alert("An error occurred while updating staff. Please try again.");
       }
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      name: "",
-      username: "",
-      password: "",
-      address: "",
-      email: "",
-      contactNumber: "",
-    });
     navigate("/admin/manage-staff");
-    setErrors({});
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-lg text-gray-600">Loading staff data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto p-8 bg-red-50 shadow-xl rounded-2xl">
+        <p className="text-red-600">{error}</p>
+        <button
+          onClick={() => navigate("/admin/manage-staff")}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
         <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
-          Add Staff
+          Edit Staff
         </h2>
-        <form className="space-y-4" onSubmit={handleSave}>
+        <form className="space-y-4" onSubmit={handleUpdate}>
           {/* Staff Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
@@ -132,16 +204,18 @@ export default function AddStaff() {
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Password<span className="text-red-500">*</span>
+              Password{" "}
+              <span className="text-gray-500">
+                (Leave blank to keep current password)
+              </span>
             </label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter password"
+              placeholder="Enter new password (min 6 characters)"
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -206,13 +280,13 @@ export default function AddStaff() {
             )}
           </div>
 
-          {/* Save Button */}
+          {/* Update & Cancel Buttons */}
           <div className="flex justify-start gap-4 pt-4">
             <button
               type="submit"
               className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
             >
-              Save
+              Update
             </button>
             <button
               type="button"

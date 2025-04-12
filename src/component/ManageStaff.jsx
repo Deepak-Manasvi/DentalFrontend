@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Eye, Pencil, Trash } from 'lucide-react';
+import { Eye, Pencil, Trash } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function ManageStaff() {
   const [staffList, setStaffList] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const navigate = useNavigate();
   const [editData, setEditData] = useState({
     name: "",
     username: "",
@@ -13,20 +16,38 @@ export default function ManageStaff() {
     contactNumber: "",
   });
 
-  useEffect(() => {
-    const storedStaff = JSON.parse(localStorage.getItem("staffList")) || [];
-    setStaffList(storedStaff);
-  }, []);
-
-  const handleDelete = (index) => {
-    const updatedList = staffList.filter((_, i) => i !== index);
-    setStaffList(updatedList);
-    localStorage.setItem("staffList", JSON.stringify(updatedList));
+  const getStafs = async () => {
+    await axios
+      .get(`${import.meta.env.VITE_APP_BASE_URL}/staff/getAllStaff`)
+      .then((res) => {
+        setStaffList(res.data.data.staff);
+      })
+      .catch((error) => {
+        console.error("Error fetching dentistes:", error);
+      });
   };
 
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setEditData(staffList[index]);
+  useEffect(() => {
+    getStafs();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_APP_BASE_URL}/staff/deletestaffById/${id}`
+      );
+
+      alert("staff deleted successfully!");
+
+      getStafs();
+    } catch (error) {
+      console.error("Error deleting dentist:", error);
+      alert("Failed to delete dentist. Please try again.");
+    }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/admin/edit-staff/${id}`);
   };
 
   const handleEditChange = (e) => {
@@ -38,10 +59,6 @@ export default function ManageStaff() {
   };
 
   const handleUpdate = () => {
-    const updatedList = [...staffList];
-    updatedList[editingIndex] = editData;
-    setStaffList(updatedList);
-    localStorage.setItem("staffList", JSON.stringify(updatedList));
     setEditingIndex(null);
   };
 
@@ -59,7 +76,7 @@ export default function ManageStaff() {
           className="p-2 border rounded w-1/3"
         />
       </div>
-    
+
       <div className="overflow-x-auto bg-white shadow-md rounded-lg h-screen">
         <table className="w-full min-w-max border-collapse">
           <thead className="bg-blue-900 text-white">
@@ -90,11 +107,11 @@ export default function ManageStaff() {
                     <div className="flex gap-3">
                       <Pencil
                         className="text-green-600 hover:text-green-800 cursor-pointer"
-                        onClick={() => handleEdit(staff)}
+                        onClick={() => handleEdit(staff._id)}
                       />
                       <Trash
                         className="text-red-600 hover:text-red-800 cursor-pointer"
-                        onClick={() => handleDelete(staff.id || index)}
+                        onClick={() => handleDelete(staff._id)}
                       />
                     </div>
                   </td>
@@ -111,6 +128,5 @@ export default function ManageStaff() {
         </table>
       </div>
     </div>
-    
-  )
+  );
 }
