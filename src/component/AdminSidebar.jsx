@@ -115,16 +115,44 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "services" && (
             <div className="ml-4">
               <Link
-                to={`/${userRole}/add-services`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Add Services
               </Link>
               <Link
-                to={`/${userRole}/manage-services`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Services
+              </Link>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => toggleSection("branches")}
+          >
+            <span>Branches</span>
+            {openSection === "services" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />
+            )}
+          </div>
+          {openSection === "branches" && (
+            <div className="ml-4">
+              <Link
+                to=""
+                className="block p-2 hover:bg-blue-700"
+              >
+                Add Branches
+              </Link>
+              <Link
+                to=""
+                className="block p-2 hover:bg-blue-700"
+              >
+                Manage Branches
               </Link>
             </div>
           )}
@@ -143,13 +171,13 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "dentist" && (
             <div className="ml-4">
               <Link
-                to={`/${userRole}/dentist-list`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Add Dentist
               </Link>
               <Link
-                to={`/${userRole}/dentist-history`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Dentist
@@ -171,13 +199,13 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "staff" && (
             <div className="ml-4">
               <Link
-                to={`/${userRole}/staff-list`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Add Staff
               </Link>
               <Link
-                to={`/${userRole}/staff-history`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Staff
@@ -198,20 +226,20 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "billing" && (
             <div className="ml-4">
-              <Link to="patient-list" className="block p-2 hover:bg-blue-700">
+              <Link
+                to="reception-patient"
+                className="block p-2 hover:bg-blue-700"
+              >
                 Receipt
               </Link>
               <Link to="ViewReceipt" className="block p-2 hover:bg-blue-700">
                 Receipt List
               </Link>
-              <Link
-                to="Invoice"
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="receipt" className="block p-2 hover:bg-blue-700">
                 Generate Invoice
               </Link>
               <Link
-                to={`/${userRole}/invoice-history`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Invoice List
@@ -233,13 +261,13 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           {openSection === "report" && (
             <div className="ml-4">
               <Link
-                to={`/${userRole}/report-list`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Revenue Report
               </Link>
               <Link
-                to={`/${userRole}/report-history`}
+                to=""
                 className="block p-2 hover:bg-blue-700"
               >
                 Patient Report

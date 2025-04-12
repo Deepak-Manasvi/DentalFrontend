@@ -12,8 +12,8 @@ import PrescriptionForm from "./pages/PrescriptionForm";
 import PediatricDentistry from "./pages/PediatricDentistry";
 import LoginForm from "./pages/LoginForm";
 import ReceptionPatientList from "./component/ReceptionPatientList";
-import Receipt from "./pages/Receipt";
 import ViewReceipt from "./component/ViewReceipt";
+import Invoice from "./component/Invoice";
 
 let userRole;
 // Function to get the user role
@@ -69,8 +69,8 @@ function App() {
           />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
-          <Route path="patient-list" element={<ReceptionPatientList />} />
-          <Route path="receipt" element={<Receipt />} />
+          <Route path="reception-patient" element={<ReceptionPatientList />} />
+          <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
         </Route>
 
