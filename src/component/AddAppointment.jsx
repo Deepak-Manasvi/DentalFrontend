@@ -254,7 +254,6 @@ const AddAppointment = () => {
     }
   };
 
-  console.log(formData, "formData");
   return (
     <div className=" mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
@@ -271,12 +270,6 @@ const AddAppointment = () => {
             onChange={handleChange}
             required
             className="w-full p-3 border rounded-xl bg-white"
-
-            // "General Patient",
-            //   "Emergency Patient",
-            //   "Regular Patient",
-            //   "Corporate Patient",
-            //   "Insurance Patient",
           >
             <option value="" disabled selected hidden>
               Patient Type
@@ -430,11 +423,10 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                    selectedMedicalHistory.includes(condition)
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition)
                       ? "bg-blue-50 font-semibold"
                       : ""
-                  }`}
+                    }`}
                 >
                   <input
                     type="checkbox"
@@ -479,11 +471,10 @@ const AddAppointment = () => {
                 <div
                   key={allergy}
                   onClick={() => handleAllergySelect(allergy)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                    selectedAllergies.includes(allergy)
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedAllergies.includes(allergy)
                       ? "bg-red-50 font-semibold"
                       : ""
-                  }`}
+                    }`}
                 >
                   <input
                     type="checkbox"
@@ -648,7 +639,7 @@ const AddAppointment = () => {
             onChange={handleChange}
             className="w-full p-3 border rounded-xl bg-gray-100"
             placeholder="Auto fetch"
-            // disabled
+          // disabled
           />
         </div>
 

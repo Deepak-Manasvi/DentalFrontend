@@ -49,79 +49,82 @@ const AddBranches = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-700 flex items-center justify-center px-4">
-      <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-md">
-        <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-6">Add Branch</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter branch name"
-            />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-          </div>
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+      <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">Add Branch</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Name<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border rounded-xl"
+            placeholder="Enter branch name"
+          />
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        </div>
 
-          {/* Address */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-                errors.address ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter address"
-            />
-            {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
-          </div>
+        {/* Address */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Address<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border rounded-xl"
+            placeholder="Enter address"
+          />
+          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+        </div>
 
-          {/* Contact */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Contact</label>
-            <input
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-                errors.contact ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="10-digit number"
-            />
-            {errors.contact && <p className="text-red-500 text-sm">{errors.contact}</p>}
-          </div>
+        {/* Contact */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Contact<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="contact"
+            value={formData.contact}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border rounded-xl"
+            placeholder="10-digit number"
+          />
+          {errors.contact && <p className="text-red-500 text-sm mt-1">{errors.contact}</p>}
+        </div>
 
-          {/* Pincode */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Pincode</label>
-            <input
-              name="pincode"
-              value={formData.pincode}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-                errors.pincode ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="6-digit pincode"
-            />
-            {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode}</p>}
-          </div>
+        {/* Pincode */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Pincode<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="pincode"
+            value={formData.pincode}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border rounded-xl"
+            placeholder="6-digit pincode"
+          />
+          {errors.pincode && <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>}
+        </div>
 
-          {/* Save Button */}
-          <button
-            type="submit"
-            className="w-full bg-indigo-500 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600 transition"
-          >
-            Save
-          </button>
-        </form>
-      </div>
+        {/* Save Button */}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+        >
+          Save
+        </button>
+      </form>
+
     </div>
   );
 };
