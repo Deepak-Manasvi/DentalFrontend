@@ -75,13 +75,15 @@ function App() {
           />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
-          <Route path="add-Branches" element={<AddBranches />} />
-          <Route path="manage-branches" element={<ManageBranches />} />
+          <Route path="add-branches" element={<AddBranches />} />
+          <Route path="manage-branches/:branchesId" element={<ManageBranches />} />
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
           <Route path="add-services" element={<AddServices />} />
           <Route path="manage-services" element={<ManageServices />} />
+          <Route path="add-staff" element={<AddStaff />} />
+          <Route path="edit-staff/:staffId" element={<ManageStaff />} />
         </Route>
 
         <Route
