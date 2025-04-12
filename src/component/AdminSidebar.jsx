@@ -113,14 +113,11 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "services" && (
             <div className="ml-4">
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="add-services" className="block p-2 hover:bg-blue-700">
                 Add Services
               </Link>
               <Link
-                to=""
+                to="manage-services"
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Services
@@ -141,6 +138,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "branches" && (
             <div className="ml-4">
+<<<<<<< Updated upstream
               <Link
                 to={`/${userRole}/add-branches`}
                 className="block p-2 hover:bg-blue-700"
@@ -151,6 +149,12 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                 to={`/${userRole}/manage-branches`}
                 className="block p-2 hover:bg-blue-700"
               >
+=======
+              <Link to="" className="block p-2 hover:bg-blue-700">
+                Add Branches
+              </Link>
+              <Link to="" className="block p-2 hover:bg-blue-700">
+>>>>>>> Stashed changes
                 Manage Branches
               </Link>
             </div>
@@ -169,16 +173,10 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "dentist" && (
             <div className="ml-4">
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="" className="block p-2 hover:bg-blue-700">
                 Add Dentist
               </Link>
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="" className="block p-2 hover:bg-blue-700">
                 Manage Dentist
               </Link>
             </div>
@@ -197,6 +195,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "staff" && (
             <div className="ml-4">
+<<<<<<< Updated upstream
               <Link
                 to={`/${userRole}/add-staff`}
                 className="block p-2 hover:bg-blue-700"
@@ -207,6 +206,12 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                to={`/${userRole}/edit-staff/:staffId`}
                 className="block p-2 hover:bg-blue-700"
               >
+=======
+              <Link to="" className="block p-2 hover:bg-blue-700">
+                Add Staff
+              </Link>
+              <Link to="" className="block p-2 hover:bg-blue-700">
+>>>>>>> Stashed changes
                 Manage Staff
               </Link>
             </div>
@@ -237,10 +242,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
               <Link to="receipt" className="block p-2 hover:bg-blue-700">
                 Generate Invoice
               </Link>
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="" className="block p-2 hover:bg-blue-700">
                 Invoice List
               </Link>
             </div>
@@ -259,16 +261,10 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "report" && (
             <div className="ml-4">
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="" className="block p-2 hover:bg-blue-700">
                 Revenue Report
               </Link>
-              <Link
-                to=""
-                className="block p-2 hover:bg-blue-700"
-              >
+              <Link to="" className="block p-2 hover:bg-blue-700">
                 Patient Report
               </Link>
             </div>

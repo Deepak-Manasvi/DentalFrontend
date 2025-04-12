@@ -14,10 +14,15 @@ import LoginForm from "./pages/LoginForm";
 import ReceptionPatientList from "./component/ReceptionPatientList";
 import ViewReceipt from "./component/ViewReceipt";
 import Invoice from "./component/Invoice";
+<<<<<<< Updated upstream
 import AddBranches from "./component/AddBranches";
 import ManageBranches from "./component/ManageBranches";
 import AddStaff from "./component/AddStaff";
 import ManageStaff from "./component/ManageStaff";
+=======
+>>>>>>> Stashed changes
+import AddServices from "./component/AddServices";
+import ManageServices from "./component/ManageServices";
 
 let userRole;
 // Function to get the user role
@@ -62,9 +67,15 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
-          <Route path="procedure-selection/:id"element={<ProcedureSelection />}/>
+          <Route
+            path="procedure-selection/:id"
+            element={<ProcedureSelection />}
+          />
           <Route path="procedure-adult/:id" element={<AdultDentistry />} />
-          <Route path="procedure-pediatric/:id" element={<PediatricDentistry />}/>
+          <Route
+            path="procedure-pediatric/:id"
+            element={<PediatricDentistry />}
+          />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
           <Route path="add-Branches" element={<AddBranches />} />
@@ -72,8 +83,15 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+<<<<<<< Updated upstream
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="edit-staff/:staffId" element={<ManageStaff />} />
+          <Route path="add-services" element={<AddServices />} />
+          <Route path="manage-services" element={<ManageServices/>} />
+=======
+          <Route path="add-services" element={<AddServices />} />
+          <Route path="manage-services" element={<ManageServices />} />
+>>>>>>> Stashed changes
         </Route>
 
         <Route
