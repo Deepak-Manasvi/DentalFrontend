@@ -92,7 +92,6 @@ const ManageBranches = () => {
         </table>
       </div>
     </div>
-
   );
 };
 
