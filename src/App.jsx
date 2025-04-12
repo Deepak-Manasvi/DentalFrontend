@@ -14,13 +14,10 @@ import LoginForm from "./pages/LoginForm";
 import ReceptionPatientList from "./component/ReceptionPatientList";
 import ViewReceipt from "./component/ViewReceipt";
 import Invoice from "./component/Invoice";
-<<<<<<< Updated upstream
 import AddBranches from "./component/AddBranches";
 import ManageBranches from "./component/ManageBranches";
 import AddStaff from "./component/AddStaff";
 import ManageStaff from "./component/ManageStaff";
-=======
->>>>>>> Stashed changes
 import AddServices from "./component/AddServices";
 import ManageServices from "./component/ManageServices";
 
