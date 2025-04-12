@@ -24,6 +24,7 @@ import AddDentist from "./component/AddDentist";
 import ManageDentist from "./component/ManageDentist";
 import Setting from "./component/UserSetting";
 import EditBranches from "./component/EditBranches";
+import EditDentist from "./component/EditDentist";
 
 let userRole;
 // Function to get the user role
@@ -93,6 +94,7 @@ function App() {
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="edit-staff/:staffId" element={<ManageStaff />} />
           <Route path="add-dentist" element={<AddDentist />} />
+          <Route path="edit-dentist/:id" element={<EditDentist />} />
           <Route path="manage-dentist" element={<ManageDentist />} />
           <Route path="setting" element={<Setting />} />
         </Route>
