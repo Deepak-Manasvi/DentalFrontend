@@ -80,15 +80,8 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
-<<<<<<< Updated upstream
-          <Route path="add-staff" element={<AddStaff />} />
-          <Route path="edit-staff/:staffId" element={<ManageStaff />} />
-          <Route path="add-services" element={<AddServices />} />
-          <Route path="manage-services" element={<ManageServices/>} />
-=======
           <Route path="add-services" element={<AddServices />} />
           <Route path="manage-services" element={<ManageServices />} />
->>>>>>> Stashed changes
         </Route>
 
         <Route

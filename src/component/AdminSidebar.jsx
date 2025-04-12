@@ -138,23 +138,10 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "branches" && (
             <div className="ml-4">
-<<<<<<< Updated upstream
-              <Link
-                to={`/${userRole}/add-branches`}
-                className="block p-2 hover:bg-blue-700"
-              >
-                Add Branches
-              </Link>
-              <Link
-                to={`/${userRole}/manage-branches`}
-                className="block p-2 hover:bg-blue-700"
-              >
-=======
               <Link to="" className="block p-2 hover:bg-blue-700">
                 Add Branches
               </Link>
               <Link to="" className="block p-2 hover:bg-blue-700">
->>>>>>> Stashed changes
                 Manage Branches
               </Link>
             </div>
@@ -195,23 +182,10 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
           </div>
           {openSection === "staff" && (
             <div className="ml-4">
-<<<<<<< Updated upstream
-              <Link
-                to={`/${userRole}/add-staff`}
-                className="block p-2 hover:bg-blue-700"
-              >
-                Add Staff
-              </Link>
-              <Link
-               to={`/${userRole}/edit-staff/:staffId`}
-                className="block p-2 hover:bg-blue-700"
-              >
-=======
               <Link to="" className="block p-2 hover:bg-blue-700">
                 Add Staff
               </Link>
               <Link to="" className="block p-2 hover:bg-blue-700">
->>>>>>> Stashed changes
                 Manage Staff
               </Link>
             </div>
