@@ -159,7 +159,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                 Add Branches
               </Link>
               <Link
-                to={`/${userRole}/manage-branches/:branchesId`}
+                to={`/${userRole}/manage-branches`}
                 className="block p-2 hover:bg-blue-700"
               >
                 Manage Branches
