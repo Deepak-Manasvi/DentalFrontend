@@ -1,8 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-const AddBranches = () => {
+const EditBranches = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -10,8 +13,38 @@ const AddBranches = () => {
     pincode: "",
   });
 
-  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch branch data when component mounts
+  useEffect(() => {
+    const fetchBranchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/branch/getBranchById/${id}`
+        );
+
+        // Update form with existing branch data
+        const branchData = response.data.branch;
+        setFormData({
+          name: branchData.name || "",
+          address: branchData.address || "",
+          contact: branchData.contact || "",
+          pincode: branchData.pincode || "",
+        });
+
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch branch data. Please try again.");
+        setLoading(false);
+        console.error("Error fetching branch data:", err);
+      }
+    };
+
+    fetchBranchData();
+  }, [id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,33 +69,49 @@ const AddBranches = () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      return;x
     }
 
-    // ✅ Print form data in console
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_APP_BASE_URL}/branch/updateBranchById/${id}`,
+        formData
+      );
 
-    const res = await axios.post(
-      `${import.meta.env.VITE_APP_BASE_URL}/branch/createBranch`,
-      formData
-    );
-
-    alert("Form submitted successfully!");
-
-    navigate("/admin/manage-branches");
-
-    // ✅ Reset form after submit
-    setFormData({
-      name: "",
-      address: "",
-      contact: "",
-      pincode: "",
-    });
+      alert("Branch updated successfully!");
+      navigate("/admin/manage-branches");
+    } catch (err) {
+      setError("Failed to update branch. Please try again.");
+      console.error("Error updating branch:", err);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-lg text-gray-600">Loading branch data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto p-8 bg-red-50 shadow-xl rounded-2xl">
+        <p className="text-red-600">{error}</p>
+        <button
+          onClick={() => navigate("/admin/manage-branches")}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
-        Add Branch
+        Edit Branch
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
@@ -137,16 +186,25 @@ const AddBranches = () => {
           )}
         </div>
 
-        {/* Save Button */}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
-        >
-          Save
-        </button>
+        {/* Buttons */}
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => navigate("/admin/manage-branches")}
+            className="bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition text-lg"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+          >
+            Update
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
-export default AddBranches;
+export default EditBranches;

@@ -1,29 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { Eye, Pencil, Trash } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Eye, Pencil, Trash } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ManageBranches = () => {
   // Dummy data to simulate branches
-  const [branches, setBranches] = useState([
-    { id: 1, name: 'Main Branch', address: '123 Main St', contact: '123-456-7890' },
-    { id: 2, name: 'North Branch', address: '456 North St', contact: '987-654-3210' },
-    { id: 3, name: 'South Branch', address: '789 South St', contact: '555-123-4567' }
-  ]);
+  const [branches, setBranches] = useState([]);
+  const [showModal, setshowModal] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchBranches = async () => {
+    await axios
+      .get(`${import.meta.env.VITE_APP_BASE_URL}/branch/getAllBranch`)
+      .then((res) => {
+        setBranches(res.data.branches);
+      })
+      .catch((error) => {
+        console.error("Error fetching branches:", error);
+      });
+  };
 
   useEffect(() => {
-    // Simulate an API call and set the branches data (we are using the dummy data above)
-    console.log(branches); // Log the dummy data to check
+    fetchBranches();
   }, []);
 
   const handleView = (branch) => {
-    console.log('Viewing:', branch);
+    console.log("Viewing:", branch);
   };
 
   const handleEdit = (branch) => {
-    console.log('Editing:', branch);
+    navigate(`/admin/edit-branch/${branch._id}`);
   };
 
   const handleDelete = (id) => {
-    setBranches(prev => prev.filter(branch => branch.id !== id));
+    const res = axios.delete(
+      `${import.meta.env.VITE_APP_BASE_URL}/branch/deleteBranchById/${id}`
+    );
+    fetchBranches();
     console.log(`Branch with ID ${id} deleted`);
   };
 
@@ -32,6 +46,23 @@ const ManageBranches = () => {
 
   return (
     <div className="mx-auto overflow-x-hidden">
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50  bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white p-10 rounded-lg shadow-2xl w-1/2">
+            <h2 className="text-xl font-bold mb-4">Branch Details</h2>
+            <p>Name: {selectedBranch?.name}</p>
+            <p>Address: {selectedBranch?.address}</p>
+            <p>Contact: {selectedBranch?.contact}</p>
+            <p>pincode: {selectedBranch?.pincode}</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+              onClick={() => setshowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mb-4 mt-4 flex justify-between">
         <h2 className="text-2xl font-bold text-gray-700">Manage Branches</h2>
         <input
@@ -67,7 +98,10 @@ const ManageBranches = () => {
                     <div className="flex gap-3">
                       <Eye
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                        onClick={() => handleView(branch)}
+                        onClick={() => {
+                          setshowModal(true);
+                          setSelectedBranch(branch);
+                        }}
                       />
                       <Pencil
                         className="text-green-600 hover:text-green-800 cursor-pointer"
@@ -75,7 +109,7 @@ const ManageBranches = () => {
                       />
                       <Trash
                         className="text-red-600 hover:text-red-800 cursor-pointer"
-                        onClick={() => handleDelete(branch.id)}
+                        onClick={() => handleDelete(branch._id)}
                       />
                     </div>
                   </td>

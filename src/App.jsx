@@ -23,6 +23,7 @@ import ManageServices from "./component/ManageServices";
 import AddDentist from "./component/AddDentist";
 import ManageDentist from "./component/ManageDentist";
 import Setting from "./component/UserSetting";
+import EditBranches from "./component/EditBranches";
 
 let userRole;
 // Function to get the user role
@@ -40,7 +41,6 @@ const AdminRoute = ({ element }) => {
 const ReceptionRoute = ({ element }) => {
   return getUserRole() === "reception" ? element : <Navigate to="/" />;
 };
-
 
 function App() {
   return (
@@ -79,10 +79,8 @@ function App() {
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
           {/* <Route path="treatment" element={<TreatmentPage />} /> */}
           <Route path="add-branches" element={<AddBranches />} />
-          <Route
-            path="manage-branches/:branchesId"
-            element={<ManageBranches />}
-          />
+          <Route path="manage-branches" element={<ManageBranches />} />
+          <Route path="edit-branch/:id" element={<EditBranches />} />
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
