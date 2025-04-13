@@ -46,7 +46,7 @@ const AddBranches = () => {
       formData
     );
 
-    alert("Form submitted successfully!");
+    alert("Branch Created successfully!");
 
     navigate("/admin/manage-branches");
 

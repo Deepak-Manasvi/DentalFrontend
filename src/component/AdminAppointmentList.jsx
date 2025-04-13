@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AppointmentDetails from "./AppointmentDetails";
+import { Eye, Edit, CheckCircle, Trash2 } from "lucide-react";
 
 const AdminAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
@@ -28,7 +29,7 @@ const AdminAppointmentList = () => {
       }
 
       alert("Patient checked in successfully!");
-      fetchAppointments(); // Refresh the list
+      fetchAppointments();
     } catch (error) {
       console.error("Check-in process failed:", error);
       alert("Check-in failed. Try again.");
@@ -94,10 +95,21 @@ const AdminAppointmentList = () => {
     )
   );
 
+  const tableHeaders = [
+    "ID",
+    "Name",
+    "Contact",
+    "Address",
+    "Doctor",
+    "Time",
+    "OPD Amount",
+    "Pay Amount",
+    "Status",
+    "Action",
+  ];
+
   return (
     <div className="mx-auto overflow-x-hidden">
-      {/* Search Bar */}
-
       <AppointmentDetails
         setShowAppointment={setShowAppointment}
         showAppointment={showAppointment}
@@ -117,110 +129,118 @@ const AdminAppointmentList = () => {
         />
       </div>
 
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg h-screen ">
-        <table className="w-full min-w-max border-collapse ">
-          <thead className="bg-blue-900 text-white">
-            <tr className="text-sm md:text-base">
-              {[
-                "ID",
-                "Name",
-                "Contact",
-                "Address",
-                "Doctor",
-                "Time",
-                "OPD Amount",
-                "Pay Amount",
-                "Status",
-                "Action",
-              ].map((header) => (
-                <th key={header} className="py-2 px-4 text-left">
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.map((app, index) => (
-              <tr
-                key={app._id || index}
-                className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
-              >
-                <td className="py-2 px-4">{index + 1}</td>
-                <td className="py-2 px-4">{app.patientName || "N/A"}</td>
-                <td className="py-2 px-4">{app.mobileNumber || "N/A"}</td>
-                <td className="py-2 px-4">{app.address || "N/A"}</td>
-                <td className="py-2 px-4">{app.doctorName || "N/A"}</td>
-                <td className="py-2 px-4">{app.appointmentTime || "N/A"}</td>
-                <td className="py-2 px-4">{app.opdAmount || "N/A"}</td>
-                <td className="py-2 px-4">
-                  {app.payAmount || app.opdAmount || "N/A"}
-                </td>
-                <td
-                  className={`py-2 px-4 font-semibold ${
-                    app.status === "Paid" ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {app.status || "N/A"}
-                </td>
-                <td className="py-2 px-4 relative">
-                  <button
-                    className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 focus:outline-none"
-                    onClick={() => toggleDropdown(app._id || index)}
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <div className="relative">
+          <div className="max-h-96 overflow-y-auto overflow-x-auto">
+            <table className="w-full border-collapse table-fixed">
+              <thead className="bg-blue-900 text-white sticky top-0 z-10">
+                <tr className="text-sm md:text-base">
+                  {tableHeaders.map((header) => (
+                    <th key={header} className="py-2 px-4 text-left w-1/10">
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAppointments.map((app, index) => (
+                  <tr
+                    key={app._id || index}
+                    className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
                   >
-                    Actions ▼
-                  </button>
-
-                  {dropdownOpen === (app._id || index) && (
-                    <div
-                      ref={dropdownRef}
-                      className="absolute z-100 mt-2 w-36 bg-white shadow-lg rounded-md border"
-                      style={{ transform: "translateY(0%)", right: "0" }}
+                    <td className="py-2 px-4 w-1/10">{index + 1}</td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.patientName || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.mobileNumber || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10">{app.address || "N/A"}</td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.doctorName || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.appointmentTime || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.opdAmount || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10">
+                      {app.payAmount || app.opdAmount || "N/A"}
+                    </td>
+                    <td
+                      className={`py-2 px-4 w-1/10 font-semibold ${
+                        app.status === "Paid"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
                     >
-                      <ul className="text-left">
-                        <li>
-                          <button
-                            onClick={() => handleEdit(app)}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
-                          >
-                            Edit
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            onClick={() => {
-                              setShowAppointment(true);
-                              setAppointmentData(app);
-                            }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
-                          >
-                            View
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            onClick={() => handleCheckIn(app._id)}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white"
-                          >
-                            Check In
-                          </button>
-                        </li>
+                      {app.status || "N/A"}
+                    </td>
+                    <td className="py-2 px-4 w-1/10 relative">
+                      <button
+                        className="bg-blue-900 text-white px-3 py-1 text-nowrap rounded-md hover:bg-blue-600 focus:outline-none"
+                        onClick={() => toggleDropdown(app._id || index)}
+                      >
+                        Actions ▼
+                      </button>
 
-                        <li>
-                          <button
-                            onClick={() => handleDelete(app._id)}
-                            className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600"
-                          >
-                            Delete
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {dropdownOpen === (app._id || index) && (
+                        <div
+                          ref={dropdownRef}
+                          className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border"
+                          style={{ transform: "translateY(0%)", right: "0" }}
+                        >
+                          <ul className="text-left">
+                            <li>
+                              <button
+                                onClick={() => handleEdit(app)}
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white flex items-center gap-2"
+                              >
+                                <Edit size={16} />
+                                <span>Edit</span>
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                onClick={() => {
+                                  setShowAppointment(true);
+                                  setAppointmentData(app);
+                                }}
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white flex items-center gap-2"
+                              >
+                                <Eye size={16} />
+                                <span>View</span>
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                onClick={() => handleCheckIn(app._id)}
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white flex items-center gap-2"
+                              >
+                                <CheckCircle size={16} />
+                                <span>Check In</span>
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                onClick={() => handleDelete(app._id)}
+                                className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                              >
+                                <Trash2 size={16} />
+                                <span>Delete</span>
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
