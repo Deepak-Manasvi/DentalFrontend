@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+
 
 const ViewReceipt = () => {
   const navigate = useNavigate();
@@ -31,6 +33,12 @@ const ViewReceipt = () => {
 
   const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
+  const [selectedAction, setSelectedAction] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+
+  const toggleDropdown = (id) => {
+    setDropdownOpen(dropdownOpen === id ? null : id);
+  };
 
   const handleGenerateInvoice = () => {
     navigate("/Invoice");
@@ -70,80 +78,131 @@ const ViewReceipt = () => {
     setViewingReceipt(null);
   };
 
+  const handleActionChange = (e, receipt) => {
+    const action = e.target.value;
+    setSelectedAction(action);
+
+    if (action === "View") {
+      handleView(receipt);
+    } else if (action === "Edit") {
+      handleEdit(receipt);
+    } else if (action === "Print") {
+      handlePrint(receipt.id);
+    }
+  };
+
+  const tableHeaders = [
+    "#",
+    "Date",
+    "Receipt No",
+    "UHID",
+    "Name",
+    "Doctor Name",
+    "Treatment",
+    "Amount",
+    "Mode",
+    "Action",
+  ];
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">View Receipts</h1>
-
-      <div className="overflow-y-auto border border-gray-300 rounded-lg" style={{ maxHeight: "500px" }}>
-        <table className="min-w-full bg-white">
-          <thead className="sticky top-0 bg-gray-200 z-10">
-            <tr>
-              <th className="border px-4 py-2">#</th>
-              <th className="border px-4 py-2">Date</th>
-              <th className="border px-4 py-2">Receipt No</th>
-              <th className="border px-4 py-2">UHID</th>
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Doctor Name</th>
-              <th className="border px-4 py-2">Treatment</th>
-              <th className="border px-4 py-2">Amount</th>
-              <th className="border px-4 py-2">Mode</th>
-              <th className="border px-4 py-2">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {receipts.length > 0 ? (
-              receipts.map((receipt, index) => (
-                <tr key={receipt.id} className="text-center">
-                  <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">{receipt.date}</td>
-                  <td className="border px-4 py-2">{receipt.receiptNo}</td>
-                  <td className="border px-4 py-2">{receipt.uhid}</td>
-                  <td className="border px-4 py-2">{receipt.name}</td>
-                  <td className="border px-4 py-2">{receipt.doctorName}</td>
-                  <td className="border px-4 py-2">{receipt.treatment}</td>
-                  <td className="border px-4 py-2">₹{receipt.amount}</td>
-                  <td className="border px-4 py-2">{receipt.mode}</td>
-                  <td className="border px-4 py-2 space-x-2">
-                    <button
-                      onClick={() => handleView(receipt)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleEdit(receipt)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handlePrint(receipt.id)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm"
-                    >
-                      Print
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="border px-4 py-8 text-center" colSpan="10">
-                  No Receipts Found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-end mt-6">
+    <div className="mx-auto overflow-x-hidden p-6">
+      <div className="mb-4 mt-4 flex justify-between">
+        <h2 className="text-2xl font-bold mb-4 text-gray-700 text-center">
+          Receipt List
+        </h2>
         <button
           onClick={handleGenerateInvoice}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Generate Invoice
         </button>
+      </div>
+
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <div className="relative">
+          <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+            <table className="w-full border-collapse table-fixed">
+              <thead className="bg-blue-900 text-white sticky top-0 z-10">
+                <tr className="text-sm md:text-base">
+                  {tableHeaders.map((header) => (
+                    <th key={header} className="py-2 px-4 text-left w-1/10">
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {receipts.length > 0 ? (
+                  receipts.map((receipt, index) => (
+                    <tr
+                      key={receipt.id}
+                      className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
+                    >
+                      <td className="py-2 px-4 w-1/10">{index + 1}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.date}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.receiptNo}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.uhid}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.name}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.doctorName}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.treatment}</td>
+                      <td className="py-2 px-4 w-1/10">₹{receipt.amount}</td>
+                      <td className="py-2 px-4 w-1/10">{receipt.mode}</td>
+                      <td className="py-2 px-4 relative">
+                        <button
+                          className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                          onClick={() => toggleDropdown(index)}
+                        >
+                          Actions <ChevronDown size={16} />
+                        </button>
+
+                        {dropdownOpen === index && (
+                          <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0">
+                            <ul className="text-left">
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
+                                  onClick={() => handleView(receipt)}
+                                >
+                                  View
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-300"
+                                  onClick={() => handleEdit(receipt)}
+                                >
+                                  Edit
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-green-600 hover:bg-green-100"
+                                  onClick={() => handlePrint(receipt.id)}
+                                >
+                                  Print
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={10}
+                      className="text-center text-gray-500 py-4"
+                    >
+                      No Receipts Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* View Modal */}
@@ -151,7 +210,6 @@ const ViewReceipt = () => {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4">View Receipt</h2>
-
             <div className="space-y-2">
               <p><strong>Date:</strong> {viewingReceipt.date}</p>
               <p><strong>Receipt No:</strong> {viewingReceipt.receiptNo}</p>
@@ -162,7 +220,6 @@ const ViewReceipt = () => {
               <p><strong>Amount:</strong> ₹{viewingReceipt.amount}</p>
               <p><strong>Mode:</strong> {viewingReceipt.mode}</p>
             </div>
-
             <div className="flex justify-end mt-6">
               <button
                 onClick={handleCloseView}
@@ -180,7 +237,6 @@ const ViewReceipt = () => {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4">Edit Receipt</h2>
-
             <div className="space-y-4">
               <input
                 type="text"
@@ -223,7 +279,6 @@ const ViewReceipt = () => {
                 className="w-full border px-3 py-2 rounded"
               />
             </div>
-
             <div className="flex justify-end space-x-2 mt-6">
               <button
                 onClick={handleSave}

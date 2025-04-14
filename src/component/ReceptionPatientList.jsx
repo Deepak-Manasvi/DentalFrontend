@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+
 const dummyPatients = [
   {
     date: "9-04-2025",
@@ -9,6 +11,8 @@ const dummyPatients = [
     contact: "9876543210",
     address: "Delhi",
     doctor: "Dr. Mehta",
+    modeOfPayment: "Cash",
+    amount: 500,
   },
   {
     date: "10-04-2025",
@@ -18,76 +22,32 @@ const dummyPatients = [
     contact: "9123456789",
     address: "Mumbai",
     doctor: "Dr. Sharma",
+    modeOfPayment: "UPI",
+    transactionId: "84854845255",
+    amount: 600,
   },
 ];
 
-
-// Shared Modal Component
-const Modal = ({ isOpen, onClose, content, patient }) => {
-  if (!isOpen) return null;
-
-  const renderContent = () => {
-    if (content === "View") {
-      return (
-        <>
-          <p><strong>Patient:</strong> {patient.name}</p>
-          <p><strong>UHID:</strong> {patient.uhid}</p>
-          <p><strong>Doctor:</strong> {patient.doctor}</p>
-        </>
-      );
-    } else if (content === "Receipt") {
-      return (
-        <>
-          <p><strong>Name:</strong> {patient.name}</p>
-          <p><strong>UHID:</strong> {patient.uhid}</p>
-          <p><strong>App ID:</strong> {patient.appId}</p>
-          <p><strong>Doctor:</strong> {patient.doctor}</p>
-          <p><strong>Date:</strong> {patient.date}</p>
-          <p><strong>Address:</strong> {patient.address}</p>
-        </>
-      );
-    }
-  };
-
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-md w-96">
-        <h2 className="text-lg font-semibold mb-4">{content} Details</h2>
-        <div className="mb-4 space-y-1">{renderContent()}</div>
-        <button
-          className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-          onClick={onClose}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const ReceptionPatientList = () => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [modalInfo, setModalInfo] = useState({
-    isOpen: false,
-    content: "",
-    patient: null,
-  });
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+    const [viewingReceipt, setViewingReceipt] = useState(null);
+  
 
-  const handleReceipt = (patient) => {
-    console.log("get")
-    navigate("/reception/receipt", { state: { patient } }); // 👈 Send patient data via state
+  const toggleDropdown = (id) => {
+    setDropdownOpen(dropdownOpen === id ? null : id);
   };
 
-  const openModal = (type, patient) => {
-    setModalInfo({ isOpen: true, content: type, patient });
+
+  const handleView = (receipt) => {
+    setViewingReceipt(receipt);
   };
 
-  const closeModal = () => {
-    setModalInfo({ isOpen: false, content: "", patient: null });
+  const handleCloseView = () => {
+    setViewingReceipt(null);
   };
+
 
   const filteredPatients = dummyPatients.filter((patient) =>
     `${patient.name} ${patient.contact} ${patient.uhid}`
@@ -95,83 +55,151 @@ const ReceptionPatientList = () => {
       .includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <div className="p-4 rounded-md">
-      <h2 className="text-blue-600 font-semibold mb-3">Patient List</h2>
+  const handleReceipt = (patient) => {
+    const data = {
+      date: patient.date,
+      appId: patient.appId,
+      patientName: patient.name,
+      uhid: patient.uhid,
+      doctorName: patient.doctor,
+      receiptMode: patient.modeOfPayment,
+      transactionId: patient.transactionId,
+      amount: patient.amount,
+      receptionist: patient.receptionist,
+      dateTime: `${patient.date} ${patient.time}`,
+    };
+    navigate("/admin/receipt", { state: { patient: data } });
+  };
 
-      <div className="flex justify-end mb-3">
+
+  
+  return (
+    <div className="mx-auto px-4 py-6">
+      <div className="mb-4 mt-2 flex justify-between">
+        <h2 className="text-2xl font-bold text-gray-700">Patient List</h2>
         <input
           type="text"
-          placeholder="Search Patient Name , mobile, Id"
-          className="px-3 py-1 rounded-full border border-gray-300 w-72"
+          placeholder="Search by name, contact or ID"
+          className="p-2 border rounded w-1/3"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead className="bg-teal-700 text-white">
-          <tr>
-            <th className="px-2 py-1">Date</th>
-            <th className="px-2 py-1">App. Id</th>
-            <th className="px-2 py-1">UHID</th>
-            <th className="px-2 py-1">Name</th>
-            <th className="px-2 py-1">Contact</th>
-            <th className="px-2 py-1">Address</th>
-            <th className="px-2 py-1">Consulting Doctor</th>
-            <th className="px-2 py-1">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPatients.length === 0 ? (
-            <tr>
-              <td colSpan="8" className="text-center py-2">
-                No matching patients found.
-              </td>
-            </tr>
-          ) : (
-            filteredPatients.map((patient, index) => (
-              <tr key={index} className="text-center border-b">
-                <td className="px-2 py-1">{patient.date}</td>
-                <td className="px-2 py-1">{patient.appId}</td>
-                <td className="px-2 py-1">{patient.uhid}</td>
-                <td className="px-2 py-1">{patient.name}</td>
-                <td className="px-2 py-1">{patient.contact}</td>
-                <td className="px-2 py-1">{patient.address}</td>
-                <td className="px-2 py-1">{patient.doctor}</td>
-                <td className="px-2 py-1 space-x-2">
-                  <button
-                    className="text-blue-500 hover:underline"
-                    onClick={() => openModal("View", patient)}
-                  >
-                    View
-                  </button>
-                  <button
-                    className="text-green-500 hover:underline"
-                    onClick={() => handleReceipt(patient)}
-                  >
-                    Receipt
-                  </button>
-                  <button
-                    className="text-purple-500 hover:underline"
-                    onClick={() => console.log("Cancel clicked")}
-                  >
-                    Cancel
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      {viewingReceipt && (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded shadow-lg w-96">
+        <h2 className="text-xl font-bold mb-4">View Receipt</h2>
+        <div className="space-y-2">
+          <p><strong>Date:</strong> {viewingReceipt.date}</p>
+          <p><strong>Appointment Id:</strong> {viewingReceipt.appId}</p>
+          <p><strong>UHID:</strong> {viewingReceipt.uhid}</p>
+          <p><strong>Name:</strong> {viewingReceipt.name}</p>
+          <p><strong>Contact:</strong> {viewingReceipt.contact}</p>
+          <p><strong>Address:</strong> {viewingReceipt.address}</p>
+          <p><strong>Amount:</strong> ₹{viewingReceipt.amount}</p>
+          <p><strong>Doctor:</strong> {viewingReceipt.doctor}</p>
+        </div>
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleCloseView}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
 
-      {/* Modal */}
-      <Modal
-        isOpen={modalInfo.isOpen}
-        onClose={closeModal}
-        content={modalInfo.content}
-        patient={modalInfo.patient || {}}
-      />
+
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <div className="relative">
+          <div className="max-h-[28rem] overflow-y-auto overflow-x-auto">
+            <table className="w-full border-collapse table-fixed">
+              <thead className="bg-blue-900 text-white sticky top-0 z-10">
+                <tr className="text-sm md:text-base">
+                  <th className="py-2 px-4 w-1/10">Date</th>
+                  <th className="py-2 px-4 w-1/10">App ID</th>
+                  <th className="py-2 px-4 w-1/10">UHID</th>
+                  <th className="py-2 px-4 w-1/10">Name</th>
+                  <th className="py-2 px-4 w-1/10">Contact</th>
+                  <th className="py-2 px-4 w-1/10">Address</th>
+                  <th className="py-2 px-4 w-1/10">Amount</th>
+                  <th className="py-2 px-4 w-1/10">Doctor</th>
+                  <th className="py-2 px-4 w-1/10">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPatients.length === 0 ? (
+                  <tr>
+                    <td colSpan="9" className="text-center py-4 text-gray-500">
+                      No matching patients found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredPatients.map((patient, index) => (
+                    <tr
+                      key={index}
+                      className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
+                    >
+                      <td className="py-2 px-4">{patient.date}</td>
+                      <td className="py-2 px-4">{patient.appId}</td>
+                      <td className="py-2 px-4">{patient.uhid}</td>
+                      <td className="py-2 px-4">{patient.name}</td>
+                      <td className="py-2 px-4">{patient.contact}</td>
+                      <td className="py-2 px-4">{patient.address}</td>
+                      <td className="py-2 px-4">₹{patient.amount}</td>
+                      <td className="py-2 px-4">{patient.doctor}</td>
+                      <td className="py-2 px-4 relative">
+                        <button
+                          className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                          onClick={() => toggleDropdown(index)}
+                        >
+                          Actions <ChevronDown size={16} />
+                        </button>
+
+                        {dropdownOpen === index && (
+                          <div
+                            className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0"
+                          >
+                            <ul className="text-left">
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
+                                  onClick={() => handleView(patient)}
+                                >
+                                  View
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white"
+                                  onClick={() => handleReceipt(patient)}
+                                >
+                                  Receipt
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600"
+                                  onClick={() => alert("Cancel Clicked")}
+                                >
+                                  Cancel
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
