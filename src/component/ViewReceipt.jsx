@@ -74,7 +74,7 @@ const ViewReceipt = () => {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">View Receipts</h1>
 
-      <div className="overflow-y-auto border border-gray-300 rounded-lg" style={{ maxHeight: "500px" }}>
+      <div className="overflow-x-auto border border-gray-300 rounded-lg mb-6">
         <table className="min-w-full bg-white">
           <thead className="sticky top-0 bg-gray-200 z-10">
             <tr>
@@ -149,7 +149,7 @@ const ViewReceipt = () => {
       {/* View Modal */}
       {viewingReceipt && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-96">
             <h2 className="text-xl font-bold mb-4">View Receipt</h2>
 
             <div className="space-y-2">
@@ -178,7 +178,7 @@ const ViewReceipt = () => {
       {/* Edit Modal */}
       {editingReceipt && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-96">
             <h2 className="text-xl font-bold mb-4">Edit Receipt</h2>
 
             <div className="space-y-4">

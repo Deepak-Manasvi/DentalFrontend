@@ -13,7 +13,6 @@ import PediatricDentistry from "./pages/PediatricDentistry";
 import LoginForm from "./pages/LoginForm";
 import ReceptionPatientList from "./component/ReceptionPatientList";
 import ViewReceipt from "./component/ViewReceipt";
-import Invoice from "./component/Invoice";
 import AddBranches from "./component/AddBranches";
 import ManageBranches from "./component/ManageBranches";
 import AddStaff from "./component/AddStaff";
@@ -28,6 +27,7 @@ import EditDentist from "./component/EditDentist";
 import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
 import InvoiceForm from "./component/InvoiceForm";
+import InvoiceList from "./component/InvoiceList";
 
 let userRole;
 // Function to get the user role
@@ -71,6 +71,7 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
+          <Route path="patient-History" element={<PatientList />} />
 
           <Route
             path="procedure-selection/:id"
@@ -87,7 +88,7 @@ function App() {
           <Route path="manage-branches" element={<ManageBranches />} />
           <Route path="edit-branch/:id" element={<EditBranches />} />
           <Route path="reception-patient" element={<ReceptionPatientList />} />
-          <Route path="receipt" element={<Invoice />} />
+          <Route path="invoicelist" element={<InvoiceList />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
           <Route path="invoiceform" element={< InvoiceForm/>} />
           <Route path="add-staff" element={<AddStaff />} />
