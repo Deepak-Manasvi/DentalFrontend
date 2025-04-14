@@ -125,7 +125,7 @@ const AdminAppointmentList = () => {
           placeholder="Search patients..."
           className="p-2 border rounded w-1/3"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
         />
       </div>
 

@@ -27,6 +27,7 @@ import EditBranches from "./component/EditBranches";
 import EditDentist from "./component/EditDentist";
 import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
+import InvoiceForm from "./component/InvoiceForm";
 
 let userRole;
 // Function to get the user role
@@ -70,6 +71,7 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
+
           <Route
             path="procedure-selection/:id"
             element={<ProcedureSelection />}
@@ -87,6 +89,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Invoice />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+          <Route path="invoiceform" element={< InvoiceForm/>} />
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="manage-staff" element={<ManageStaff />} />
           <Route path="edit-staff/:id" element={<EditStaff />} />

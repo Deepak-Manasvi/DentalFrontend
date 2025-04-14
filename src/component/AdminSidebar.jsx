@@ -242,7 +242,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
               <Link to="receipt" className="block p-2 hover:bg-blue-700">
                 Generate Invoice
               </Link>
-              <Link to="" className="block p-2 hover:bg-blue-700">
+              <Link to="invoiceform" className="block p-2 hover:bg-blue-700">
                 Invoice List
               </Link>
             </div>
