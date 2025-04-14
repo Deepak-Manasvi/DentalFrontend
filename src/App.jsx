@@ -27,8 +27,8 @@ import EditBranches from "./component/EditBranches";
 import EditDentist from "./component/EditDentist";
 import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
-import InvoiceForm from "./component/InvoiceForm";
 import Receipt from "./component/Receipt";
+import InvoiceForm from "./component/InvoiceForm";
 
 let userRole;
 // Function to get the user role
