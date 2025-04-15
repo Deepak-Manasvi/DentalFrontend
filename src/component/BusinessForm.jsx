@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function BusinessForm() {
+const BusinessForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     businessName: "",
     address: "",
@@ -33,18 +33,19 @@ export default function BusinessForm() {
     setIsSubmitting(true);
 
     try {
-
+    
       const apiFormData = new FormData();
 
-      
+    
       Object.keys(formData).forEach((key) => {
         apiFormData.append(key, formData[key]);
       });
 
-    
+     
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setSubmissionStatus("success");
+   
     } catch (error) {
       console.error("Submission error:", error);
       setSubmissionStatus("error");
@@ -54,28 +55,37 @@ export default function BusinessForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-[#2B7A6F] p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-6 text-white">
-        Business Information
-      </h2>
+    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-gray-800">
+          Business Information
+        </h2>
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-700"
+          type="button"
+        >
+          ✕
+        </button>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Business Photo Upload */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Business Photo
           </label>
           <div className="flex items-center justify-center w-full">
             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 {formData.businessPhoto ? (
-                  <p className="text-sm text-white">
+                  <p className="text-sm text-gray-500">
                     {formData.businessPhoto.name}
                   </p>
                 ) : (
                   <>
                     <svg
-                      className="w-8 h-8 mb-4 text-gray-700"
+                      className="w-8 h-8 mb-4 text-gray-500"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -89,7 +99,7 @@ export default function BusinessForm() {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-gray-700">
+                    <p className="mb-2 text-sm text-gray-500">
                       Click to upload a photo
                     </p>
                   </>
@@ -111,7 +121,7 @@ export default function BusinessForm() {
         <div>
           <label
             htmlFor="businessName"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Business Name
           </label>
@@ -130,7 +140,7 @@ export default function BusinessForm() {
         <div>
           <label
             htmlFor="address"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Address
           </label>
@@ -149,7 +159,7 @@ export default function BusinessForm() {
         <div>
           <label
             htmlFor="contact"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Contact
           </label>
@@ -168,7 +178,7 @@ export default function BusinessForm() {
         <div>
           <label
             htmlFor="licenseNumber"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             License Number
           </label>
@@ -187,7 +197,7 @@ export default function BusinessForm() {
         <div>
           <label
             htmlFor="financialYear"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Financial Year
           </label>
@@ -230,4 +240,6 @@ export default function BusinessForm() {
       </form>
     </div>
   );
-}
+};
+
+export default BusinessForm;
