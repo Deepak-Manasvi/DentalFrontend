@@ -55,10 +55,12 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-blue-900 text-white text-xl p-4 shadow-lg z-50 transition-transform duration-300 
+     
+        className={`fixed top-0 bg-[#2B7A6F] left-0 h-full text-white text-xl p-4 shadow-lg z-50 transition-transform duration-300 
           ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0 w-64`}
+          
       >
         {/* Sidebar Header */}
         <div className="flex items-center gap-3 pb-6 border-b border-gray-500">

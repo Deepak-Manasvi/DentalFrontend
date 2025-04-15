@@ -51,12 +51,12 @@ const AdminLayout = () => {
           }`}
       >
         {/* Navbar */}
-        <div className="bg-blue-800 text-white flex justify-between items-center px-6 py-4 fixed top-0 left-0 w-full z-10 shadow-md">
+        <div className="bg-[#2B7A6F] text-white flex justify-between items-center px-6 py-4 fixed top-0 left-0 w-full z-10 shadow-md">
           {/* Sidebar toggle and current time (on smaller screens) */}
           <div className="flex items-center gap-4">
             {!isSidebarOpen && (
               <button
-                className="md:hidden p-2 bg-blue-600 rounded text-lg"
+                className="md:hidden p-2 bg-[#2B7A6F] rounded text-lg"
                 onClick={() => setIsSidebarOpen(true)}
               >
                 ☰

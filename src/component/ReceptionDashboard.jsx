@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ReceptionDashboard = () => {
   const [data, setData] = useState(null);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,39 +31,40 @@ const ReceptionDashboard = () => {
 
   return (
     <div className="p-4 space-y-6">
-      {/* Buttons Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "Book Appointment" },
-          { label: "Receipt" },
-          { label: "Invoice Generate" },
-          { label: "Calendar" },
-        ].map((btn, idx) => (
-          <button
-            key={idx}
-            className="bg-blue-500 text-white py-2 px-4 rounded-xl shadow"
-            onClick={() => console.log(`${btn.label} Clicked`)}
-          >
-            {btn.label}
-          </button>
-        ))}
-      </div>
+    {/* Buttons Row */}
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      {[
+        { label: "Book Appointment", path: "receptionist/add-appointment" },
+        { label: "Receipt", path: "receptionist/reception-patient" },
+        { label: "Invoice Generate", path: "receptionist/invoiceform" },
+        { label: "Calendar", path: "" },
+      ].map((btn, idx) => (
+        <button
+          key={idx}
+          className="bg-blue-500 text-white py-2 px-4 rounded-xl shadow"
+          onClick={() => navigate(`/${btn.path}`)}
+        >
+          {btn.label}
+        </button>
+      ))}
+    </div>
 
+  
       {/* Today Section */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-2.5">
-        <button className="bg-indigo-300 text-black py-8 px-6 rounded-xl shadow text-base">
+        <button className="bg-gray-300 text-black py-8 px-6 rounded-xl shadow text-base">
           Today’s Appointments: {totalAppointments}
         </button>
-        <button className="bg-indigo-300 text-black py-8 px-6 rounded-xl shadow text-base">
+        <button className="bg-gray-300 text-black py-8 px-6 rounded-xl shadow text-base">
           Today’s Patients: {totalPatients}
         </button>
-        <button className="bg-indigo-300 text-black py-8 px-6 rounded-xl shadow text-base">
+        <button className="bg-gray-300 text-black py-8 px-6 rounded-xl shadow text-base">
           Today’s Collection: ₹{todaysCollection}
         </button>
       </div>
 
       {/* Appointments */}
-      <div className="bg-white shadow rounded-xl p-4 w-full">
+      <div className=" bg-gray-300 shadow rounded-xl p-4 w-full">
         <h2 className="text-xl font-semibold mb-4">Upcoming Appointments</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
