@@ -106,6 +106,8 @@ function App() {
           <Route path="manage-dentist" element={<ManageDentist />} />
           <Route path="setting" element={<Setting />} />
           <Route path="dashboard-card" element={<DashboardCard />} />
+          <Route path="receipt" element={<Receipt />} />
+
         </Route>
 
         <Route

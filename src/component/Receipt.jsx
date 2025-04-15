@@ -6,6 +6,8 @@ const Receipt = () => {
   const navigate = useNavigate();
   const patient = location.state?.patient;
 
+  console.log(patient)
+
   if (!patient) {
     return <p className="text-center mt-10">No patient data found.</p>;
   }
@@ -23,7 +25,7 @@ const Receipt = () => {
         </div>
         <div className="mt-2 sm:mt-0">
           <p><strong>Doctor:</strong> {patient.doctorName}</p>
-          <p><strong>Receipt Mode:</strong> {patient.modeOfPayment}</p>
+          <p><strong>Receipt Mode:</strong> {"Online"}</p>
           <p><strong>Transaction ID:</strong> {patient.transactionId || "---"}</p>
         </div>
       </div>
@@ -35,11 +37,11 @@ const Receipt = () => {
       </p>
 
       <p className="mb-2">
-        Amount in words: <strong>{patient.amountInWords}</strong>
+        Amount in words: <strong>{`${patient.amountInWords} Rupee Only-` }</strong>
       </p>
 
       <p className="mb-4">
-        Mode of Payment: <strong>{patient.modeOfPayment}</strong>
+        Mode of Payment: <strong>{patient.receiptMode}</strong>
       </p>
 
       <p className="italic font-medium text-center mt-6">
