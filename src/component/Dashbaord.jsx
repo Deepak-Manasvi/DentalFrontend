@@ -1,28 +1,64 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from './Card';
 import RevenueChart from './RevenueChart';
 import PatientTrends from './PatientTrends';
 import QuickLinks from './QuickLinks';
 import { FaUserMd, FaUsers, FaCalendarCheck, FaMoneyBill } from 'react-icons/fa';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import axios from 'axios';
 
 const Dashboard = () => {
+  const [data, setData] = useState(null)
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [showTrends, setShowTrends] = useState(true);
+
+  async function fetchDetails() {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/dashboardDetails`);
+      setData(res.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchDetails()
+  },[])  
+  
+  
+  if (!data) {
+    return <div className="p-6 text-center text-gray-600">Loading...</div>;
+  }
+
   // card data
   const cards = [
     {
       icon: <FaUserMd className="text-2xl text-blue-500" />,
       title: 'Total Doctors',
-      options: ['Dr Mehta', 'Dr Shrivastav', 'Dr Vaishali', 'Dr Sneha'],
+      count: data.totalDoctors,
+      options: data.doctorNames,
     },
     {
       icon: <FaUsers className="text-2xl text-red-500" />,
       title: 'Total Patients',
-      options: ['Today', 'Last 7 days', 'Last Month', 'Last 3 months'],
+      count: data.totalPatients,
+      options: {
+        today: data.todayPatients,
+        last7Days: data.last7DaysPatients,
+        lastMonth: data.lastMonthPatients,
+        last3Months: data.last3MonthsPatients,
+      },
     },
     {
       icon: <FaCalendarCheck className="text-2xl text-purple-500" />,
       title: 'Appointments',
-      options: ['Today', 'Last 7 days', 'Last Month', 'Last 3 months'],
+      count: data.totalAppointments,
+      options: {
+        today: data.todayAppointments,
+        last7Days: data.last7DaysAppointments,
+        lastMonth: data.lastMonthAppointments,
+        last3Months: data.last3MonthsAppointments,
+      },
     },
     {
       icon: <FaMoneyBill className="text-2xl text-green-500" />,
@@ -30,9 +66,6 @@ const Dashboard = () => {
       options: ['700'],
     },
   ];
-
-  const [showRevenue, setShowRevenue] = useState(true);
-  const [showTrends, setShowTrends] = useState(true);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -74,7 +107,7 @@ const Dashboard = () => {
             </button>
             {showTrends && (
               <div className="mt-4">
-                <PatientTrends />
+                <PatientTrends data={data.dailyPatientCounts}/>
               </div>
             )}
           </div>

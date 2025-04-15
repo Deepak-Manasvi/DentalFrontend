@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Card = ({ icon, title, link, options }) => {
+// Helper function to convert camelCase keys to readable format
+const formatLabel = (key) => {
+  const map = {
+    today: 'Today',
+    last7Days: 'Last 7 Days',
+    lastMonth: 'Last Month',
+    last3Months: 'Last 3 Months',
+  };
+  return map[key] || key;
+};
+
+const Card = ({ icon, title, link, options, count }) => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOptionKey, setSelectedOptionKey] = useState('');
 
-  // Determine the initial label based on title
   const getDropdownLabel = () => {
-    if (selectedOption) return selectedOption;
+    if (selectedOptionKey && options) {
+      return `${formatLabel(selectedOptionKey)}: ${options[selectedOptionKey]}`;
+    }
 
     switch (title) {
       case 'Total Doctors':
@@ -23,23 +35,20 @@ const Card = ({ icon, title, link, options }) => {
     }
   };
 
-  // Handle card click to navigate
   const handleCardClick = () => {
     if (link && !dropdownOpen) {
       navigate(link);
     }
   };
 
-  // Handle dropdown option click
-  const handleOptionClick = (option) => {
-    console.log(`Selected: ${option}`);
-    setSelectedOption(option);
+  const handleOptionClick = (key) => {
+    setSelectedOptionKey(key);
     setDropdownOpen(false);
   };
 
   return (
     <div
-      className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:scale-105 h-[200px] relative"
+      className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 transform hover:scale-105 h-[220px] relative"
       onClick={handleCardClick}
     >
       <div className="flex items-center space-x-3">
@@ -47,8 +56,13 @@ const Card = ({ icon, title, link, options }) => {
         <div className="text-lg font-semibold">{title}</div>
       </div>
 
+      {/* Count */}
+      {count !== undefined && (
+        <div className="mt-4 text-3xl font-bold text-gray-800">{count}</div>
+      )}
+
       {/* Dropdown */}
-      {options && (
+      {options && typeof options === 'object' && (
         <div className="mt-4 relative">
           <button
             className="bg-gray-100 p-3 rounded-md text-sm w-full text-left"
@@ -62,16 +76,16 @@ const Card = ({ icon, title, link, options }) => {
 
           {dropdownOpen && (
             <div className="absolute left-0 mt-2 w-full max-h-40 overflow-y-auto bg-white shadow-lg rounded-md z-10">
-              {options.map((option, i) => (
+              {Object.entries(options).map(([key, value]) => (
                 <button
-                  key={i}
+                  key={key}
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 rounded-md"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click
-                    handleOptionClick(option);
+                    e.stopPropagation();
+                    handleOptionClick(key);
                   }}
                 >
-                  {option}
+                  {`${formatLabel(key)}: ${value}`}
                 </button>
               ))}
             </div>
