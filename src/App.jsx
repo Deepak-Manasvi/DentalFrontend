@@ -30,6 +30,7 @@ import EditStaff from "./component/EditStaff";
 import Receipt from "./component/Receipt";
 import InvoiceForm from "./component/InvoiceForm";
 import InvoiceList from "./component/InvoiceList";
+import ReceptionDashboard from "./component/ReceptionDashboard";
 
 let userRole;
 // Function to get the user role
@@ -111,7 +112,7 @@ function App() {
           path="/receptionist"
           element={<ReceptionRoute element={<AdminLayout />} />}
         >
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard" element={<ReceptionDashboard/>} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />

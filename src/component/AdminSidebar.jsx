@@ -68,17 +68,17 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
         {/* Sidebar Sections */}
         <div className="mt-6">
-          {/* Dashboard */}
-          {isSectionVisible("dashboard") && (
-            <div
-              className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
-              onClick={() => navigate(`/${userRole}/dashboard-card`)}
-            >
-              <span>Dashboard</span>
-              <MdKeyboardArrowRight />
-            </div>
+          <div
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            onClick={() => navigate("dashboard")}
+          >
+            <span>Dashboard</span>
+            {openSection === "dashboard" ? (
+              <MdKeyboardArrowDown />
+            ) : (
+              <MdKeyboardArrowRight />   
           )}
-
+       </div>
           {/* Appointment */}
           {isSectionVisible("appointment") && (
             <>
