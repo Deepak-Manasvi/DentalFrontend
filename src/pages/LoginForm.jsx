@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import Bg from "../assets/bg.png";
 
-export default function LoginForm() {
+export default function Login() {
   const navigate = useNavigate();
   const [role, setRole] = useState("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
@@ -35,93 +38,95 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-blue-300 to-blue-400 p-6">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{ backgroundImage: `url(${Bg})` }}
+    >
+      <div className="absolute inset-0 flex justify-center items-center">
+        <h1 className="text-green-700 text-9xl font-bold drop-shadow-lg mb-150">
+          Dental Care
+        </h1>
+      </div>
+
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="flex flex-col md:flex-row w-full max-w-6xl rounded-3xl overflow-hidden bg-white/30 backdrop-blur-3xl border border-white/50 shadow-2xl"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="bg-[#2C7A7B] text-white rounded-3xl shadow-2xl w-full max-w-lg p-10 z-10 mt-40"
       >
-        {/* Left Image */}
-        <div className="md:w-[50%] w-full flex items-center justify-center p-8 bg-white/10">
-          <motion.img
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            src="https://static.vecteezy.com/system/resources/previews/029/269/310/original/dental-care-illustration-with-dentist-treating-human-teeth-and-cleaning-using-medical-equipment-in-healthcare-flat-cartoon-background-design-vector.jpg"
-            alt="Dentist"
-            className="object-cover rounded-2xl shadow-lg w-full h-[90%]"
-          />
-        </div>
+        <h2 className="text-2xl mb-3 text-center font-semibold">
+          Welcome To Dental Care
+        </h2>
+        <h1 className="text-3xl font-bold mb-8 text-center">Log In</h1>
 
-        {/* Login Form */}
-        <div className="md:w-[50%] w-full flex items-center justify-center p-10">
-          <div className="w-full max-w-md">
-            <h2 className="text-5xl md:text-6xl font-extrabold text-center mb-10 text-blue-900">
-              Login
-            </h2>
-
-            <motion.form
-              onSubmit={handleLogin}
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="space-y-6"
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Role Selection */}
+          <div>
+            <label className="block text-lg mb-2">Select User</label>
+            <select
+              className="w-full px-4 py-3 rounded-md bg-white text-[#2C7A7B] text-lg focus:outline-none"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
             >
-              <div>
-                <select
-                  className="w-full p-4 rounded-xl bg-white/50 border border-white shadow-sm"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value="admin">Admin</option>
-                  <option value="receptionist">Receptionist</option>
-                </select>
-              </div>
-
-              <div>
-                <input
-                  type="text"
-                  placeholder="Username or Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-5 rounded-2xl text-lg border-2 border-white/50 bg-white/40 backdrop-blur-md focus:ring-4 focus:ring-blue-300 focus:outline-none shadow-lg placeholder-gray-600"
-                  required
-                />
-              </div>
-
-              <div>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-5 rounded-2xl text-lg border-2 border-white/50 bg-white/40 backdrop-blur-md focus:ring-4 focus:ring-blue-300 focus:outline-none shadow-lg placeholder-gray-600"
-                  required
-                />
-              </div>
-
-              {error && (
-                <p className="text-red-600 text-center font-semibold">
-                  ⚠️ {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold text-2xl shadow-md hover:shadow-xl hover:scale-105 hover:from-blue-600 hover:to-blue-800 transition-all duration-300"
-              >
-                Login
-              </button>
-
-              <div className="text-center mt-4">
-                <a href="#" className="text-blue-700 hover:underline text-sm">
-                  Forgot Password?
-                </a>
-              </div>
-            </motion.form>
+              <option value="admin">Admin</option>
+              <option value="receptionist">Receptionist</option>
+            </select>
           </div>
-        </div>
+
+          {/* Email Field */}
+          <div>
+            <label className="block text-lg mb-2">Email Address</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-md bg-white text-[#2C7A7B] text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <label className="block text-lg mb-2">Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 rounded-md bg-white text-[#2C7A7B] text-lg placeholder-gray-500 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-3/4 transform -translate-y-1/2 cursor-pointer text-black"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </span>
+          </div>
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-300 text-sm text-center font-semibold">
+              ⚠️ {error}
+            </p>
+          )}
+
+          {/* Forgot Password */}
+          <div className="w-full flex justify-end text-sm">
+  <a href="#" className="hover:underline">
+    Forgot Password?
+  </a>
+</div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-white text-[#2C7A7B] font-semibold py-3 rounded-md hover:bg-green-500 hover:text-white transition duration-300"
+          >
+            Login
+          </button>
+        </form>
       </motion.div>
     </div>
   );

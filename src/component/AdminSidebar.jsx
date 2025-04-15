@@ -380,7 +380,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                     Clinic Configuration
                   </Link>
                   <Link
-                    to={`/${userRole}/profile`}
+                    to={`/${userRole}/setting`}
                     className="block p-2 hover:bg-blue-700"
                   >
                     User profile
