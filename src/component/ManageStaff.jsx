@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, X } from "lucide-react"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -47,6 +47,7 @@ export default function ManageStaff() {
   };
 
   const toggleDropdown = (index) => {
+    
     setDropdownOpen(dropdownOpen === index ? null : index);
   };
 
@@ -88,7 +89,7 @@ export default function ManageStaff() {
                   <td className="py-2 px-4 relative">
                     <div className="relative inline-block text-left">
                       <button
-                        onClick={() => toggleDropdown(index)}
+                        onClick={() => toggleDropdown(index)} 
                         className="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-700"
                       >
                         Actions
@@ -98,6 +99,15 @@ export default function ManageStaff() {
                           ref={dropdownRef}
                           className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10"
                         >
+                          <div className="flex justify-between items-center border-b p-2">
+                            <span className="font-semibold">Actions</span>
+                            <button
+                              onClick={() => setDropdownOpen(null)}
+                              className="p-1 hover:bg-gray-200 rounded"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
                           <ul className="py-1">
                             <li>
                               <button

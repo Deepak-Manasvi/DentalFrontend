@@ -7,7 +7,7 @@ const ManageDentist = () => {
   const [dentist, setDentist] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDentist, setSelectedDentist] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null); // Tracks the currently open dropdown
+  const [dropdownOpen, setDropdownOpen] = useState(null); 
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
 
@@ -31,7 +31,7 @@ const ManageDentist = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null); // Close dropdown if clicking outside
+        setDropdownOpen(null); 
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -39,7 +39,7 @@ const ManageDentist = () => {
   }, []);
 
   const toggleDropdown = (id) => {
-    setDropdownOpen(dropdownOpen === id ? null : id); // Toggle dropdown visibility
+    setDropdownOpen(dropdownOpen === id ? null : id); 
   };
 
   const handleView = (dentist) => {
