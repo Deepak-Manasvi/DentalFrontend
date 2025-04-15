@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   async function fetchDetails() {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/dashboardDetails`);
+      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/admin/dashboardDetails`);
       setData(res.data);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
