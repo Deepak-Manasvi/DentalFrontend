@@ -63,7 +63,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
         {/* Sidebar Header */}
         <div className="flex items-center gap-3 pb-6 border-b border-gray-500">
           <FaUserCircle className="text-3xl" />
-          <span className="text-2xl font-semibold">{userRole} Panel</span>
+          <span className="text-2xl font-semibold uppercase">{userRole} Panel</span>
         </div>
 
         {/* Sidebar Sections */}
@@ -380,7 +380,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                     Clinic Configuration
                   </Link>
                   <Link
-                    to={`/${userRole}/profile`}
+                    to={`/${userRole}/setting`}
                     className="block p-2 hover:bg-blue-700"
                   >
                     User profile
