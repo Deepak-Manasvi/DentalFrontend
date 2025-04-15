@@ -44,7 +44,7 @@ const AdminRoute = ({ element }) => {
 
 // Protected Route for Reception Role
 const ReceptionRoute = ({ element }) => {
-  return getUserRole() === "reception" ? element : <Navigate to="/" />;
+  return getUserRole() === "receptionist" ? element : <Navigate to="/" />;
 };
 
 function App() {
@@ -57,8 +57,8 @@ function App() {
           element={
             getUserRole() === "admin" ? (
               <Navigate to="/admin/dashboard" />
-            ) : getUserRole() === "reception" ? (
-              <Navigate to="/reception/dashboard" />
+            ) : getUserRole() === "receptionist" ? (
+              <Navigate to="/receptionist/dashboard" />
             ) : (
               <LoginForm />
             )
@@ -90,7 +90,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Receipt />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
-          <Route path="invoiceform" element={< InvoiceForm/>} />
+          <Route path="invoiceform" element={<InvoiceForm />} />
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="manage-staff" element={<ManageStaff />} />
           <Route path="edit-staff/:id" element={<EditStaff />} />
@@ -106,14 +106,17 @@ function App() {
         </Route>
 
         <Route
-          path="/reception"
+          path="/receptionist"
           element={<ReceptionRoute element={<AdminLayout />} />}
         >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
-          
-          
+          <Route path="patient-list" element={<PatientList />} />
+          <Route path="reception-patient" element={<ReceptionPatientList />} />
+          <Route path="receipt" element={<Receipt />} />
+          <Route path="ViewReceipt" element={<ViewReceipt />} />
+          <Route path="invoiceform" element={<InvoiceForm />} />
         </Route>
       </Routes>
     </div>

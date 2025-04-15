@@ -1,3 +1,4 @@
+import { RxCross2 } from "react-icons/rx"; 
 import { useState } from "react";
 import axios from "axios";
 
@@ -111,7 +112,7 @@ const ManageServices = () => {
         (type) => type.title === activeCategory
       );
       const endpoint = `${baseURL}/services${category.updateEndpoint}${serviceId}`;
-      await axios.put(endpoint, editedService);
+      await axios.patch(endpoint, editedService);
       setEditingIndex(null);
       fetchServices(activeCategory);
     } catch (err) {
@@ -206,10 +207,10 @@ const ManageServices = () => {
                 Save
               </button>
               <button
-                className="bg-red-500 text-white px-3 py-1 rounded"
+                className="bg-red-500 hover:bg-blue-500 text-white px-3 py-1 rounded border font-bold border-solid-black "
                 onClick={() => setEditingIndex(null)}
               >
-                ✖
+                <RxCross2 />
               </button>
             </>
           ) : (
@@ -259,9 +260,10 @@ const ManageServices = () => {
             <h2 className="text-lg font-semibold">Item Details</h2>
             <button
               onClick={() => setModalData(null)}
-              className="text-gray-600 hover:text-black"
+              className="bg-red-500 hover:bg-blue-500 text-white font-bold px-3 py-1 border border-solid-black "
             >
-              ✖
+              <RxCross2 />
+             
             </button>
           </div>
           <table className="min-w-full">
@@ -303,9 +305,9 @@ const ManageServices = () => {
             <h2 className="text-xl font-semibold">{activeCategory} Services</h2>
             <button
               onClick={closeModal}
-              className="text-gray-600 hover:text-black"
+              className="bg-red-500 hover:bg-blue-500 text-white font-bold px-3 py-1 border border-solid-black "
             >
-              ✖
+              <RxCross2 />
             </button>
           </div>
           <table className="w-full border border-gray-200">
@@ -320,7 +322,7 @@ const ManageServices = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-center">Manage Services</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         {serviceTypes.map((service) => (
           <div
             key={service.id}

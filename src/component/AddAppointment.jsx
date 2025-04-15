@@ -1,14 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const AddAppointment = () => {
-  const navigate = useNavigate();
   const [selectedMedicalHistory, setSelectedMedicalHistory] = useState([]);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [paymentMode, setPaymentMode] = useState("Cash");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [errors, setErrors] = useState({});
+  const [appointmentId, setAppointmentId] = useState("");
 
   const [isMedicalDropdownOpen, setIsMedicalDropdownOpen] = useState(false);
   const [isAllergyDropdownOpen, setIsAllergyDropdownOpen] = useState(false);
@@ -23,8 +23,8 @@ const AddAppointment = () => {
     mobileNumber: "",
     age: "",
     address: "",
-    medicalHistory: [], // Add this array for medical history
-    allergies: [], // Add this array for allergies
+    medicalHistory: [],
+    allergies: [],
     weight: "",
     systolic: "",
     diastolic: "",
@@ -35,7 +35,7 @@ const AddAppointment = () => {
     transactionId: "",
     status: "",
     paymentMode: "Cash",
-    opdAmount: "",
+    opdAmount: "500", // Fixed to 500
   });
 
   const medicalDropdownRef = useRef();
@@ -68,6 +68,52 @@ const AddAppointment = () => {
     "None",
   ];
 
+  const drNameOptions = ["Dr MS Dhoni", "Dr Rohit Sharma", "Dr Virat Kohli"];
+
+  const appointmentTimeOptions = [
+    "10Am - 11Am",
+    "11Am - 12Am",
+    "12Am - 1Pm",
+    "1Pm - 2Pm",
+    "4Pm - 5Pm",
+    "5Pm - 6Pm",
+  ];
+
+  // Get next appointment ID on component mount
+  useEffect(() => {
+    fetchNextAppointmentId();
+  }, []);
+
+  // Fetch next available appointment ID
+  const fetchNextAppointmentId = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+      );
+
+      let nextId = 1; // Default start from 1
+
+      // If appointments exist, get the max ID and increment
+      if (
+        response.data &&
+        response.data.appointmentList &&
+        response.data.appointmentList.length > 0
+      ) {
+        const appointments = response.data.appointmentList;
+        const appIds = appointments.map((app) => parseInt(app.appId) || 0);
+        nextId = Math.max(...appIds) + 1;
+      }
+
+      setAppointmentId(nextId.toString());
+      setFormData((prev) => ({ ...prev, appId: nextId.toString() }));
+    } catch (error) {
+      console.error("Error fetching appointment ID:", error);
+      // If error, start from 1
+      setAppointmentId("1");
+      setFormData((prev) => ({ ...prev, appId: "1" }));
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -86,6 +132,22 @@ const AddAppointment = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Generate valid appointment date options (today + next 3 days)
+  const getValidDateRange = () => {
+    const today = new Date();
+    const minDate = today.toISOString().split("T")[0];
+
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 3);
+
+    return {
+      min: minDate,
+      max: maxDate.toISOString().split("T")[0],
+    };
+  };
+
+  const dateRange = getValidDateRange();
 
   const toggleMedicalDropdown = () =>
     setIsMedicalDropdownOpen(!isMedicalDropdownOpen);
@@ -141,8 +203,13 @@ const AddAppointment = () => {
       });
     }
   };
+
   const handlePaymentModeChange = (e) => {
     setPaymentMode(e.target.value);
+    setFormData((prev) => ({
+      ...prev,
+      paymentMode: e.target.value,
+    }));
   };
 
   const handleChange = (e) => {
@@ -165,7 +232,6 @@ const AddAppointment = () => {
     const newErrors = {};
     const requiredFields = [
       "patientType",
-      "appId",
       "patientName",
       "gender",
       "mobileNumber",
@@ -224,8 +290,39 @@ const AddAppointment = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Reset form after successful submission
+  const resetForm = () => {
+    setSelectedMedicalHistory([]);
+    setSelectedAllergies([]);
+    setPaymentMode("Cash");
+
+    // Fetch new appointment ID
+    fetchNextAppointmentId();
+
+    setFormData({
+      patientType: "",
+      patientName: "",
+      gender: "Male",
+      mobileNumber: "",
+      age: "",
+      address: "",
+      medicalHistory: [],
+      allergies: [],
+      weight: "",
+      systolic: "",
+      diastolic: "",
+      spo2: "",
+      bloodGroup: "",
+      appointmentDate: "",
+      doctorName: "",
+      transactionId: "",
+      status: "",
+      paymentMode: "Cash",
+      opdAmount: "500",
+    });
+  };
+
   const handleBookAppointment = async () => {
-    console.log("bookstart");
     if (!validateForm()) return;
 
     const currentTime = getCurrentTime();
@@ -233,13 +330,10 @@ const AddAppointment = () => {
 
     const finalData = {
       ...formData,
-      appointmentTime: currentTime,
-
+      appointmentTime: appointmentTime || currentTime,
       paymentMode,
     };
 
-    console.log(finalData, "finalData");
-    console.log(appointmentTime, ":asdfads");
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/addAppointment`,
@@ -247,7 +341,9 @@ const AddAppointment = () => {
       );
       console.log("Appointment booked successfully", response.data);
       alert("Appointment booked successfully!");
-      navigate(`/${role}/appointment-list`);
+
+      // Reset form instead of navigating
+      resetForm();
     } catch (error) {
       console.error("Error booking appointment:", error);
       alert("Failed to book appointment");
@@ -267,6 +363,7 @@ const AddAppointment = () => {
           </label>
           <select
             name="patientType"
+            value={formData.patientType}
             onChange={handleChange}
             required
             className="w-full p-3 border rounded-xl bg-white"
@@ -291,15 +388,13 @@ const AddAppointment = () => {
           </label>
           <input
             name="appId"
-            onChange={handleChange}
+            value={appointmentId}
             type="text"
             required
-            className="w-full p-3 border rounded-xl"
-            placeholder="Enter Appointment Id"
+            className="w-full p-3 border rounded-xl bg-gray-100"
+            placeholder="Auto-generated ID"
+            readOnly
           />
-          {errors.appId && (
-            <p className="text-red-500 text-sm mt-1">{errors.appId}</p>
-          )}
         </div>
 
         <div>
@@ -308,6 +403,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="patientName"
+            value={formData.patientName}
             onChange={handleChange}
             required
             type="text"
@@ -325,6 +421,7 @@ const AddAppointment = () => {
           </label>
           <select
             name="gender"
+            value={formData.gender}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
           >
@@ -343,6 +440,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="mobileNumber"
+            value={formData.mobileNumber}
             onChange={handleChange}
             type="number"
             placeholder="Enter Mobile Number"
@@ -359,6 +457,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="age"
+            value={formData.age}
             onChange={handleChange}
             type="number"
             placeholder="Enter Age"
@@ -375,6 +474,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="address"
+            value={formData.address}
             onChange={handleChange}
             type="text"
             placeholder="Enter Address"
@@ -423,10 +523,11 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition)
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedMedicalHistory.includes(condition)
                       ? "bg-blue-50 font-semibold"
                       : ""
-                    }`}
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -471,10 +572,11 @@ const AddAppointment = () => {
                 <div
                   key={allergy}
                   onClick={() => handleAllergySelect(allergy)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedAllergies.includes(allergy)
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedAllergies.includes(allergy)
                       ? "bg-red-50 font-semibold"
                       : ""
-                    }`}
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -495,6 +597,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="weight"
+            value={formData.weight}
             onChange={handleChange}
             type="number"
             className="w-full p-3 border rounded-xl"
@@ -512,6 +615,7 @@ const AddAppointment = () => {
           <div className="flex gap-3">
             <input
               name="systolic"
+              value={formData.systolic}
               onChange={handleChange}
               type="number"
               className="w-1/2 p-3 border rounded-xl"
@@ -519,6 +623,7 @@ const AddAppointment = () => {
             />
             <input
               name="diastolic"
+              value={formData.diastolic}
               onChange={handleChange}
               type="number"
               className="w-1/2 p-3 border rounded-xl"
@@ -538,6 +643,7 @@ const AddAppointment = () => {
           </label>
           <input
             name="spo2"
+            value={formData.spo2}
             type="number"
             onChange={handleChange}
             placeholder="Enter SPO2"
@@ -554,6 +660,7 @@ const AddAppointment = () => {
           </label>
           <select
             name="bloodGroup"
+            value={formData.bloodGroup}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
           >
@@ -584,8 +691,11 @@ const AddAppointment = () => {
           </label>
           <input
             name="appointmentDate"
+            value={formData.appointmentDate}
             onChange={handleChange}
             type="date"
+            min={dateRange.min}
+            max={dateRange.max}
             className="w-full p-3 border rounded-xl"
           />
           {errors.appointmentDate && (
@@ -597,27 +707,40 @@ const AddAppointment = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-600">
-            Appointment Time
+            Appointment Time<span className="text-red-500">*</span>
           </label>
-          <input
-            type="time"
-            className="w-full p-3 border rounded-xl"
+          <select
+            name="appointmentTime"
             value={appointmentTime}
-            readOnly
-          />
+            onChange={(e) => setAppointmentTime(e.target.value)}
+            className="w-full p-3 border rounded-xl"
+          >
+            <option value="">Select Time Slot</option>
+            {appointmentTimeOptions.map((timeSlot, index) => (
+              <option key={index} value={timeSlot}>
+                {timeSlot}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Doctor Name<span className="text-red-500">*</span>
           </label>
-          <input
+          <select
             name="doctorName"
+            value={formData.doctorName}
             onChange={handleChange}
-            type="text"
-            placeholder="Enter Doctor"
             className="w-full p-3 border rounded-xl"
-          />
+          >
+            <option value="">Select Doctor</option>
+            {drNameOptions.map((doctor, index) => (
+              <option key={index} value={doctor}>
+                {doctor}
+              </option>
+            ))}
+          </select>
           {errors.doctorName && (
             <p className="text-red-500 text-sm mt-1">{errors.doctorName}</p>
           )}
@@ -634,12 +757,11 @@ const AddAppointment = () => {
             OPD Amount
           </label>
           <input
-            type="Number"
+            type="text"
             name="opdAmount"
-            onChange={handleChange}
+            value="500"
             className="w-full p-3 border rounded-xl bg-gray-100"
-            placeholder="Auto fetch"
-          // disabled
+            readOnly
           />
         </div>
 
@@ -669,6 +791,7 @@ const AddAppointment = () => {
             </label>
             <input
               name="transactionId"
+              value={formData.transactionId}
               onChange={handleChange}
               type="text"
               placeholder="Enter TransactionId"
@@ -688,10 +811,11 @@ const AddAppointment = () => {
           </label>
           <select
             name="status"
+            value={formData.status}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
           >
-            <option>Select Status</option>
+            <option value="">Select Status</option>
             <option value="Paid">Paid</option>
             <option value="Due">Due</option>
           </select>
@@ -702,7 +826,10 @@ const AddAppointment = () => {
       </div>
 
       <div className="mt-10 flex justify-between gap-6">
-        <button className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition text-lg">
+        <button
+          className="bg-gray-300 px-6 py-3 rounded-xl hover:bg-gray-400 transition text-lg"
+          onClick={resetForm}
+        >
           Cancel
         </button>
         <button
