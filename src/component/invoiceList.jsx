@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { X, Edit, CheckCircle } from "lucide-react";
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([
@@ -33,6 +34,9 @@ const InvoiceList = () => {
     },
   ]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+
   const handleDelete = (index) => {
     const updatedInvoices = invoices.filter((_, i) => i !== index);
     setInvoices(updatedInvoices);
@@ -42,58 +46,114 @@ const InvoiceList = () => {
     alert(`Editing invoice: ${invoices[index].invoiceNo}`);
   };
 
-  return (
-    <div className="p-4 sm:p-6 bg-white shadow-lg rounded-xl max-w-7xl mx-auto mt-6">
-      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6 text-center">Invoice List</h2>
+  const toggleDropdown = (index) => {
+    setDropdownOpen(dropdownOpen === index ? null : index);
+  };
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm border border-gray-300">
-          <thead className="bg-blue-700 text-white text-xs sm:text-sm">
+  const filteredInvoices = invoices.filter((invoice) =>
+    `${invoice.patientName} ${invoice.uhid} ${invoice.invoiceNo}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="mx-auto px-4 py-6">
+      <div className="mb-4 mt-2 flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-700">Invoice List</h2>
+        <input
+          type="text"
+          placeholder="Search by name, ID or invoice"
+          className="p-2 border rounded w-1/3"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="w-full table-auto border-collapse">
+          <thead className="bg-blue-900 text-white sticky top-0 z-10 text-sm md:text-base">
             <tr>
-              <th className="border px-2 py-2 sm:px-3">S.No</th>
-              <th className="border px-2 py-2 sm:px-3">Date</th>
-              <th className="border px-2 py-2 sm:px-3">Invoice No</th>
-              <th className="border px-2 py-2 sm:px-3">Patient</th>
-              <th className="border px-2 py-2 sm:px-3">Doctor</th>
-              <th className="border px-2 py-2 sm:px-3 hidden md:table-cell">Treatment</th>
-              <th className="border px-2 py-2 sm:px-3 hidden md:table-cell">UHID</th>
-              <th className="border px-2 py-2 sm:px-3">Sub Total</th>
-              <th className="border px-2 py-2 sm:px-3">Discount</th>
-              <th className="border px-2 py-2 sm:px-3">Net Payable</th>
-              <th className="border px-2 py-2 sm:px-3">Action</th>
+              <th className="py-2 px-4">Date</th>
+              <th className="py-2 px-4">Invoice No</th>
+              <th className="py-2 px-4">Patient</th>
+              <th className="py-2 px-4">Doctor</th>
+              <th className="py-2 px-4">Treatment</th>
+              <th className="py-2 px-4">UHID</th>
+              <th className="py-2 px-4">Sub Total</th>
+              <th className="py-2 px-4">Discount</th>
+              <th className="py-2 px-4">Net Payable</th>
+              <th className="py-2 px-4">Action</th>
             </tr>
           </thead>
           <tbody>
-            {invoices.map((invoice, index) => (
-              <tr key={index} className="text-center text-xs sm:text-sm">
-                <td className="border px-2 py-1">{index + 1}</td>
-                <td className="border px-2 py-1">{invoice.date}</td>
-                <td className="border px-2 py-1">{invoice.invoiceNo}</td>
-                <td className="border px-2 py-1">{invoice.patientName}</td>
-                <td className="border px-2 py-1">{invoice.doctorName}</td>
-                <td className="border px-2 py-1 hidden md:table-cell">{invoice.treatmentType}</td>
-                <td className="border px-2 py-1 hidden md:table-cell">{invoice.uhid}</td>
-                <td className="border px-2 py-1">₹{invoice.subTotal.toFixed(2)}</td>
-                <td className="border px-2 py-1">₹{invoice.discount.toFixed(2)}</td>
-                <td className="border px-2 py-1 font-semibold text-green-600">₹{invoice.netPayable.toFixed(2)}</td>
-                <td className="border px-2 py-1">
-                  <div className="flex flex-col sm:flex-row gap-1 justify-center items-center">
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-600 text-xs"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700 text-xs"
-                    >
-                      Delete
-                    </button>
-                  </div>
+            {filteredInvoices.length === 0 ? (
+              <tr>
+                <td colSpan="10" className="text-center py-4 text-gray-500">
+                  No matching invoices found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredInvoices.map((invoice, index) => (
+                <tr
+                  key={index}
+                  className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-50"
+                >
+                  <td className="py-2 px-4">{invoice.date}</td>
+                  <td className="py-2 px-4">{invoice.invoiceNo}</td>
+                  <td className="py-2 px-4">{invoice.patientName}</td>
+                  <td className="py-2 px-4">{invoice.doctorName}</td>
+                  <td className="py-2 px-4">{invoice.treatmentType}</td>
+                  <td className="py-2 px-4">{invoice.uhid}</td>
+                  <td className="py-2 px-4">₹{invoice.subTotal.toFixed(2)}</td>
+                  <td className="py-2 px-4">₹{invoice.discount.toFixed(2)}</td>
+                  <td className="py-2 px-4 font-semibold text-green-600">
+                    ₹{invoice.netPayable.toFixed(2)}
+                  </td>
+                  <td className="py-2 px-4">
+                    <div className="relative">
+                      <button
+                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                        onClick={() => toggleDropdown(index)}
+                      >
+                        Actions
+                      </button>
+
+                      {dropdownOpen === index && (
+                        <div className="absolute top-full left-0 mt-1 w-40 bg-white z-50 shadow-lg rounded-md border">
+                          <ul className="text-left">
+                            <div className="flex justify-between items-center border-b p-2">
+                              <span className="font-semibold">Actions</span>
+                              <button
+                                onClick={() => setDropdownOpen(null)}
+                                className="p-1 hover:bg-gray-200 rounded"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                            <li>
+                              <button
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                                onClick={() => handleEdit(index)}
+                              >
+                                <Edit size={18} /> Edit
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                                onClick={() => handleDelete(index)}
+                              >
+                                <CheckCircle size={18} /> Delete
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -102,3 +162,4 @@ const InvoiceList = () => {
 };
 
 export default InvoiceList;
+
