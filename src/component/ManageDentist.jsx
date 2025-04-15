@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Eye, Pencil, Trash, ChevronDown } from "lucide-react";
+import { Eye, Pencil, Trash, X } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +7,7 @@ const ManageDentist = () => {
   const [dentist, setDentist] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDentist, setSelectedDentist] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null); // Tracks the currently open dropdown
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
 
@@ -28,11 +28,10 @@ const ManageDentist = () => {
     fetchDentist();
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null);
+        setDropdownOpen(null); // Close dropdown if clicking outside
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -40,7 +39,7 @@ const ManageDentist = () => {
   }, []);
 
   const toggleDropdown = (id) => {
-    setDropdownOpen(dropdownOpen === id ? null : id);
+    setDropdownOpen(dropdownOpen === id ? null : id); // Toggle dropdown visibility
   };
 
   const handleView = (dentist) => {
@@ -69,10 +68,8 @@ const ManageDentist = () => {
     }
   };
 
-  // Handle cases where dentist is not an array
   const dentistList = Array.isArray(dentist) ? dentist : [];
 
-  // Filter dentists based on search term
   const filteredDentists = dentistList.filter((dentist) =>
     Object.values(dentist).some(
       (value) =>
@@ -84,17 +81,26 @@ const ManageDentist = () => {
   const tableHeaders = ["#", "Name", "Address", "Contact", "Email", "Action"];
 
   return (
-    <div className="mx-auto overflow-x-hidden">
+    <div className="mx-auto px-4 lg:px-8 py-6 overflow-x-auto max-w-screen-xl">
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white p-10 rounded-lg shadow-2xl w-1/2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white p-6 md:p-10 rounded-lg shadow-2xl w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Dentist Details</h2>
-            <p>Name: {selectedDentist?.name}</p>
-            <p>Address: {selectedDentist?.address}</p>
-            <p>Contact: {selectedDentist?.contact}</p>
-            <p>Email: {selectedDentist?.email}</p>
+            <p>
+              <strong>Name:</strong> {selectedDentist?.name}
+            </p>
+            <p>
+              <strong>Address:</strong> {selectedDentist?.address}
+            </p>
+            <p>
+              <strong>Contact:</strong> {selectedDentist?.contact}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedDentist?.email}
+            </p>
             <button
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               onClick={() => setShowModal(false)}
             >
               Close
@@ -103,101 +109,104 @@ const ManageDentist = () => {
         </div>
       )}
 
-      <div className="mb-4 mt-4 flex justify-between">
-        <h2 className="text-2xl font-bold text-gray-700">Manage Dentist</h2>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Manage Dentist</h2>
         <input
           type="text"
           placeholder="Search dentist..."
-          className="p-2 border rounded w-1/3"
+          className="p-2 border border-gray-300 rounded-md w-1/3 min-w-[200px]"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <div className="relative">
-          <div className="max-h-96 overflow-y-auto overflow-x-auto">
-            <table className="w-full border-collapse table-fixed">
-              <thead className="bg-blue-900 text-white sticky top-0 z-10">
-                <tr className="text-sm md:text-base">
-                  {tableHeaders.map((header) => (
-                    <th key={header} className="py-2 px-4 text-left w-1/6">
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDentists.length > 0 ? (
-                  filteredDentists.map((dentist, index) => (
-                    <tr
-                      key={dentist._id || index}
-                      className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
+        <table className="min-w-full text-sm text-gray-700">
+          <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <tr>
+              {tableHeaders.map((header) => (
+                <th key={header} className="py-3 px-4 text-left font-medium">
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredDentists.length > 0 ? (
+              filteredDentists.map((dentist, index) => (
+                <tr
+                  key={dentist._id || index}
+                  className="border-b hover:bg-gray-100"
+                >
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">{dentist.name}</td>
+                  <td className="py-3 px-4">{dentist.address}</td>
+                  <td className="py-3 px-4">{dentist.contact}</td>
+                  <td className="py-3 px-4">{dentist.email}</td>
+                  <td className="py-3 px-4 relative">
+                    <button
+                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                      onClick={() => toggleDropdown(dentist._id || index)}
                     >
-                      <td className="py-2 px-4 w-1/6">{index + 1}</td>
-                      <td className="py-2 px-4 w-1/6">{dentist.name}</td>
-                      <td className="py-2 px-4 w-1/6">{dentist.address}</td>
-                      <td className="py-2 px-4 w-1/6">{dentist.contact}</td>
-                      <td className="py-2 px-4 w-1/6">{dentist.email}</td>
-                      <td className="py-2 px-4 w-1/6 relative">
-                        <button
-                          className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 focus:outline-none flex items-center gap-1"
-                          onClick={() => toggleDropdown(dentist._id || index)}
-                        >
-                          Actions <ChevronDown size={16} />
-                        </button>
+                      Actions
+                    </button>
 
-                        {dropdownOpen === (dentist._id || index) && (
-                          <div
-                            ref={dropdownRef}
-                            className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border"
-                            style={{ transform: "translateY(0%)", right: "0" }}
+                    {dropdownOpen === (dentist._id || index) && (
+                      <div
+                        ref={dropdownRef}
+                        className="absolute right-0 mt-2 w-40 bg-white border shadow-lg rounded-md z-20"
+                      >
+                        <div className="flex justify-between items-center border-b p-2">
+                          <span className="font-semibold">Actions</span>
+                          <button
+                            onClick={() => setDropdownOpen(null)}
+                            className="p-1 hover:bg-gray-200 rounded"
                           >
-                            <ul className="text-left">
-                              <li>
-                                <button
-                                  onClick={() => handleView(dentist)}
-                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
-                                >
-                                  <Eye size={16} />
-                                  <span>View</span>
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  onClick={() => handleEdit(dentist)}
-                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
-                                >
-                                  <Pencil size={16} />
-                                  <span>Edit</span>
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  onClick={() => handleDelete(dentist._id)}
-                                  className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
-                                >
-                                  <Trash size={16} />
-                                  <span>Delete</span>
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="text-center text-gray-500 py-4">
-                      No dentists available.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <ul className="text-left">
+                          <li>
+                            <button
+                              onClick={() => handleView(dentist)}
+                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                            >
+                              <Eye size={16} /> View
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() => handleEdit(dentist)}
+                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                            >
+                              <Pencil size={16} /> Edit
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() => handleDelete(dentist._id)}
+                              className="w-full px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                            >
+                              <Trash size={16} /> Delete
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="py-6 text-center text-gray-500">
+                  No dentists available.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
