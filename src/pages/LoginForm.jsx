@@ -43,7 +43,7 @@ export default function Login() {
       style={{ backgroundImage: `url(${Bg})` }}
     >
       <div className="absolute inset-0 flex justify-center items-center">
-        <h1 className="text-green-700 text-9xl font-bold drop-shadow-lg mb-200">
+        <h1 className="text-green-700 text-9xl font-bold drop-shadow-lg mb-150">
           Dental Care
         </h1>
       </div>
@@ -52,7 +52,7 @@ export default function Login() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-[#2C7A7B] text-white rounded-3xl shadow-2xl w-full max-w-lg p-10 z-10"
+        className="bg-[#2C7A7B] text-white rounded-3xl shadow-2xl w-full max-w-lg p-10 z-10 mt-40"
       >
         <h2 className="text-2xl mb-3 text-center font-semibold">
           Welcome To Dental Care
@@ -113,11 +113,11 @@ export default function Login() {
           )}
 
           {/* Forgot Password */}
-          <div className="flex items-center justify-between text-sm">
-            <a href="#" className="hover:underline">
-              Forgot Password?
-            </a>
-          </div>
+          <div className="w-full flex justify-end text-sm">
+  <a href="#" className="hover:underline">
+    Forgot Password?
+  </a>
+</div>
 
           {/* Submit Button */}
           <button
