@@ -61,28 +61,35 @@ const Receipt = () => {
       const imgData = canvas.toDataURL("image/png");
 
       const pdf = new jsPDF();
+      
       const width = pdf.internal.pageSize.getWidth();
       const height = (canvas.height * width) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, width, height);
-
+  
       const blob = pdf.output("blob");
       const formData = new FormData();
       formData.append("pdf", blob, "receipt.pdf");
       formData.append("patientData", JSON.stringify(patient));
-
-      const response = await axios.post("http://localhost:5000/api/receipt", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Receipt saved:", response.data);
-      alert("Receipt and PDF saved successfully!");
+  
+      
+      const response = await axios.put(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/receipt/${patient.appId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+  
+      console.log("Receipt updated:", response.data);
+      alert("Receipt updated successfully!");
     } catch (error) {
-      console.error("Error saving receipt:", error);
-      alert("Failed to save receipt.");
+      console.error("Error updating receipt:", error);
+      alert("Failed to update receipt.");
     }
   };
+  
 
   return (
     <div className="p-6 max-w-3xl mx-auto font-sans text-sm">
