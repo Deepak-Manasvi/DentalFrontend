@@ -204,3 +204,23 @@ const ReceptionPatientList = () => {
 };
 
 export default ReceptionPatientList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

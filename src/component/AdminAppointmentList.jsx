@@ -158,14 +158,14 @@ const AdminAppointmentList = () => {
   }
 
   return (
-    <div className="mx-auto px-2 md:px-4 h-screen overflow-hidden ">
+    <div className="mx-auto px-2 md:px-4 py-4">
       <AppointmentDetails
         setShowAppointment={setShowAppointment}
         showAppointment={showAppointment}
         appointmentData={appointmentData}
       />
 
-      <div className="mb-4 mt-4 flex flex-col md:flex-row md:justify-between md:items-center">
+      <div className="mb-4 flex flex-col md:flex-row md:justify-between md:items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-0 text-gray-700">
           Appointment List
         </h2>
@@ -196,90 +196,92 @@ const AdminAppointmentList = () => {
         </div>
       )}
 
-      <div className="overflow-auto max-h-[calc(100vh-300px)] bg-white shadow-md rounded-lg">
-        <table className="w-full border-collapse text-sm md:text-base">
-          <thead className="bg-blue-900 text-white sticky top-0 z-10">
-            <tr>
-              {tableHeaders.map((header) => (
-                <th
-                  key={header}
-                  className="py-3 px-2 md:px-4 text-left whitespace-nowrap"
-                >
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.length > 0 ? (
-              filteredAppointments.map((app, index) => (
-                <tr
-                  key={app._id || index}
-                  className={`border-b text-gray-700 hover:bg-gray-100 ${
-                    app.isCheckedIn ? "bg-green-50" : ""
-                  }`}
-                >
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.patientName || "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.mobileNumber || "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.address || "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.doctorName || "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.appointmentTime || "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.opdAmount ?? "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    {app.payAmount ?? app.opdAmount ?? "N/A"}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap font-semibold">
-                    {app.isCheckedIn ? (
-                      <span className="text-green-600">Checked In</span>
-                    ) : (
-                      <span
-                        className={
-                          app.status === "Paid"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="overflow-auto max-h-[70vh]">
+          <table className="w-full border-collapse text-sm md:text-base">
+            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+              <tr>
+                {tableHeaders.map((header) => (
+                  <th
+                    key={header}
+                    className="py-3 px-2 md:px-4 text-left whitespace-nowrap"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAppointments.length > 0 ? (
+                filteredAppointments.map((app, index) => (
+                  <tr
+                    key={app._id || index}
+                    className={`border-b text-gray-700 hover:bg-gray-100 ${
+                      app.isCheckedIn ? "bg-green-50" : ""
+                    }`}
+                  >
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.patientName || "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.mobileNumber || "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.address || "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.doctorName || "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.appointmentTime || "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.opdAmount ?? "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      {app.payAmount ?? app.opdAmount ?? "N/A"}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap font-semibold">
+                      {app.isCheckedIn ? (
+                        <span className="text-green-600">Checked In</span>
+                      ) : (
+                        <span
+                          className={
+                            app.status === "Paid"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }
+                        >
+                          {app.status || "N/A"}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      <button
+                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        onClick={(e) => toggleDropdown(app._id || index, e)}
                       >
-                        {app.status || "N/A"}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                    <button
-                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
-                      onClick={(e) => toggleDropdown(app._id || index, e)}
-                    >
-                      Actions
-                    </button>
+                        Actions
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeaders.length}
+                    className="py-4 text-center text-gray-500"
+                  >
+                    No appointments found.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={tableHeaders.length}
-                  className="py-4 text-center text-gray-500"
-                >
-                  No appointments found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {dropdownOpen && (
