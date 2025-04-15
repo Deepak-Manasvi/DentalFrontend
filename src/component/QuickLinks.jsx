@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
 const links = [
-  { label: 'Quick Link -1', to: '/link1' },
-  { label: 'Quick Link -2', to: '/link2' },
-  { label: 'Quick Link -3', to: '/link3' },
-  { label: 'Quick Link -4', to: '/link4' },
-  { label: 'Quick Link -5', to: '/link5' },
+  { label: 'Add Appointment', to: '/admin/add-appointment' },
+  { label: 'Patient List', to: '/admin/patient-list' },
+  { label: 'Invoice', to: '/admin/invoicelist' },
+  { label: 'Manage Staff', to: '/admin/manage-staff' },
+  { label: 'Manage Branch', to: '/admin/manage-branches' },
 ];
 
 const QuickLinks = () => {

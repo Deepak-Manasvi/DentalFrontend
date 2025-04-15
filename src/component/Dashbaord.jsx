@@ -9,10 +9,26 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 const Dashboard = () => {
   // card data
   const cards = [
-    { icon: <FaUserMd className="text-2xl text-blue-500" />, title: 'Total Doctors', link: '/doctors' },
-    { icon: <FaUsers className="text-2xl text-red-500" />, title: 'Total Patients', options: ['Today', 'Last 7 days', 'Last Month', 'Last 3 months'], link: '/patients' },
-    { icon: <FaCalendarCheck className="text-2xl text-purple-500" />, title: 'Appointments', link: '/appointments' },
-    { icon: <FaMoneyBill className="text-2xl text-green-500" />, title: 'Total Revenue', link: '/revenue' },
+    {
+      icon: <FaUserMd className="text-2xl text-blue-500" />,
+      title: 'Total Doctors',
+      options: ['Dr Mehta', 'Dr Shrivastav', 'Dr Vaishali', 'Dr Sneha'],
+    },
+    {
+      icon: <FaUsers className="text-2xl text-red-500" />,
+      title: 'Total Patients',
+      options: ['Today', 'Last 7 days', 'Last Month', 'Last 3 months'],
+    },
+    {
+      icon: <FaCalendarCheck className="text-2xl text-purple-500" />,
+      title: 'Appointments',
+      options: ['Today', 'Last 7 days', 'Last Month', 'Last 3 months'],
+    },
+    {
+      icon: <FaMoneyBill className="text-2xl text-green-500" />,
+      title: 'Total Revenue',
+      options: ['700'],
+    },
   ];
 
   const [showRevenue, setShowRevenue] = useState(true);

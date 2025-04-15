@@ -35,7 +35,7 @@ const RevenueChart = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `₹${value}`}
                 label={{
                   value: 'Thousands',
                   angle: -90,
@@ -43,7 +43,7 @@ const RevenueChart = () => {
                 }}
                 domain={[0, 1000]}
               />
-              <Tooltip formatter={(value) => `$${value}`} />
+              <Tooltip formatter={(value) => `₹${value}`} />
               <Line
                 type="monotone"
                 dataKey="revenue"
