@@ -31,6 +31,12 @@ import Receipt from "./component/Receipt";
 import InvoiceForm from "./component/InvoiceForm";
 import InvoiceList from "./component/InvoiceList";
 import ReceptionDashboard from "./component/ReceptionDashboard";
+import RevenueReport from "./component/RevenueReport";
+import TotalRevenue from "./pages/TotalRevenue";
+import CashlessTreatment from "./pages/CashlessTreatment";
+import DiscountRefund from "./pages/DiscountRefund";
+import RevenueByService from "./pages/RevenueByService";
+import RevenueByPaymentMode from "./pages/RevenueByPaymentMode";
 
 let userRole;
 // Function to get the user role
@@ -107,6 +113,14 @@ function App() {
           <Route path="setting" element={<Setting />} />
           <Route path="dashboard-card" element={<DashboardCard />} />
           <Route path="receipt" element={<Receipt />} />
+          <Route path="revenue-report" element={<RevenueReport/>}/>
+          <Route path="revenue/total" element={<TotalRevenue />} />
+          <Route path="renenue/cashless" element={<CashlessTreatment/>}/>
+          <Route path="revenue/discount" element={<DiscountRefund/>}/>
+          <Route path="revenue/invoice" element={<TotalRevenue/>}/>
+          <Route path="revenue/service" element={<RevenueByService/>}/>
+          <Route path="revenue/payment" element={<RevenueByPaymentMode/>}/>
+
 
         </Route>
 
