@@ -11,9 +11,7 @@ export default function ManageStaff() {
 
   const getStafs = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/staff/getAllStaff`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/staff/getAllStaff`);
       setStaffList(res.data.data.staff);
     } catch (error) {
       console.error("Error fetching staff:", error);
@@ -36,9 +34,7 @@ export default function ManageStaff() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_APP_BASE_URL}/staff/deletestaffById/${id}`
-      );
+      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/staff/deletestaffById/${id}`);
       alert("Staff deleted successfully!");
       getStafs();
     } catch (error) {
@@ -82,33 +78,48 @@ export default function ManageStaff() {
           <tbody>
             {staffList.length > 0 ? (
               staffList.map((staff, index) => (
-                <tr
-                  key={staff._id || index}
-                  className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
-                >
+                <tr key={staff._id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
                   <td className="py-2 px-4">{index + 1}</td>
                   <td className="py-2 px-4">{staff.name}</td>
                   <td className="py-2 px-4">{staff.username}</td>
                   <td className="py-2 px-4">{staff.email}</td>
                   <td className="py-2 px-4">{staff.address}</td>
                   <td className="py-2 px-4">{staff.contactNumber}</td>
-                  <td className="py-2 px-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(staff._id)}
-                        className="text-yellow-400 hover:text-yellow-400 px-3 py-1 rounded flex items-center gap-1 "
+                  <td className="py-2 px-4 relative">
+                    <button
+                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 focus:outline-none"
+                      onClick={() => toggleDropdown(index)}
+                    >
+                      Actions ▼
+                    </button>
+
+                    {dropdownOpen === index && (
+                      <div
+                        ref={dropdownRef}
+                        className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-md border z-10"
                       >
-                        <Pencil size={16} />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(staff._id)}
-                        className="text-red-600 hover:text-red-700 px-3 py-1 rounded flex items-center gap-1 "
-                      >
-                        <Trash size={16} />
-                        Delete
-                      </button>
-                    </div>
+                        <ul className="text-left">
+                          <li>
+                            <button
+                              onClick={() => handleEdit(staff._id)}
+                              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white flex items-center gap-2"
+                            >
+                              <Pencil size={16} />
+                              <span>Edit</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() => handleDelete(staff._id)}
+                              className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                            >
+                              <Trash size={16} />
+                              <span>Delete</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
