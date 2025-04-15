@@ -19,10 +19,9 @@ const PatientHistory = () => {
 
   async function fetchPatientHistory() {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_APP_BASE_URL}/appointments/patientHistory`
-          );
-          
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/patientHistory`
+      );
       const pastPatients = response.data.historyList || [];
       setHistory(pastPatients);
       console.log("Fetched Patient History:", pastPatients);

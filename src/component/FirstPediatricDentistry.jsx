@@ -11,7 +11,7 @@ const toothNames = [
     "Upper Left Lateral Incisor  ",
     "Upper Left Canine (Cuspid)",
     "Upper Left First Molar",
-     "Lower Left Second Molar)",
+    "Lower Left Second Molar)",
     "Lower Left First Molar",
     "Lower Left Canine (Cuspid)",
     "Lower Left Lateral Incisor",
@@ -111,7 +111,7 @@ const FirstAdultDentistryForm = ({
                 <div className="grid grid-cols-10 gap-2">
                     {teethData.slice(0, 10).map((tooth) => (
                         <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
-                            <div className="bg-white p-1 rounded">
+                            <div className=" p-1 rounded">
                                 <img
                                     src={`/pediatricTeeth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
@@ -134,7 +134,7 @@ const FirstAdultDentistryForm = ({
                 <div className="grid grid-cols-10 gap-2">
                     {teethData.slice(10).map((tooth) => (
                         <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
-                            <div className="bg-white p-1 rounded">
+                            <div className=" p-1 rounded">
                                 <img
                                     src={`/pediatricTeeth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
@@ -187,23 +187,40 @@ const FirstAdultDentistryForm = ({
                 </div>
                 <div>
                     <label>Chief Complaint*</label>
-                    <input
+                    <select
                         name="complaint"
                         value={formData.complaint}
                         onChange={handleChange}
                         className="border rounded px-2 py-1 w-full"
                         required
-                    />
+                    >
+                        <option value="" disabled>Select a Complaint</option>
+                        <option value="Headache">Headache</option>
+                        <option value="Cough">Cough</option>
+                        <option value="Fever">Fever</option>
+                        <option value="Fatigue">Fatigue</option>
+                        <option value="Nausea">Nausea</option>
+                        {/* Add more options as needed */}
+                    </select>
                 </div>
+
                 <div>
                     <label>Examination*</label>
-                    <input
+                    <select
                         name="examination"
                         value={formData.examination}
                         onChange={handleChange}
                         className="border rounded px-2 py-1 w-full"
                         required
-                    />
+                    >
+                        <option value="" disabled>Select an Examination</option>
+                        <option value="Blood Pressure">Blood Pressure</option>
+                        <option value="ECG">ECG</option>
+                        <option value="Blood Test">Blood Test</option>
+                        <option value="X-Ray">X-Ray</option>
+                        <option value="CT Scan">CT Scan</option>
+                        {/* Add more options as needed */}
+                    </select>
                 </div>
                 <div>
                     <label>Advice*</label>
