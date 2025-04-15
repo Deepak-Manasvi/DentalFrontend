@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toWords } from "number-to-words";
-import { X } from "lucide-react"; 
+import { Eye, Edit, CheckCircle, X } from "lucide-react"; 
 
 const ReceptionPatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -172,26 +172,26 @@ const ReceptionPatientList = () => {
                                 </div>
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
                                     onClick={() => handleView(patient)}
                                   >
-                                    View
+                                    <Eye size={18} /> View
                                   </button>
                                 </li>
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white"
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
                                     onClick={() => handleReceipt(patient)}
                                   >
-                                    Receipt
+                                    <Edit size={18} /> Receipt
                                   </button>
                                 </li>
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600"
+                                    className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
                                     onClick={() => alert("Cancel Clicked")}
                                   >
-                                    Cancel
+                                    <CheckCircle size={18} /> Cancel
                                   </button>
                                 </li>
                               </ul>
