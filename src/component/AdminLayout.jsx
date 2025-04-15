@@ -1,12 +1,15 @@
+import { IoMdArrowDropdown } from "react-icons/io"; 
 import { Outlet, useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
+import BusinessForm from "./BusinessForm"; 
 
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
+  const [showBusinessForm, setShowBusinessForm] = useState(false); // State to control form visibility
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
 
@@ -32,8 +35,12 @@ const AdminLayout = () => {
     if (confirmLogout) {
       localStorage.clear();
       navigate("/");
-       window.location.reload();
+      window.location.reload();
     }
+  };
+
+  const handleOpenBusinessForm = () => {
+    setShowBusinessForm(true);
   };
 
   return (
@@ -47,8 +54,9 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-58" : "ml-0"
-          }`}
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isSidebarOpen ? "ml-58" : "ml-0"
+        }`}
       >
         {/* Navbar */}
         <div className="bg-[#2B7A6F] text-white flex justify-between items-center px-6 py-4 fixed top-0 left-0 w-full z-10 shadow-md">
@@ -62,16 +70,19 @@ const AdminLayout = () => {
                 ☰
               </button>
             )}
+            <button
+              className="flex items-center gap-2 text-xl font-semibold bg-blue-700 hover:bg-blue-600 ml-60 px-4 py-2 rounded transition"
+              onClick={handleOpenBusinessForm}
+            >
+              <span>Business Name</span>
+              <IoMdArrowDropdown />
+            </button>
+
             <span className="text-sm md:hidden">{currentTime}</span>
           </div>
 
-          {/* Centered title for large screens */}
-          {/* <h1 className="text-xl font-semibold mx-auto hidden md:block">
-            Admin Dashboard
-          </h1> */}
-
           {/* Right section: time, welcome, and logout */}
-          <div className="flex items-center gap-4 text-right">
+          <div className="flex items-center gap-4 text-right font-bold">
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm">{currentTime}</span>
               <span className="text-lg font-semibold">Welcome, {userRole}</span>
@@ -87,10 +98,13 @@ const AdminLayout = () => {
           </div>
         </div>
 
-
         {/* Page Content */}
-        <div className="flex-1 p-4 mt-[80px]  overflow-y-auto">
-          <Outlet />
+        <div className="flex-1 p-4 mt-[80px] overflow-y-auto">
+          {showBusinessForm ? (
+            <BusinessForm onClose={() => setShowBusinessForm(false)} />
+          ) : (
+            <Outlet />
+          )}
         </div>
       </div>
     </div>
