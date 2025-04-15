@@ -29,7 +29,7 @@ import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
 import Receipt from "./component/Receipt";
 import InvoiceForm from "./component/InvoiceForm";
-import InvoiceList from "./component/InvoiceList";
+import InvoiceList from "./component/invoiceList";
 import ReceptionDashboard from "./component/ReceptionDashboard";
 import RevenueReport from "./component/RevenueReport";
 import TotalRevenue from "./pages/TotalRevenue";
