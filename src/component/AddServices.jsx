@@ -1,19 +1,28 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
+import axios from "axios";
 
-const AddServices = ({ onSaveService }) => {
+const AddServices = () => {
   const [showForm, setShowForm] = useState(false);
   const [activeService, setActiveService] = useState("");
   const [formData, setFormData] = useState({
     procedureName: "",
     treatmentName: "",
     price: "",
+    name: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const serviceTypes = [
-    { id: 1, title: "Chief Complaint", icon: "🩺" },
-    { id: 2, title: "Examination", icon: "🔍" },
-    { id: 3, title: "Treatment Procedure", icon: "💊" },
-    { id: 4, title: "Medicine", icon: "💉" },
+    { id: 1, title: "Chief Complaint", icon: "🩺", endpoint: "createChief" },
+    { id: 2, title: "Examination", icon: "🔍", endpoint: "createExamination" },
+    {
+      id: 3,
+      title: "Treatment Procedure",
+      icon: "💊",
+      endpoint: "createTreatment",
+    },
+    { id: 4, title: "Medicine", icon: "💉", endpoint: "createMedicine" },
   ];
 
   const handleCardClick = (serviceTitle) => {
@@ -22,9 +31,19 @@ const AddServices = ({ onSaveService }) => {
 
     // Reset form data based on service type
     if (serviceTitle === "Treatment Procedure") {
-      setFormData({ procedureName: "", treatmentName: "", price: "" });
+      setFormData({
+        procedureName: "",
+        treatmentName: "",
+        price: "",
+        name: "",
+      });
     } else {
-      setFormData({ name: "" });
+      setFormData({
+        name: "",
+        procedureName: "",
+        treatmentName: "",
+        price: "",
+      });
     }
   };
 
@@ -32,36 +51,61 @@ const AddServices = ({ onSaveService }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    // For Treatment Procedure, validate and include all three fields
-    if (activeService === "Treatment Procedure") {
-      if (
-        formData.procedureName.trim() === "" ||
-        formData.treatmentName.trim() === ""
-      )
-        return;
+    try {
+      const currentService = serviceTypes.find(
+        (service) => service.title === activeService
+      );
+      let endpoint = `/services/${currentService.endpoint}`;
+      let dataToSend;
 
-      onSaveService({
-        type: activeService,
-        procedureName: formData.procedureName,
-        treatmentName: formData.treatmentName,
-        price: formData.price || "0",
+      // Prepare appropriate data based on service type
+      if (activeService === "Treatment Procedure") {
+        if (
+          formData.procedureName.trim() === "" ||
+          formData.treatmentName.trim() === ""
+        )
+          return;
+
+        dataToSend = {
+          procedureName: formData.procedureName,
+          treatmentName: formData.treatmentName,
+          price: formData.price || "0",
+        };
+      } else {
+        if (formData.name.trim() === "") return;
+
+        dataToSend = {
+          name: formData.name,
+        };
+      }
+
+      // Make API call
+      const res = await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}${endpoint}`,
+        dataToSend
+      );
+
+      // Show success alert
+      alert(`${activeService} created successfully!`);
+
+      // Reset form and hide it
+      setFormData({
+        procedureName: "",
+        treatmentName: "",
+        price: "",
+        name: "",
       });
-    } else {
-      // For other services, only save type and name
-      if (formData.name.trim() === "") return;
-
-      onSaveService({
-        type: activeService,
-        name: formData.name,
-      });
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error creating service:", error);
+      alert(`Error creating ${activeService}. Please try again.`);
+    } finally {
+      setIsLoading(false);
     }
-
-    // Reset form and hide it
-    setFormData({ procedureName: "", treatmentName: "", price: "", name: "" });
-    setShowForm(false);
   };
 
   // Render different forms based on service type
@@ -128,14 +172,16 @@ const AddServices = ({ onSaveService }) => {
               type="button"
               onClick={() => setShowForm(false)}
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
@@ -166,14 +212,16 @@ const AddServices = ({ onSaveService }) => {
               type="button"
               onClick={() => setShowForm(false)}
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

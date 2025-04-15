@@ -26,6 +26,7 @@ import EditBranches from "./component/EditBranches";
 import EditDentist from "./component/EditDentist";
 import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
+import Receipt from "./component/Receipt";
 import InvoiceForm from "./component/InvoiceForm";
 import InvoiceList from "./component/InvoiceList";
 
@@ -112,6 +113,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
+          
+          
         </Route>
       </Routes>
     </div>
