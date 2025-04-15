@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
 const ViewReceipt = () => {
   const navigate = useNavigate();
+  const dropdownRefs = useRef([]);
 
   const [receipts, setReceipts] = useState([
     {
@@ -32,11 +33,23 @@ const ViewReceipt = () => {
 
   const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [dropdownOpenIndex, setDropdownOpenIndex] = useState(null);
 
-  const toggleDropdown = (id) => {
-    setDropdownOpen(dropdownOpen === id ? null : id);
-  };
+  // Handle click outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownOpenIndex !== null &&
+        dropdownRefs.current[dropdownOpenIndex] &&
+        !dropdownRefs.current[dropdownOpenIndex].contains(event.target)
+      ) {
+        setDropdownOpenIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpenIndex]);
 
   const handleGenerateInvoice = () => {
     navigate("/Invoice");
@@ -44,14 +57,17 @@ const ViewReceipt = () => {
 
   const handleView = (receipt) => {
     setViewingReceipt(receipt);
+    setDropdownOpenIndex(null);
   };
 
   const handleEdit = (receipt) => {
     setEditingReceipt(receipt);
+    setDropdownOpenIndex(null);
   };
 
   const handlePrint = (id) => {
     alert(`Print receipt with ID: ${id}`);
+    setDropdownOpenIndex(null);
   };
 
   const handleChange = (e) => {
@@ -66,14 +82,6 @@ const ViewReceipt = () => {
     setReceipts(updatedReceipts);
     setEditingReceipt(null);
     alert("Receipt Updated Successfully!");
-  };
-
-  const handleCloseEdit = () => {
-    setEditingReceipt(null);
-  };
-
-  const handleCloseView = () => {
-    setViewingReceipt(null);
   };
 
   const tableHeaders = [
@@ -121,52 +129,55 @@ const ViewReceipt = () => {
                       <td className="py-2 px-4 w-1/10">₹{receipt.amount}</td>
                       <td className="py-2 px-4 w-1/10">{receipt.mode}</td>
                       <td className="py-2 px-4 relative">
-                        <button
-                          className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
-                          onClick={() => toggleDropdown(index)}
-                        >
-                          Actions <ChevronDown size={16} />
-                        </button>
+                        <div className="inline-block" ref={(el) => (dropdownRefs.current[index] = el)}>
+                          <button
+                            className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                            onClick={() =>
+                              setDropdownOpenIndex(
+                                dropdownOpenIndex === index ? null : index
+                              )
+                            }
+                          >
+                            Actions <ChevronDown size={16} />
+                          </button>
 
-                        {dropdownOpen === index && (
-                          <div className="absolute z-50 mt-2 w-40 bg-white shadow-lg rounded-md border right-0">
-                            <ul className="text-left">
-                              <li>
-                                <button
-                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
-                                  onClick={() => handleView(receipt)}
-                                >
-                                  View
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-300"
-                                  onClick={() => handleEdit(receipt)}
-                                >
-                                  Edit
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  className="w-full text-left px-4 py-2 text-green-600 hover:bg-green-100"
-                                  onClick={() => handlePrint(receipt.id)}
-                                >
-                                  Print
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        )}
+                          {dropdownOpenIndex === index && (
+                            <div className="absolute z-50 mt-2 w-40 bg-white shadow-lg rounded-md border right-0">
+                              <ul className="text-left">
+                                <li>
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
+                                    onClick={() => handleView(receipt)}
+                                  >
+                                    View
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-300"
+                                    onClick={() => handleEdit(receipt)}
+                                  >
+                                    Edit
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-green-600 hover:bg-green-100"
+                                    onClick={() => handlePrint(receipt.id)}
+                                  >
+                                    Print
+                                  </button>
+                                </li>
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={10}
-                      className="text-center text-gray-500 py-4"
-                    >
+                    <td colSpan={10} className="text-center text-gray-500 py-4">
                       No Receipts Found
                     </td>
                   </tr>
@@ -194,7 +205,7 @@ const ViewReceipt = () => {
             </div>
             <div className="flex justify-end mt-6">
               <button
-                onClick={handleCloseView}
+                onClick={() => setViewingReceipt(null)}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >
                 Close
@@ -259,7 +270,7 @@ const ViewReceipt = () => {
                 Save
               </button>
               <button
-                onClick={handleCloseEdit}
+                onClick={() => setEditingReceipt(null)}
                 className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
               >
                 Cancel

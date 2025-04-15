@@ -299,8 +299,8 @@ const ManageServices = () => {
     if (!isModalOpen) return null;
 
     return (
-      <div className="fixed lg:w-[116%] inset-0 bg-transparent  mx-auto flex items-center justify-center z-40">
-        <div className="bg-white p-6 rounded shadow-lg w-11/12 max-w-5xl max-h-screen overflow-auto">
+      <div className="fixed inset-0 bg-transparent flex items-center ml-50 justify-center z-40">
+        <div className="bg-white p-6 rounded shadow-lg w-11/12 max-w-full max-h-screen overflow-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">{activeCategory} Services</h2>
             <button
