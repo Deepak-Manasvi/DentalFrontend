@@ -351,7 +351,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
                     Revenue Report
                   </Link>
                   <Link
-                    to={`/${userRole}/patient-report`}
+                    to={`/${userRole}/revenue-report`}
                     className="block p-2 hover:bg-blue-700"
                   >
                     Patient Report
