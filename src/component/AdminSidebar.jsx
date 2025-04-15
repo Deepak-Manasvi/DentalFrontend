@@ -68,7 +68,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
         {/* Sidebar Sections */}
         <div className="mt-6">
-          <div
+          {/* <div
             className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
             onClick={() => navigate("dashboard")}
           >
@@ -78,7 +78,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
             ) : (
               <MdKeyboardArrowRight />   
           )}
-       </div>
+       </div> */}
           {/* Appointment */}
           {isSectionVisible("appointment") && (
             <>

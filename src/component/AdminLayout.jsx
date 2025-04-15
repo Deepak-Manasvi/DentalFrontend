@@ -32,6 +32,7 @@ const AdminLayout = () => {
     if (confirmLogout) {
       localStorage.clear();
       navigate("/");
+       window.location.reload();
     }
   };
 
