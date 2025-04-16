@@ -63,7 +63,7 @@ const Dashboard = () => {
     {
       icon: <FaMoneyBill className="text-2xl text-green-500" />,
       title: 'Total Revenue',
-      options: ['700'],
+      options: ['700','800','900','1000'],
     },
   ];
 
