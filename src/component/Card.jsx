@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 
 // Helper function to convert camelCase keys to readable format
 const formatLabel = (key) => {
@@ -65,14 +66,17 @@ const Card = ({ icon, title, link, options, count }) => {
       {options && typeof options === 'object' && (
         <div className="mt-4 relative">
           <button
-            className="bg-gray-100 p-3 rounded-md text-sm w-full text-left"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDropdownOpen((prev) => !prev);
-            }}
-          >
-            {getDropdownLabel()}
-          </button>
+  className="bg-gray-100 p-3 rounded-md text-sm w-full text-left flex items-center justify-between"
+  onClick={(e) => {
+    e.stopPropagation();
+    setDropdownOpen((prev) => !prev);
+  }}
+>
+  <span>{getDropdownLabel()}</span>
+  <ChevronDown
+    className={`w-4 h-4 ml-2 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+  />
+</button>
 
           {dropdownOpen && (
             <div className="absolute left-0 mt-2 w-full max-h-40 overflow-y-auto bg-white shadow-lg rounded-md z-10">
