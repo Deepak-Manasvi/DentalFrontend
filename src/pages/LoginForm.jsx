@@ -41,12 +41,14 @@ export default function Login() {
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
       style={{ backgroundImage: `url(${Bg})` }}
+
     >
       <div className="absolute inset-0 flex justify-center items-center">
         <h1 className="text-green-700 text-9xl font-bold drop-shadow-lg mb-150">
           Dental Care
         </h1>
       </div>
+
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
