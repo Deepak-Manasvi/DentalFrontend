@@ -4,13 +4,13 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContaine
 
 const PatientTrends = ({ data = [] }) => {
   const defaultData = [
-    { day: 'Monday', patients: 0 },
-    { day: 'Tuesday', patients: 0 },
+    { day: 'Mon', patients: 0 },
+    { day: 'Tues', patients: 0 },
     { day: 'Wed', patients: 0 },
-    { day: 'Thursday', patients: 0 },
-    { day: 'Friday', patients: 0 },
-    { day: 'Saturday', patients: 0 },
-    { day: 'Sunday', patients: 0 },
+    { day: 'Thur', patients: 0 },
+    { day: 'Fri', patients: 0 },
+    { day: 'Sat', patients: 0 },
+    { day: 'Sun', patients: 0 },
   ];
   const mergedData = defaultData.map((defaultDay) => {
     const match = data.find((d) => d.day === defaultDay.day);
