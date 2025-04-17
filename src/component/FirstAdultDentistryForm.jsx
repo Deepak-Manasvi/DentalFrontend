@@ -143,63 +143,35 @@ const FirstAdultDentistryForm = ({
 
       <h2 className="text-3xl font-bold mb-4">Select Teeth</h2>
 
-      {/* Top 16 Teeth Row */}
-      <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-8 gap-2">
-          {teethData.slice(0, 16).map((tooth) => (
-            <div
-              key={tooth.id}
-              className="flex flex-col items-center p-2 rounded shadow-sm"
-            >
-              <div className=" p-1 rounded">
-                <img
-                  src={`/adultdentistryTooth/tooth${tooth.id}.png`}
-                  alt={tooth.label}
-                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id]
-                      ? "border-2 border-blue-500 rounded"
-                      : ""
-                    }`}
-                />
-              </div>
-              <span className="text-xs text-center">{tooth.label}</span>
-              <input
-                type="checkbox"
-                checked={selectedTeeth[tooth.id] || false}
-                onChange={() => handleCheckboxChange(tooth.id)}
-              />
-            </div>
-          ))}
+      
+      {/* All Teeth*/}
+<div className="overflow-x-auto mb-6">
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-4">
+    {teethData.map((tooth) => (
+      <div
+        key={tooth.id}
+        className="flex flex-col items-center p-2 rounded shadow-sm"
+      >
+        <div className="p-1 rounded">
+          <img
+            src={`/adultdentistryTooth/tooth${tooth.id}.png`}
+            alt={tooth.label}
+            className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id]
+              ? "border-2 border-blue-500 rounded"
+              : ""
+            }`}
+          />
         </div>
+        <span className="text-xs text-center">{tooth.label}</span>
+        <input
+          type="checkbox"
+          checked={selectedTeeth[tooth.id] || false}
+          onChange={() => handleCheckboxChange(tooth.id)}
+        />
       </div>
-
-      {/* Bottom 16 Teeth Row */}
-      <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-8 gap-2">
-          {teethData.slice(16).map((tooth) => (
-            <div
-              key={tooth.id}
-              className="flex flex-col items-center p-2 rounded shadow-sm"
-            >
-              <div className=" p-1 rounded">
-                <img
-                  src={`/adultdentistryTooth/tooth${tooth.id}.png`}
-                  alt={tooth.label}
-                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id]
-                      ? "border-2 border-blue-500 rounded"
-                      : ""
-                    }`}
-                />
-              </div>
-              <span className="text-xs text-center">{tooth.label}</span>
-              <input
-                type="checkbox"
-                checked={selectedTeeth[tooth.id] || false}
-                onChange={() => handleCheckboxChange(tooth.id)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+    ))}
+  </div>
+</div>
 
       {/* Form Fields */}
       <div className="mt-6 grid grid-cols-5 gap-4">
