@@ -5,7 +5,6 @@ import axios from "axios";
 
 const ViewReceipt = () => {
   const navigate = useNavigate();
-
   const [receipts, setReceipts] = useState([]);
   const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
@@ -18,47 +17,33 @@ const ViewReceipt = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
-
-        
         const appointments = response.data.appointmentList;
-
-        
         const filtered = appointments.filter(
-          (appointment) => appointment.receipt
+          (appointment) => appointment.receiptGenerate
         );
-
         setReceipts(filtered);
       } catch (error) {
         console.error("Error fetching receipts:", error);
       }
     };
-
     fetchReceipts();
   }, []);
-
 
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id);
   };
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(null);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleGenerateInvoice = () => {
-    navigate("/Invoice");
-  };
 
   const handleView = (receipt) => {
     setViewingReceipt(receipt);
@@ -86,24 +71,12 @@ const ViewReceipt = () => {
     alert("Receipt Updated Successfully!");
   };
 
-  const handleCloseEdit = () => {
-    setEditingReceipt(null);
-  };
-
-  const handleCloseView = () => {
-    setViewingReceipt(null);
-  };
+  const handleCloseEdit = () => setEditingReceipt(null);
+  const handleCloseView = () => setViewingReceipt(null);
 
   const tableHeaders = [
-    "Date",
-    "Receipt No",
-    "UHID",
-    "Name",
-    "Doctor Name",
-    "Treatment",
-    "Amount",
-    "Mode",
-    "Action",
+    "Date", "Receipt No", "UHID", "Name", "Doctor Name",
+    "Treatment", "Amount", "Mode", "Action",
   ];
 
   return (
@@ -115,35 +88,24 @@ const ViewReceipt = () => {
               <thead className="bg-blue-900 text-white sticky top-0 z-10">
                 <tr className="text-sm md:text-base">
                   {tableHeaders.map((header) => (
-                    <th key={header} className="py-2 px-4 text-left w-1/10">
-                      {header}
-                    </th>
+                    <th key={header} className="py-2 px-4 text-left w-1/10">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {receipts.length > 0 ? (
                   receipts.map((receipt, index) => (
-                    <tr
-                      key={receipt.id}
-                      className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100"
-                    >
-                      <td className="py-2 px-4 w-1/10">
-                        {receipt.appointmentDate}
+                    <tr key={receipt.id} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
+                      <td className="py-2 px-4">{receipt.appointmentDate}</td>
+                      <td className="py-2 px-4">{receipt.receiptNo}</td>
+                      <td className="py-2 px-4">{receipt.uhid}</td>
+                      <td className="py-2 px-4">{receipt.patientName}</td>
+                      <td className="py-2 px-4">
+                        {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
                       </td>
-                      <td className="py-2 px-4 w-1/10">{receipt.receiptNo}</td>
-                      <td className="py-2 px-4 w-1/10">{receipt.uhid}</td>
-                      <td className="py-2 px-4 w-1/10">
-                        {receipt.patientName}
-                      </td>
-                      <td className="py-2 px-4 w-1/10">
-                        {receipt.doctorName[0]}
-                      </td>
-                      <td className="py-2 px-4 w-1/10">{receipt.treatment}</td>
-                      <td className="py-2 px-4 w-1/10">₹{receipt.opdAmount}</td>
-                      <td className="py-2 px-4 w-1/10">
-                        {receipt.paymentMode}
-                      </td>
+                      <td className="py-2 px-4">{receipt.treatment}</td>
+                      <td className="py-2 px-4">₹{receipt.opdAmount}</td>
+                      <td className="py-2 px-4">{receipt.paymentMode}</td>
                       <td className="py-2 px-4 relative" ref={dropdownRef}>
                         <button
                           className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
@@ -156,10 +118,7 @@ const ViewReceipt = () => {
                           <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0 top-0">
                             <div className="flex justify-between items-center border-b p-2">
                               <span className="font-semibold">Actions</span>
-                              <button
-                                onClick={() => setDropdownOpen(null)}
-                                className="p-1 hover:bg-gray-200 rounded"
-                              >
+                              <button onClick={() => setDropdownOpen(null)} className="p-1 hover:bg-gray-200 rounded">
                                 <X size={16} />
                               </button>
                             </div>
@@ -169,8 +128,7 @@ const ViewReceipt = () => {
                                   className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
                                   onClick={() => handleView(receipt)}
                                 >
-                                  <Eye size={16} />
-                                  <span>View</span>
+                                  <Eye size={16} /><span>View</span>
                                 </button>
                               </li>
                               <li>
@@ -178,8 +136,7 @@ const ViewReceipt = () => {
                                   className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-300 flex items-center gap-2"
                                   onClick={() => handleEdit(receipt)}
                                 >
-                                  <Edit size={16} />
-                                  <span>Edit</span>
+                                  <Edit size={16} /><span>Edit</span>
                                 </button>
                               </li>
                               <li>
@@ -187,11 +144,19 @@ const ViewReceipt = () => {
                                   className="w-full text-left px-4 py-2 text-green-600 hover:bg-green-100 flex items-center gap-2"
                                   onClick={() => handlePrint(receipt.id)}
                                 >
-                                  <CheckCircle size={16} />
-                                  <span>Print</span>
+                                  <CheckCircle size={16} /><span>Print</span>
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-blue-600 hover:bg-blue-100 flex items-center gap-2"
+                                  onClick={() => handleGenerateInvoice(receipt)}
+                                >
+                                  <CheckCircle size={16} /><span>Generate Invoice</span>
                                 </button>
                               </li>
                             </ul>
+
                           </div>
                         )}
                       </td>
@@ -216,30 +181,14 @@ const ViewReceipt = () => {
           <div className="bg-white p-6 rounded shadow-lg w-full sm:w-96">
             <h2 className="text-xl font-bold mb-4">View Receipt</h2>
             <div className="space-y-2">
-              <p>
-                <strong>Date:</strong> {viewingReceipt.date}
-              </p>
-              <p>
-                <strong>Receipt No:</strong> {viewingReceipt.receiptNo}
-              </p>
-              <p>
-                <strong>UHID:</strong> {viewingReceipt.uhid}
-              </p>
-              <p>
-                <strong>Name:</strong> {viewingReceipt.name}
-              </p>
-              <p>
-                <strong>Doctor:</strong> {viewingReceipt.doctorName}
-              </p>
-              <p>
-                <strong>Treatment:</strong> {viewingReceipt.treatment}
-              </p>
-              <p>
-                <strong>Amount:</strong> ₹{viewingReceipt.amount}
-              </p>
-              <p>
-                <strong>Mode:</strong> {viewingReceipt.mode}
-              </p>
+              <p><strong>Date:</strong> {viewingReceipt.appointmentDate}</p>
+              <p><strong>Receipt No:</strong> {viewingReceipt.receiptNo}</p>
+              <p><strong>UHID:</strong> {viewingReceipt.uhid}</p>
+              <p><strong>Name:</strong> {viewingReceipt.patientName}</p>
+              <p><strong>Doctor:</strong> {Array.isArray(viewingReceipt.doctorName) ? viewingReceipt.doctorName.join(", ") : viewingReceipt.doctorName}</p>
+              <p><strong>Treatment:</strong> {viewingReceipt.treatment}</p>
+              <p><strong>Amount:</strong> ₹{viewingReceipt.opdAmount}</p>
+              <p><strong>Mode:</strong> {viewingReceipt.paymentMode}</p>
             </div>
             <div className="flex justify-end mt-6">
               <button
@@ -261,10 +210,10 @@ const ViewReceipt = () => {
             <div className="space-y-4">
               <input
                 type="text"
-                name="name"
-                value={editingReceipt.name}
+                name="patientName"
+                value={editingReceipt.patientName}
                 onChange={handleChange}
-                placeholder="Name"
+                placeholder="Patient Name"
                 className="w-full border px-3 py-2 rounded"
               />
               <input
@@ -285,16 +234,16 @@ const ViewReceipt = () => {
               />
               <input
                 type="number"
-                name="amount"
-                value={editingReceipt.amount}
+                name="opdAmount"
+                value={editingReceipt.opdAmount}
                 onChange={handleChange}
                 placeholder="Amount"
                 className="w-full border px-3 py-2 rounded"
               />
               <input
                 type="text"
-                name="mode"
-                value={editingReceipt.mode}
+                name="paymentMode"
+                value={editingReceipt.paymentMode}
                 onChange={handleChange}
                 placeholder="Payment Mode"
                 className="w-full border px-3 py-2 rounded"
