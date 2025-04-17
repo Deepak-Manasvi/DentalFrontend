@@ -59,7 +59,6 @@ function App() {
   return (
     <div className="w-full overflow-x-hidden">
       <Routes>
-        {/* Default Home Route - Redirects Based on Role */}
         <Route
           path="/"
           element={
@@ -72,8 +71,6 @@ function App() {
             )
           }
         />
-        {/* Public Routes */}
-        {/* Admin Routes (Protected) */}
         <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
@@ -92,7 +89,6 @@ function App() {
             element={<PediatricDentistry />}
           />
           <Route path="PrescriptionForm/:id" element={<PrescriptionForm />} />
-          {/* <Route path="treatment" element={<TreatmentPage />} /> */}
           <Route path="add-branches" element={<AddBranches />} />
           <Route path="manage-branches" element={<ManageBranches />} />
           <Route path="edit-branch/:id" element={<EditBranches />} />
@@ -120,10 +116,7 @@ function App() {
           <Route path="revenue/invoice" element={<TotalRevenue/>}/>
           <Route path="revenue/service" element={<RevenueByService/>}/>
           <Route path="revenue/payment" element={<RevenueByPaymentMode/>}/>
-
-
         </Route>
-
         <Route
           path="/receptionist"
           element={<ReceptionRoute element={<AdminLayout />} />}
@@ -141,8 +134,5 @@ function App() {
     </div>
   );
 }
-
 export default App;
 
-
-// adding comment
