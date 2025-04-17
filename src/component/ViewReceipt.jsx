@@ -29,6 +29,26 @@ const ViewReceipt = () => {
     fetchReceipts();
   }, []);
 
+  const handleGenerateInvoice = async (receipt) => {
+    try {
+      console.log("called")
+      const res = await axios.put(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateInvoiceGenerate/${receipt.appId}`,
+        { InvoiceGenerate: true }
+      );
+
+      if (res.status === 200) {
+        alert("Receipt saved successfully!");
+        window.location.reload(); // reload the screen
+      } else {
+        alert("Failed to save receipt.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving receipt.");
+    }
+  };
+
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id);
   };
@@ -87,15 +107,15 @@ const ViewReceipt = () => {
             <table className="w-full border-collapse table-fixed">
               <thead className="bg-blue-900 text-white sticky top-0 z-10">
                 <tr className="text-sm md:text-base">
-                  {tableHeaders.map((header) => (
-                    <th key={header} className="py-2 px-4 text-left w-1/10">{header}</th>
+                  {tableHeaders.map((header, idx) => (
+                    <th key={idx} className="py-2 px-4 text-left w-1/10">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {receipts.length > 0 ? (
                   receipts.map((receipt, index) => (
-                    <tr key={receipt.id} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
+                    <tr key={receipt.id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
                       <td className="py-2 px-4">{receipt.appointmentDate}</td>
                       <td className="py-2 px-4">{receipt.receiptNo}</td>
                       <td className="py-2 px-4">{receipt.uhid}</td>
@@ -156,7 +176,6 @@ const ViewReceipt = () => {
                                 </button>
                               </li>
                             </ul>
-
                           </div>
                         )}
                       </td>

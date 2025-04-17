@@ -28,7 +28,7 @@ import EditDentist from "./component/EditDentist";
 import DashboardCard from "./component/Dashboard";
 import EditStaff from "./component/EditStaff";
 import Receipt from "./component/Receipt";
-import InvoiceForm from "./component/InvoiceForm";
+import GenerateInvoice from "./component/GenerateInvoice";
 import InvoiceList from "./component/invoiceList";
 import ReceptionDashboard from "./component/ReceptionDashboard";
 import RevenueReport from "./component/RevenueReport";
@@ -95,7 +95,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="invoicelist" element={<InvoiceList />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
-          <Route path="invoiceform" element={<InvoiceForm />} />
+          <Route path="invoiceform" element={<GenerateInvoice />} />
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="manage-staff" element={<ManageStaff />} />
           <Route path="edit-staff/:id" element={<EditStaff />} />
@@ -128,7 +128,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Receipt />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
-          <Route path="invoiceform" element={<InvoiceForm />} />
+          {/* <Route path="invoiceform" element={<InvoiceForm />} /> */}
         </Route>
       </Routes>
     </div>
