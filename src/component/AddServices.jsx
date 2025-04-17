@@ -147,6 +147,7 @@ const AddServices = () => {
               icon={service.icon}
               title={service.title}
               onClick={() => handleCardClick(service.title)}
+              showDescription={true}
             />
           ))}
         </div>

@@ -189,7 +189,8 @@ const ManageServices = () => {
             icon={service.icon}
             title={service.title}
             onClick={() => handleCardClick(service.title)}
-          />
+            showDescription={false}
+           />
         ))}
       </div>
 
@@ -230,9 +231,9 @@ const ManageServices = () => {
                 setDropdownOpen={setDropdownOpen}
                 dropdownRef={dropdownRef}
                 customColumns={getCustomColumns()}
-                containerClassName="" // Added relative positioning here
+                containerClassName=""
                 headerClassName="bg-blue-900 text-white"
-                dropdownClassName="absolute top-0 right-0 z-10 mt-2 bg-white shadow-lg rounded-lg p-2" // Position dropdown correctly
+                dropdownClassName="absolute top-0 right-0 z-10 mt-2 bg-white shadow-lg rounded-lg p-2"
               />
             )}
           </div>
