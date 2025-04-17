@@ -210,7 +210,7 @@ const TreatmentProcedure = ({
             </button>
 
             {/* Procedure Table */}
-            {procedureList.length > 0 && (
+            {/* {procedureList.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-2 text-gray-600">Saved Procedure List</h3>
                     <table className="w-full text-lg border border-gray-300">
@@ -239,29 +239,77 @@ const TreatmentProcedure = ({
                         </tbody>
                     </table>
                 </div>
-            )}
+            )} */}
+            {procedureList.length > 0 && (
+  <div className="mb-6">
+    <h3 className="text-xl font-semibold mb-2 text-blue-700">Saved Procedure List</h3>
+    <div className="overflow-x-auto rounded-lg shadow">
+      <table className="w-full text-sm text-left border border-blue-200">
+        <thead className="bg-blue-600 text-white">
+          <tr>
+            <th className="px-4 py-2 border border-blue-200">Procedure</th>
+            <th className="px-4 py-2 border border-blue-200">Treatment</th>
+            <th className="px-4 py-2 border border-blue-200">Sitting</th>
+            <th className="px-4 py-2 border border-blue-200">Action</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white text-gray-700">
+          {procedureList.map((item, index) => (
+            <tr key={index} className="hover:bg-blue-50 transition">
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.procedure}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.treatment}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.sitting}</td>
+              <td
+                className="px-4 py-2 border border-blue-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
+                onClick={() => handleDeleteProcedure(index)}
+              >
+                Delete
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
 
             <hr className="my-6" />
 
             {/* Today Procedure */}
             <h3 className="text-2xl font-semibold mb-2 text-gray-600">Today Procedure</h3>
+           
             <div className="grid grid-cols-3 gap-4 mb-4">
-                {Object.entries(todayProcedure).map(([key, value]) => (
-                    <div key={key}>
-                        <label className="block mb-1 capitalize">{key.replace(/([A-Z])/g, " $1")}</label>
-                        <input
-                            value={value}
-                            onChange={(e) =>
-                                setTodayProcedure({ ...todayProcedure, [key]: e.target.value })
-                            }
-                            className="border px-2 py-1 rounded w-full"
-                        />
-                        {todayErrors[key] && (
-                            <p className="text-red-500 text-sm">{todayErrors[key]}</p>
-                        )}
-                    </div>
-                ))}
-            </div>
+  {Object.entries(todayProcedure).map(([key, value]) => (
+    <div key={key}>
+      <label className="block mb-1 capitalize">
+        {key.replace(/([A-Z])/g, " $1")}
+      </label>
+      {key.toLowerCase().includes('date') ? (
+        <input
+          type="date"
+          value={value}
+          onChange={(e) =>
+            setTodayProcedure({ ...todayProcedure, [key]: e.target.value })
+          }
+          className="border px-2 py-1 rounded w-full"
+        />
+      ) : (
+        <input
+          value={value}
+          onChange={(e) =>
+            setTodayProcedure({ ...todayProcedure, [key]: e.target.value })
+          }
+          className="border px-2 py-1 rounded w-full"
+        />
+      )}
+      {todayErrors[key] && (
+        <p className="text-red-500 text-sm">{todayErrors[key]}</p>
+      )}
+    </div>
+  ))}
+</div>
+
 
             <button
                 onClick={handleFinalSave}
@@ -271,7 +319,7 @@ const TreatmentProcedure = ({
             </button>
 
             {/* Final Treatment Records Table */}
-            {finalProcedures.length > 0 && (
+            {/* {finalProcedures.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-2 text-gray-600">Saved Final Procedures</h3>
                     <table className="w-full text-lg border border-gray-300">
@@ -299,7 +347,41 @@ const TreatmentProcedure = ({
                         </tbody>
                     </table>
                 </div>
-            )}
+            )} */}
+        {finalProcedures.length > 0 && (
+  <div className="mb-6">
+    <h3 className="text-xl font-semibold mb-2 text-blue-700">Saved Final Procedures</h3>
+    <div className="overflow-x-auto rounded-lg shadow">
+      <table className="w-full text-sm text-left border border-blue-200">
+        <thead className="bg-blue-600 text-white">
+          <tr>
+            <th className="px-4 py-2 border border-blue-200">Date</th>
+            <th className="px-4 py-2 border border-blue-200">Tooth Name</th>
+            <th className="px-4 py-2 border border-blue-200">Procedure Done</th>
+            <th className="px-4 py-2 border border-blue-200">Materials Used</th>
+            <th className="px-4 py-2 border border-blue-200">Notes</th>
+            <th className="px-4 py-2 border border-blue-200">Next Date</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white text-gray-700">
+          {finalProcedures.map((item, index) => (
+            <tr key={index} className="hover:bg-blue-50 transition">
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.date}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.toothName}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.procedureDone}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.materialsUsed}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.notes}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{item.nextDate}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
+
+ 
 
 
             <hr className="my-6" />
@@ -388,7 +470,7 @@ const TreatmentProcedure = ({
             </button>
 
             {/* Medicine Table */}
-            {medicineList.length > 0 && (
+            {/* {medicineList.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-2 text-gray-600">Prescribed Medicines</h3>
                     <table className="w-full text-lg border border-gray-300">
@@ -423,7 +505,45 @@ const TreatmentProcedure = ({
                         </tbody>
                     </table>
                 </div>
-            )}
+            )} */}
+       {medicineList.length > 0 && (
+  <div className="mb-6">
+    <h3 className="text-xl font-semibold mb-2 text-blue-700">Prescribed Medicines</h3>
+    <div className="overflow-x-auto rounded-lg shadow">
+      <table className="w-full text-sm text-left border border-blue-200">
+        <thead className="bg-blue-600 text-white">
+          <tr>
+            <th className="px-4 py-2 border border-blue-200">Name</th>
+            <th className="px-4 py-2 border border-blue-200">Frequency</th>
+            <th className="px-4 py-2 border border-blue-200">Before Food</th>
+            <th className="px-4 py-2 border border-blue-200">After Food</th>
+            <th className="px-4 py-2 border border-blue-200">Duration</th>
+            <th className="px-4 py-2 border border-blue-200">Instructions</th>
+            <th className="px-4 py-2 border border-blue-200">Action</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white text-gray-700">
+          {medicineList.map((med, index) => (
+            <tr key={index} className="hover:bg-blue-50 transition">
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.name}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.frequency}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.beforeFood}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.afterFood}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.duration}</td>
+              <td className="px-4 py-2 border border-blue-200 text-center">{med.instructions}</td>
+              <td
+                className="px-4 py-2 border border-blue-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
+                onClick={() => handleDeleteMedicine(index)}
+              >
+                Delete
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
 
 
             {/* Medicine Section */}
