@@ -145,7 +145,7 @@ const FirstAdultDentistryForm = ({
 
       {/* Top 16 Teeth Row */}
       <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-16 gap-2">
+        <div className="grid grid-cols-8 gap-2">
           {teethData.slice(0, 16).map((tooth) => (
             <div
               key={tooth.id}
@@ -174,7 +174,7 @@ const FirstAdultDentistryForm = ({
 
       {/* Bottom 16 Teeth Row */}
       <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-16 gap-2">
+        <div className="grid grid-cols-8 gap-2">
           {teethData.slice(16).map((tooth) => (
             <div
               key={tooth.id}
@@ -251,6 +251,16 @@ const FirstAdultDentistryForm = ({
             {/* Add more options as needed */}
           </select>
         </div>
+        <div >
+  <label>Advice*</label>
+  <input
+    name="advice"
+    value={formData.advice}
+    onChange={handleChange}
+    className="border rounded px-2 py-1 w-full"
+    required
+  />
+</div>
 
         <div>
           <label>Examination*</label>
