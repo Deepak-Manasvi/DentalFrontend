@@ -176,7 +176,7 @@ const BusinessForm = ({ onClose }) => {
             Contact
           </label>
           <input
-            type="text"
+            type="number"
             id="contact"
             name="contact"
             value={formData.contact}
