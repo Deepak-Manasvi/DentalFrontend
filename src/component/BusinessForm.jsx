@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import js from "@eslint/js";
 
 const BusinessForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -51,7 +52,7 @@ const BusinessForm = ({ onClose }) => {
           },
         }
       );
-
+      localStorage.setItem("user", JSON.stringify(response.data));
       console.log("Business created:", response.data);
       setSubmissionStatus("success");
 

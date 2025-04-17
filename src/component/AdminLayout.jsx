@@ -12,13 +12,22 @@ const AdminLayout = () => {
   const [showBusinessForm, setShowBusinessForm] = useState(false);
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
-
+  const [businessName, setbusinessName] = useState("")
+  const [profilePhoto, setProfilePhoto] = useState(null)
+ 
   // Check if this is the first load after login
   useEffect(() => {
     // Check if user is admin and if this is their first visit to the dashboard
     const isAdmin = userRole === "admin";
     const isFirstVisit = !localStorage.getItem("dashboardVisited");
-
+    if(localStorage.getItem("user")) {
+      const panel = JSON.parse(localStorage.getItem("user"))
+      setbusinessName(panel.businessName)
+      setProfilePhoto(panel.businessPhoto.url)
+    }
+    else {
+      setbusinessName(role)
+    }
     if (isAdmin && isFirstVisit) {
       // Set a small delay to ensure dashboard is loaded before showing popup
       const timer = setTimeout(() => {
@@ -29,7 +38,7 @@ const AdminLayout = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [userRole]);
+  }, [businessName]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,6 +77,8 @@ const AdminLayout = () => {
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
         userRole={userRole}
+        businessName={businessName}
+        profilePhoto={profilePhoto}
       />
 
       {/* Main Content */}

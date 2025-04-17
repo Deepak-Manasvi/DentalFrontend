@@ -3,7 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
-const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
+const AdminSidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  userRole,
+  businessName,
+  profilePhoto,
+}) => {
   const [openSection, setOpenSection] = useState(null);
   const navigate = useNavigate();
 
@@ -55,20 +61,26 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
 
       {/* Sidebar */}
       <div
-     
         className={`fixed top-0 bg-[#2B7A6F] left-0 h-full text-white text-xl font-bold p-4 shadow-lg z-50 transition-transform duration-300 
           ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0 w-64`}
-          
       >
         {/* Sidebar Header */}
         <div className="flex items-center gap-3 pb-6 border-b border-gray-500">
-          <FaUserCircle className="text-3xl" />
-          <span className="text-2xl font-semibold uppercase">{userRole} Panel</span>
+          {
+            <div>
+              {profilePhoto ? (
+                <img src={profilePhoto} className="rounded-full w-8 h-8" />
+              ) : (
+                <FaUserCircle className="text-3xl" />
+              )}
+            </div>
+          }
+          <span className="text-2xl font-semibold uppercase">
+            {businessName} Panel
+          </span>
         </div>
-
-        
 
         {/* Sidebar Sections */}
         <div className="mt-6">
@@ -82,7 +94,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => {
             ) : (
               <MdKeyboardArrowRight />   
           )} */}
-       </div>
+          </div>
           {/* Appointment */}
           {isSectionVisible("appointment") && (
             <>
