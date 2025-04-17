@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const BusinessForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -33,19 +34,30 @@ const BusinessForm = ({ onClose }) => {
     setIsSubmitting(true);
 
     try {
-    
       const apiFormData = new FormData();
 
-    
+      // Append all fields to FormData
       Object.keys(formData).forEach((key) => {
         apiFormData.append(key, formData[key]);
       });
 
-     
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // API request
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/business/create-business`,
+        apiFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
+      console.log("Business created:", response.data);
       setSubmissionStatus("success");
-   
+
+      setTimeout(() => {
+        onClose();
+      }, 1500);
     } catch (error) {
       console.error("Submission error:", error);
       setSubmissionStatus("error");
@@ -226,7 +238,7 @@ const BusinessForm = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Submission Status Message */}
+        {/* Submission Status */}
         {submissionStatus === "success" && (
           <div className="mt-3 p-2 bg-green-100 text-green-700 rounded-md text-center">
             Business information saved successfully!

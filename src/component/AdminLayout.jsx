@@ -1,17 +1,35 @@
-import { IoMdArrowDropdown } from "react-icons/io"; 
+import { IoMdArrowDropdown } from "react-icons/io";
 import { Outlet, useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import BusinessForm from "./BusinessForm"; 
+import BusinessForm from "./BusinessForm";
 
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
-  const [showBusinessForm, setShowBusinessForm] = useState(false); // State to control form visibility
+  const [showBusinessForm, setShowBusinessForm] = useState(false);
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
+
+  // Check if this is the first load after login
+  useEffect(() => {
+    // Check if user is admin and if this is their first visit to the dashboard
+    const isAdmin = userRole === "admin";
+    const isFirstVisit = !localStorage.getItem("dashboardVisited");
+
+    if (isAdmin && isFirstVisit) {
+      // Set a small delay to ensure dashboard is loaded before showing popup
+      const timer = setTimeout(() => {
+        setShowBusinessForm(true);
+        // Mark that the dashboard has been visited to avoid showing popup again
+        localStorage.setItem("dashboardVisited", "true");
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [userRole]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -70,13 +88,13 @@ const AdminLayout = () => {
                 ☰
               </button>
             )}
-            <button
+            {/* <button
               className="flex items-center gap-2 text-xl font-semibold bg-blue-700 hover:bg-blue-600 ml-60 px-4 py-2 rounded transition"
               onClick={handleOpenBusinessForm}
             >
               <span>Business Name</span>
               <IoMdArrowDropdown />
-            </button>
+            </button> */}
 
             <span className="text-sm md:hidden">{currentTime}</span>
           </div>
@@ -100,13 +118,18 @@ const AdminLayout = () => {
 
         {/* Page Content */}
         <div className="flex-1 p-4 mt-[80px] overflow-y-auto">
-          {showBusinessForm ? (
-            <BusinessForm onClose={() => setShowBusinessForm(false)} />
-          ) : (
-            <Outlet />
-          )}
+          <Outlet />
         </div>
       </div>
+
+      {/* Business Form Modal Popup */}
+      {showBusinessForm && (
+        <div className="fixed inset-0 bg-transparent bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-md w-full mx-4 animate-fade-in">
+            <BusinessForm onClose={() => setShowBusinessForm(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

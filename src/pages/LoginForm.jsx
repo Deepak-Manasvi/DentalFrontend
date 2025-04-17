@@ -27,6 +27,12 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", role);
 
+      // Remove any previous visit flag to ensure the form shows up
+      if (role === "admin") {
+        localStorage.removeItem("dashboardVisited");
+      }
+
+      // Navigate to the appropriate dashboard
       if (role === "admin") {
         navigate("/admin/dashboard");
       } else {
