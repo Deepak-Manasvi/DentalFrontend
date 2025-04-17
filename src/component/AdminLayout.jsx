@@ -26,7 +26,7 @@ const AdminLayout = () => {
       setProfilePhoto(panel.businessPhoto.url)
     }
     else {
-      setbusinessName(role)
+      setbusinessName(userRole)
     }
     if (isAdmin && isFirstVisit) {
       // Set a small delay to ensure dashboard is loaded before showing popup
