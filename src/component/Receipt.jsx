@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import axios from "axios";
 
 const Receipt = () => {
   const location = useLocation();
@@ -14,35 +14,43 @@ const Receipt = () => {
     return <p className="text-center mt-10">No patient data found.</p>;
   }
 
+  // ✅ Handle Print
   const handlePrint = () => {
-    const receiptContent = document.getElementById("receipt-to-print").innerHTML;
+    const printContent = receiptRef.current;
+
     const printWindow = window.open("", "_blank", "width=800,height=600");
     printWindow.document.write(`
       <html>
         <head>
           <title>Receipt</title>
           <style>
+            @media print {
+              body {
+                margin: 0;
+                font-family: sans-serif;
+              }
+              .receipt {
+                width: 210mm;
+                padding: 20mm;
+                box-sizing: border-box;
+              }
+            }
             body {
               font-family: sans-serif;
               padding: 20px;
             }
-            h1 {
-              text-align: center;
-            }
             .receipt {
               border: 1px solid #ccc;
               padding: 20px;
-              max-width: 600px;
+              max-width: 800px;
               margin: auto;
-            }
-            @media print {
-              @page { margin: 0; }
-              body { margin: 1.6cm; }
             }
           </style>
         </head>
         <body>
-          <div class="receipt">${receiptContent}</div>
+          <div class="receipt">
+            ${printContent.innerHTML}
+          </div>
           <script>
             window.onload = function() {
               window.print();
@@ -55,106 +63,119 @@ const Receipt = () => {
     printWindow.document.close();
   };
 
-  const handleSave = async () => {
-    try {
-      const canvas = await html2canvas(receiptRef.current);
-      const imgData = canvas.toDataURL("image/png");
+  // ✅ Handle PDF Download
+  // const downloadReceipt = async () => {
+  //   const canvas = await html2canvas(receiptRef.current, { scale: 2 });
+  //   const imgData = canvas.toDataURL("image/png");
+  //   const pdf = new jsPDF("p", "mm", "a4");
 
-      const pdf = new jsPDF();
-      
-      const width = pdf.internal.pageSize.getWidth();
-      const height = (canvas.height * width) / canvas.width;
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-  
-      const blob = pdf.output("blob");
-      const formData = new FormData();
-      formData.append("pdf", blob, "receipt.pdf");
-      formData.append("patientData", JSON.stringify(patient));
-  
-      
-      const response = await axios.put(
-        `${import.meta.env.VITE_APP_BASE_URL}/appointments/receipt/${patient.appId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+  //   const pageWidth = pdf.internal.pageSize.getWidth();
+  //   const pageHeight = pdf.internal.pageSize.getHeight();
+
+  //   const imgProps = {
+  //     width: pageWidth,
+  //     height: (canvas.height * pageWidth) / canvas.width,
+  //   };
+
+  //   pdf.addImage(imgData, "PNG", 0, 0, imgProps.width, imgProps.height);
+  //   pdf.save(`Receipt_${patient.appId || "App"}.pdf`);
+  // };
+
+  // ✅ Handle Save & Generate Receipt API
+  const handleSaveReceipt = async () => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateReceiptGenerate/${patient.appId}`,
+        { receiptGenerate: true }
       );
-  
-      console.log("Receipt updated:", response.data);
-      alert("Receipt updated successfully!");
-    } catch (error) {
-      console.error("Error updating receipt:", error);
-      alert("Failed to update receipt.");
+
+      if (res.status === 200) {
+        alert("Receipt saved successfully!");
+        window.location.reload(); // reload the screen
+      } else {
+        alert("Failed to save receipt.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving receipt.");
     }
   };
-  
 
   return (
-    <div className="p-6 max-w-3xl mx-auto font-sans text-sm">
+    <div className="p-6 max-w-4xl mx-auto font-sans text-sm bg-gray-50 min-h-screen">
       {/* Printable Section */}
-      <div id="receipt-to-print" ref={receiptRef} className="border rounded shadow bg-white p-6">
-        <h1 className="text-center text-2xl font-semibold mb-4">Receipt</h1>
+      <div
+        id="receipt-to-print"
+        ref={receiptRef}
+        className="bg-white p-8 border border-gray-300 shadow-lg text-gray-900"
+      >
+        <h1 className="text-3xl font-bold text-center mb-6">Patient Receipt</h1>
 
-        <div className="flex flex-col sm:flex-row justify-between mb-4">
+        <div className="flex justify-between mb-4 border-b pb-2">
           <div>
             <p><strong>Date:</strong> {patient.date}</p>
             <p><strong>App ID:</strong> {patient.appId || "-"}</p>
-            <p><strong>Patient Name:</strong> {patient.patientName}</p>
             <p><strong>UHID:</strong> {patient.uhid}</p>
+            <p><strong>Receipt Mode:</strong> {patient.receiptMode}</p>
           </div>
-          <div className="mt-2 sm:mt-0">
+          <div>
+            <p><strong>Patient Name:</strong> {patient.patientName}</p>
             <p><strong>Doctor:</strong> {patient.doctorName}</p>
-            <p><strong>Receipt Mode:</strong> Online</p>
             <p><strong>Transaction ID:</strong> {patient.transactionId || "---"}</p>
           </div>
         </div>
 
-        <p className="mb-2">
-          Received with sincere thanks from <strong>{patient.patientName}</strong> towards the
-          charges for <strong>{patient.treatmentType || "Dental Services"}</strong> a total amount of (
-          <strong>₹{patient.amount}</strong>).
-        </p>
+        <div className="mb-4">
+          <p>
+            Received with sincere thanks from <strong>{patient.patientName}</strong> the amount of 
+            <strong> ₹{patient.amount}</strong> towards <strong>{patient.treatmentType || "Dental Services"}</strong>.
+          </p>
+          <p className="mt-2">
+            Amount in Words: <strong>{patient.amountInWords} Rupee Only</strong>
+          </p>
+          <p className="mt-2">
+            Mode of Payment: <strong>{patient.receiptMode}</strong>
+          </p>
+        </div>
 
-        <p className="mb-2">
-          Amount in words: <strong>{patient.amountInWords} Rupee Only-</strong>
-        </p>
-
-        <p className="mb-4">
-          Mode of Payment: <strong>{patient.receiptMode}</strong>
-        </p>
-
-        <p className="italic font-medium text-center mt-6">
+        <p className="italic text-center my-8">
           “We appreciate your trust in our services and look forward to serving you again.”
         </p>
 
-        <div className="text-right font-semibold mt-6">
-          <p>Authorized Signatory:</p>
-          <p>{patient.receptionist || "Receptionist"}</p>
-          <p>{patient.dateTime}</p>
+        <div className="flex justify-end">
+          <div className="text-right">
+            <p><strong>Authorized Signatory</strong></p>
+            <p>{patient.receptionist || "Receptionist"}</p>
+            <p>{patient.dateTime}</p>
+          </div>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="text-center mt-6 space-x-2">
+      <div className="text-center mt-8 space-x-4">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Back
         </button>
-        <button
-          onClick={handleSave}
-          className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600"
+        {/* <button
+          onClick={downloadReceipt}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
-          Save Receipt
-        </button>
+          Download Receipt
+        </button> */}
         <button
           onClick={handlePrint}
-          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
         >
           Print Receipt
+        </button>
+        <button
+          onClick={handleSaveReceipt}
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+        >
+          Save Receipt
         </button>
       </div>
     </div>
