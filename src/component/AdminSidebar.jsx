@@ -78,7 +78,7 @@ const AdminSidebar = ({
             </div>
           }
           <span className="text-2xl font-semibold uppercase">
-            {businessName} Panel
+            {businessName} 
           </span>
         </div>
 

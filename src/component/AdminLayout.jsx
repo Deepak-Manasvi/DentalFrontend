@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Outlet, useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
@@ -135,7 +136,7 @@ const AdminLayout = () => {
 
       {/* Business Form Modal Popup */}
       {showBusinessForm && (
-        <div className="fixed inset-0 bg-transparent bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-blur bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-md w-full mx-4 animate-fade-in">
             <BusinessForm onClose={() => setShowBusinessForm(false)} />
           </div>

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import js from "@eslint/js";
 
 const BusinessForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -68,9 +67,9 @@ const BusinessForm = ({ onClose }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800">
+    <div className="w-full max-w-md mx-auto bg-white p-4 rounded-lg shadow-md overflow-y-auto max-h-screen">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg font-bold text-gray-800">
           Business Information
         </h2>
         <button
@@ -82,23 +81,23 @@ const BusinessForm = ({ onClose }) => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Business Photo Upload */}
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Business Photo Upload - Reduced height */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Business Photo
           </label>
           <div className="flex items-center justify-center w-full">
-            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+            <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div className="flex flex-col items-center justify-center py-2">
                 {formData.businessPhoto ? (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-gray-500 truncate w-full text-center px-2">
                     {formData.businessPhoto.name}
                   </p>
                 ) : (
-                  <>
+                  <div className="flex items-center">
                     <svg
-                      className="w-8 h-8 mb-4 text-gray-500"
+                      className="w-5 h-5 mr-2 text-gray-500"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -112,10 +111,8 @@ const BusinessForm = ({ onClose }) => {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-gray-500">
-                      Click to upload a photo
-                    </p>
-                  </>
+                    <p className="text-xs text-gray-500">Upload photo</p>
+                  </div>
                 )}
               </div>
               <input
@@ -130,30 +127,91 @@ const BusinessForm = ({ onClose }) => {
           </div>
         </div>
 
-        {/* Business Name */}
-        <div>
-          <label
-            htmlFor="businessName"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Business Name
-          </label>
-          <input
-            type="text"
-            id="businessName"
-            name="businessName"
-            value={formData.businessName}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+        {/* Two-column layout for smaller fields on larger screens */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Business Name */}
+          <div>
+            <label
+              htmlFor="businessName"
+              className="block text-xs font-medium text-gray-700 mb-1"
+            >
+              Business Name
+            </label>
+            <input
+              type="text"
+              id="businessName"
+              name="businessName"
+              value={formData.businessName}
+              onChange={handleChange}
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Contact */}
+          <div>
+            <label
+              htmlFor="contact"
+              className="block text-xs font-medium text-gray-700 mb-1"
+            >
+              Contact
+            </label>
+            <input
+              type="number"
+              id="contact"
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* License Number */}
+          <div>
+            <label
+              htmlFor="licenseNumber"
+              className="block text-xs font-medium text-gray-700 mb-1"
+            >
+              License Number
+            </label>
+            <input
+              type="text"
+              id="licenseNumber"
+              name="licenseNumber"
+              value={formData.licenseNumber}
+              onChange={handleChange}
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Financial Year */}
+          <div>
+            <label
+              htmlFor="financialYear"
+              className="block text-xs font-medium text-gray-700 mb-1"
+            >
+              Financial Year
+            </label>
+            <input
+              type="text"
+              id="financialYear"
+              name="financialYear"
+              value={formData.financialYear}
+              onChange={handleChange}
+              placeholder="YYYY-YYYY"
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
         </div>
 
-        {/* Address */}
+        {/* Address - Full width */}
         <div>
           <label
             htmlFor="address"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-xs font-medium text-gray-700 mb-1"
           >
             Address
           </label>
@@ -162,92 +220,37 @@ const BusinessForm = ({ onClose }) => {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        {/* Contact */}
-        <div>
-          <label
-            htmlFor="contact"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Contact
-          </label>
-          <input
-            type="number"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        {/* License Number */}
-        <div>
-          <label
-            htmlFor="licenseNumber"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            License Number
-          </label>
-          <input
-            type="text"
-            id="licenseNumber"
-            name="licenseNumber"
-            value={formData.licenseNumber}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        {/* Financial Year */}
-        <div>
-          <label
-            htmlFor="financialYear"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Financial Year
-          </label>
-          <input
-            type="text"
-            id="financialYear"
-            name="financialYear"
-            value={formData.financialYear}
-            onChange={handleChange}
-            placeholder="YYYY-YYYY"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="2"
+            className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
         </div>
 
         {/* Save Button */}
-        <div className="pt-4">
+        <div className="pt-2">
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full px-4 py-2 text-white font-medium rounded-md ${
+            className={`w-full px-3 py-2 text-sm text-white font-medium rounded-md ${
               isSubmitting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+            } focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500`}
           >
             {isSubmitting ? "Saving..." : "Save"}
           </button>
         </div>
 
         {/* Submission Status */}
-        {submissionStatus === "success" && (
-          <div className="mt-3 p-2 bg-green-100 text-green-700 rounded-md text-center">
-            Business information saved successfully!
-          </div>
-        )}
-        {submissionStatus === "error" && (
-          <div className="mt-3 p-2 bg-red-100 text-red-700 rounded-md text-center">
-            Error saving information. Please try again.
+        {submissionStatus && (
+          <div
+            className={`mt-2 p-1 text-sm rounded-md text-center ${
+              submissionStatus === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {submissionStatus === "success"
+              ? "Business information saved successfully!"
+              : "Error saving information. Please try again."}
           </div>
         )}
       </form>
