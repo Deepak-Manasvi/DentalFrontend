@@ -1,3 +1,4 @@
+import { MdArrowDropDown } from "react-icons/md"; 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
@@ -9,6 +10,10 @@ const AdminSidebar = ({
   userRole,
   businessName,
   profilePhoto,
+  licenseNumber,
+  financialYear,
+  contact,
+  address,
 }) => {
   const [openSection, setOpenSection] = useState(null);
   const navigate = useNavigate();
@@ -16,6 +21,10 @@ const AdminSidebar = ({
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
   };
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
 
   // Define which sections are visible to which roles
   const roleSections = {
@@ -77,9 +86,26 @@ const AdminSidebar = ({
               )}
             </div>
           }
-          <span className="text-2xl font-semibold uppercase">
-            {businessName} 
-          </span>
+          <div className="relative inline-block text-left">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center text-2xl font-semibold uppercase"
+            >
+              {businessName}
+              <MdArrowDropDown className="ml-1" />
+            </button>
+
+            {isOpen && (
+              <div className="absolute mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                <ul className="py-2 px-4 text-sm text-gray-700">
+                  <li className="py-1 border-b">Address - {address}</li>
+                  <li className="py-1 border-b">Contact - {contact}</li>
+                  <li className="py-1 border-b">License Number - {licenseNumber}</li>
+                  <li className="py-1">Financial Year - {financialYear}</li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sidebar Sections */}

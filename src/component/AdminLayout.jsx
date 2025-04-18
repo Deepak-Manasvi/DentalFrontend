@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import BusinessForm from "./BusinessForm";
 
+
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
@@ -13,22 +14,29 @@ const AdminLayout = () => {
   const [showBusinessForm, setShowBusinessForm] = useState(false);
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
-  const [businessName, setbusinessName] = useState("")
-  const [profilePhoto, setProfilePhoto] = useState(null)
- 
-  // Check if this is the first load after login
+  const [businessName, setbusinessName] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [contact, setcontact] = useState();
+  const [licenseNumber, setlicenseNumber] = useState("");
+  const [address, setaddress] = useState("");
+  const [financialYear, setfinancialYear] = useState("");
+
+
+  // Check if this is the first load after login {"businessName":"Test","address":"gbhjk","contact":"5555555555","licenseNumber":"1235678","financialYear":"2025-2026","businessPhoto":{"url":"https://res.cloudinary.com/dbb8jigqx/image/upload/v1744963345/wsblkebmnoaippihwkfj.png","public_id":"wsblkebmnoaippihwkfj"},"_id":"680207105dbf1af9a42cf722","createdAt":"2025-04-18T08:02:24.783Z","updatedAt":"2025-04-18T08:02:24.783Z","__v":0}
   useEffect(() => {
     // Check if user is admin and if this is their first visit to the dashboard
     const isAdmin = userRole === "admin";
     const isFirstVisit = !localStorage.getItem("dashboardVisited");
-    if(localStorage.getItem("user")) {
-      const panel = JSON.parse(localStorage.getItem("user"))
-      setbusinessName(panel.businessName)
-      setProfilePhoto(panel.businessPhoto.url)
-
-    }
-    else {
-      setbusinessName(userRole)
+    if (localStorage.getItem("user")) {
+      const panel = JSON.parse(localStorage.getItem("user"));
+      setbusinessName(panel.businessName);
+      setProfilePhoto(panel.businessPhoto.url);
+      setcontact(panel.contact);
+      setaddress(panel.address);
+      setfinancialYear(panel.financialYear);
+      setlicenseNumber(panel.licenseNumber);
+    } else {
+      setbusinessName(userRole);
     }
     if (isAdmin && isFirstVisit) {
       // Set a small delay to ensure dashboard is loaded before showing popup
@@ -81,6 +89,10 @@ const AdminLayout = () => {
         userRole={userRole}
         businessName={businessName}
         profilePhoto={profilePhoto}
+        address={address}
+        licenseNumber={licenseNumber}
+        financialYear={financialYear}
+        contact={contact}
       />
 
       {/* Main Content */}

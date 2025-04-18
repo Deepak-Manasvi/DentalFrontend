@@ -54,7 +54,7 @@ const BusinessForm = ({ onClose }) => {
       localStorage.setItem("user", JSON.stringify(response.data));
       console.log("Business created:", response.data);
       setSubmissionStatus("success");
-
+         window.location.reload();
       setTimeout(() => {
         onClose();
       }, 1500);
