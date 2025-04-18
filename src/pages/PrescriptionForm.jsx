@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -5,9 +6,16 @@ const PrescriptionForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [prescriptionData, setPrescriptionData] = useState(null);
+  const [patientData, setPatientData] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_APP_BASE_URL
+        }/appointments/getAppointmentByAppId/${id}`
+      );
+      setPatientData(res.data.appointment);
       const dummyData = {
         clinicName: "Smiles Dental Care",
         doctorName: "Dr. XYZ (BDS, MDS)",
@@ -38,6 +46,12 @@ const PrescriptionForm = () => {
 
     fetchData();
   }, [id]);
+  console.log(patientData)
+ 
+
+  // useEffect(() => {
+  //   fetchDataForPatient();
+  // }, []);
 
   const handleSave = () => {
     console.log("Saving Prescription:", prescriptionData);
@@ -49,10 +63,13 @@ const PrescriptionForm = () => {
   const {
     clinicName,
     doctorName,
-    patient,
+    patientName,
     diagnosis,
     tests,
+    gender,
     advice,
+    age,
+    appointmentDate,
     prescriptionItems,
   } = prescriptionData;
 
@@ -60,15 +77,32 @@ const PrescriptionForm = () => {
     <div className="max-w-7xl mx-auto p-10 shadow-2xl font-sans bg-white text-lg">
       {/* Header */}
       <div className="pb-6 mb-6">
-        <h1 className="text-4xl font-bold text-blue-900">{clinicName}</h1>
-        <p className="text-2xl text-gray-700 mt-1">{doctorName}</p>
+        {/* <h1 className="text-4xl font-bold text-blue-900">{clinicName}</h1> */}
+        <p className="text-2xl text-gray-700 mt-1">{patientData.doctorName}</p>
 
         {/* Patient Info */}
         <div className="grid grid-cols-2 gap-4 text-lg mt-6 bg-white p-4 rounded-md border border-gray-300">
-          <div className="font-semibold">Name:</div><div>{patient.name}</div>
-          <div className="font-semibold">Age:</div><div>{patient.age}</div>
-          <div className="font-semibold">Gender:</div><div>{patient.gender}</div>
-          <div className="font-semibold">Date:</div><div>{patient.date}</div>
+          
+          <div className="flex gap-2">
+            <h1 className="font-semibold">Name:</h1>
+            <p>{patientData.patientName}</p>
+
+            </div>
+            <div className="flex gap-2">
+            <h1 className="font-semibold">Age:</h1>
+            <p>{patientData.age}</p>
+
+            </div>
+            <div className="flex gap-2">
+            <h1 className="font-semibold">Gender:</h1>
+            <p>{patientData.gender}</p>
+
+            </div>
+            <div className="flex gap-2">
+            <h1 className="font-semibold">Date:</h1>
+            <p>{patientData.appointmentDate}</p>
+
+            </div>
         </div>
       </div>
 
