@@ -25,6 +25,7 @@ const AdminLayout = () => {
       const panel = JSON.parse(localStorage.getItem("user"))
       setbusinessName(panel.businessName)
       setProfilePhoto(panel.businessPhoto.url)
+
     }
     else {
       setbusinessName(userRole)
@@ -136,7 +137,7 @@ const AdminLayout = () => {
 
       {/* Business Form Modal Popup */}
       {showBusinessForm && (
-        <div className="fixed inset-0 bg-blur bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 backdrop-blur-md bg-white/20 bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-md w-full mx-4 animate-fade-in">
             <BusinessForm onClose={() => setShowBusinessForm(false)} />
           </div>
