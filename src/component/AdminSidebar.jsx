@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
+import { FaChevronDown } from "react-icons/fa";
 
 const AdminSidebar = ({
   isSidebarOpen,
@@ -77,8 +78,8 @@ const AdminSidebar = ({
               )}
             </div>
           }
-          <span className="text-2xl font-semibold uppercase">
-            {businessName} 
+          <span className="text-2xl font-semibold uppercase flex gap-3">
+            {businessName} <FaChevronDown  size={20} className="mt-2"/>
           </span>
         </div>
 
