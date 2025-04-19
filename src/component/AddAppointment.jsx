@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
@@ -9,16 +8,13 @@ const AddAppointment = () => {
   const [appointmentTime, setAppointmentTime] = useState("");
   const [errors, setErrors] = useState({});
   const [appointmentId, setAppointmentId] = useState("");
-
   const [isMedicalDropdownOpen, setIsMedicalDropdownOpen] = useState(false);
   const [isAllergyDropdownOpen, setIsAllergyDropdownOpen] = useState(false);
-
-  const [drList, setDrList] = useState([]); // list from API
+  const [drList, setDrList] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [appointmentTimeOptions, setAppointmentTimeOptions] = useState([]);
-
   const role = localStorage.getItem("role");
-
+  const selectedBranch = localStorage.getItem("selectedBranch");
   const [formData, setFormData] = useState({
     patientType: "",
     appId: "",
@@ -39,7 +35,8 @@ const AddAppointment = () => {
     transactionId: "",
     status: "",
     paymentMode: "Cash",
-    opdAmount: "", // Fixed to 500
+    opdAmount: "", 
+    branchId: selectedBranch,
   });
 
   const medicalDropdownRef = useRef();
@@ -72,18 +69,6 @@ const AddAppointment = () => {
     "None",
   ];
 
-  const drNameOptions = ["Dr MS Dhoni", "Dr Rohit Sharma", "Dr Virat Kohli"];
-
-  // const appointmentTimeOptions = [
-  //   "10Am - 11Am",
-  //   "11Am - 12Am",
-  //   "12Am - 1Pm",
-  //   "1Pm - 2Pm",
-  //   "4Pm - 5Pm",
-  //   "5Pm - 6Pm",
-  // ];
-
-  // Get next appointment ID on component mount
   useEffect(() => {
     fetchNextAppointmentId();
 
@@ -113,17 +98,12 @@ const AddAppointment = () => {
     setAppointmentTimeOptions(doctor.timeSlots);
   };
 
-
-  // Fetch next available appointment ID
   const fetchNextAppointmentId = async () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
       );
-
-      let nextId = 1; // Default start from 1
-
-      // If appointments exist, get the max ID and increment
+      let nextId = 1;
       if (
         response.data &&
         response.data.appointmentList &&
@@ -133,12 +113,10 @@ const AddAppointment = () => {
         const appIds = appointments.map((app) => parseInt(app.appId) || 0);
         nextId = Math.max(...appIds) + 1;
       }
-
       setAppointmentId(nextId.toString());
       setFormData((prev) => ({ ...prev, appId: nextId.toString() }));
     } catch (error) {
       console.error("Error fetching appointment ID:", error);
-      // If error, start from 1
       setAppointmentId("1");
       setFormData((prev) => ({ ...prev, appId: "1" }));
     }

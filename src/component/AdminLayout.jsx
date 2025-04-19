@@ -7,7 +7,6 @@ import { FaUserCircle } from "react-icons/fa";
 import BusinessForm from "./BusinessForm";
 import axios from "axios";
 
-
 const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
@@ -30,7 +29,19 @@ const AdminLayout = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/branch/getAllBranch`
         );
-        setBranches(res.data.branches);
+        const branchList = res.data.branches;
+        setBranches(branchList);
+
+        // ✅ Match localStorage branchId with list and get _id
+        const savedBranchId = localStorage.getItem("selectedBranch");
+        if (savedBranchId) {
+          const match = branchList.find(
+            (branch) => branch.branchId === savedBranchId
+          );
+          if (match) {
+            setSelectedBranch(match._id);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch branches:", error);
       }
@@ -145,16 +156,30 @@ const AdminLayout = () => {
             <div className="w-64">
               <select
                 value={selectedBranch}
-                onChange={(e) => setSelectedBranch(e.target.value)}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  setSelectedBranch(selectedId);
+
+                  // ✅ Find the full branch object
+                  const selectedBranchObj = branches.find(
+                    (branch) => branch._id === selectedId
+                  );
+
+                  if (selectedBranchObj) {
+                    localStorage.setItem("selectedBranch", selectedBranchObj.branchId); // ✅ Save branchId to localStorage
+                  }
+                }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2B7A6F] focus:border-teal-500 text-white bg-[#2B7A6F]"
               >
+                <option value="">Select a Branch</option>
                 {branches.map((branch) => (
                   <option key={branch._id} value={branch._id}>
-                    {branch.name}
+                    {branch.branchId}
                   </option>
                 ))}
               </select>
             </div>
+
 
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm">{currentTime}</span>

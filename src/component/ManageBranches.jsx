@@ -96,11 +96,14 @@ const ManageBranches = () => {
         draggable
         pauseOnHover
       />
-      
+
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-2xl w-11/12 md:w-1/2">
             <h2 className="text-xl font-bold mb-4">Branch Details</h2>
+            <p>
+              <strong>Branch Id:</strong> {selectedBranch?.branchId}
+            </p>
             <p>
               <strong>Name:</strong> {selectedBranch?.name}
             </p>
