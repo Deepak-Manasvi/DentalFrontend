@@ -21,7 +21,7 @@ const RevenueReport = () => {
         {revenueCards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-gray-200 hover:bg-blue-500 hover:text-white hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out rounded-2xl shadow-lg p-12 h-40 cursor-pointer text-xl font-semibold flex items-center justify-center text-center"
+            className="bg-teal-500 hover:bg-teal-700 text-white hover:text-yellow-300 hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out rounded-2xl shadow-lg p-12 h-40 cursor-pointer text-xl font-semibold flex items-center justify-center text-center"
             onClick={() => navigate(card.path)}
           >
             {card.label}
