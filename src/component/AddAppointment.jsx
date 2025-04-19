@@ -533,7 +533,7 @@ const AddAppointment = () => {
               selectedMedicalHistory.map((condition) => (
                 <span
                   key={condition}
-                  className="bg-[#2B7A6F] text-teal-700 text-sm px-2 py-1 rounded-full"
+                  className="bg-[blue-500] text-blue-700 text-sm px-2 py-1 rounded-full"
                 >
                   {condition}
                 </span>

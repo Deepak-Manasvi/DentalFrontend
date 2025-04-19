@@ -556,7 +556,7 @@ const TreatmentProcedure = ({
         >
           Back
         </button>
-        <button className="bg-teal-600 text-white px-6 py-2 rounded">
+        <button className="bg-teal-500 text-white px-6 py-2 rounded">
           Save All
         </button>
       </div>
