@@ -315,16 +315,7 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleFinalSave}
-<<<<<<< Updated upstream
-        className="text-white px-6 py-1 mb-4 rounded"
-        style={{
-          backgroundColor: '#2B7A6F',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
-=======
         className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
->>>>>>> Stashed changes
       >
         Save Today's Procedure
       </button>
@@ -565,18 +556,7 @@ const TreatmentProcedure = ({
         >
           Back
         </button>
-<<<<<<< Updated upstream
-        <button 
-        className="text-white px-6 py-1 mb-4 rounded"
-        style={{
-          backgroundColor: '#2B7A6F',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
-        >
-=======
         <button className="bg-teal-600 text-white px-6 py-2 rounded">
->>>>>>> Stashed changes
           Save All
         </button>
       </div>

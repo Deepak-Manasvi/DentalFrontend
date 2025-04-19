@@ -562,7 +562,6 @@ const FirstAdultDentistryForm = ({
       </div>
 
       {/* Saved Table */}
-<<<<<<< Updated upstream
      
    {saved && (
   <div>
@@ -598,42 +597,6 @@ const FirstAdultDentistryForm = ({
         ))}
       </tbody>
     </table>
-=======
-      {saved && (
-        <div>
-          <h3 className="text-lg font-bold mb-2">Saved Records</h3>
-          <table className="w-full text-sm">
-            <thead className="bg-teal-900 text-white">
-              <tr>
-                <th className="px-3 py-2 border">Tooth Name</th>
-                <th className="px-3 py-2 border">Dental Condition</th>
-                <th className="px-3 py-2 border">Complaint</th>
-                <th className="px-3 py-2 border">Examination</th>
-                <th className="px-3 py-2 border">Advice</th>
-                <th className="px-3 py-2 border">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((rec, index) => (
-                <tr key={index} className="border border-teal-200">
-                  <td className="px-3 py-2 border">{rec.toothName}</td>
-                  <td className="px-3 py-2 border">{rec.dentalCondition}</td>
-                  <td className="px-3 py-2 border">{rec.complaint}</td>
-                  <td className="px-3 py-2 border">{rec.examination}</td>
-                  <td className="px-3 py-2 border">{rec.advice}</td>
-                  <td className="px-3 py-2 border">
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
->>>>>>> Stashed changes
 
           <div className="mt-4 text-right">
             <button
