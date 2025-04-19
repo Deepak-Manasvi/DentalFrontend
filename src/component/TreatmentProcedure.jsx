@@ -212,7 +212,12 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleProcedureSave}
-        className="bg-gray-400 px-6 py-1 mb-4 rounded"
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
       >
         Save Procedure
       </button>
@@ -221,7 +226,7 @@ const TreatmentProcedure = ({
       
       {procedureList.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2 text-blue-700">
+          <h3 className="text-xl font-semibold mb-2 ">
             Saved Procedure List
           </h3>
           <div className="overflow-x-auto rounded-lg shadow">
@@ -310,7 +315,12 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleFinalSave}
-        className="bg-green-500 text-white px-6 py-2 rounded mb-6"
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
       >
         Save Today's Procedure
       </button>
@@ -467,7 +477,12 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleMedicineAdd}
-        className="bg-purple-500 text-white px-6 py-2 rounded mb-4"
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
       >
         Add Medicine
       </button>
@@ -542,11 +557,18 @@ const TreatmentProcedure = ({
       <div className="flex justify-between mt-16 px-10">
         <button
           onClick={() => setShowTreatment(true)}
-          className="bg-gray-500 text-white px-6 py-2 rounded"
+          className="bg-gray-500 text-white px-6 py-1  rounded"
         >
           Back
         </button>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded">
+        <button 
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
+        >
           Save All
         </button>
       </div>

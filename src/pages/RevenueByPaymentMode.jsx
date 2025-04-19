@@ -121,6 +121,16 @@ const RevenueByPaymentMode = () => {
         </table>
       </div>
 
+      {/* Back Button (aligned to the left) */}
+      <div className="text-left mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-[#2e7b74] text-white px-6 py-2 rounded hover:bg-[#25655f] transition"
+        >
+          Back
+        </button>
+      </div>
+
       {/* Total */}
       <div className="text-right font-bold text-xl mb-4 text-[#2e7b74]">
         Total: ₹{filteredData.reduce((sum, item) => sum + item.amount, 0)}
@@ -146,16 +156,6 @@ const RevenueByPaymentMode = () => {
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
-      </div>
-
-      {/* Back Button */}
-      <div className="text-center">
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-[#2e7b74] text-white px-6 py-2 rounded hover:bg-[#25655f] transition"
-        >
-          Back
-        </button>
       </div>
     </div>
   );

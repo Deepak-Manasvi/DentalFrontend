@@ -30,7 +30,7 @@ const AdminLayout = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/branch/getAllBranch`
         );
-        setBranches(res.data.branches); 
+        setBranches(res.data.branches);
       } catch (error) {
         console.error("Failed to fetch branches:", error);
       }
@@ -114,9 +114,8 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
-          isSidebarOpen ? "ml-58" : "ml-0"
-        }`}
+        className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-58" : "ml-0"
+          }`}
       >
         {/* Navbar */}
         <div className="bg-[#2B7A6F] text-white flex justify-between items-center px-6 py-4 fixed top-0 left-0 w-full z-10 shadow-md">
@@ -147,19 +146,16 @@ const AdminLayout = () => {
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="w-full px-4 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2B7A6F] focus:border-blue-500 text-white bg-[#2B7A6F]"
               >
-                {/* <option value="" disabled>
-                  Select Branch
-                </option> */}
                 {branches.map((branch) => (
                   <option key={branch._id} value={branch._id}>
-                    {branch.name}{" "}
-                    
+                    {branch.name}
                   </option>
                 ))}
               </select>
             </div>
+
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm">{currentTime}</span>
               <span className="text-lg font-semibold">Welcome, {userRole}</span>

@@ -461,9 +461,7 @@ const FirstAdultDentistryForm = ({
             <img
               src={`/adultdentistryTooth/tooth${tooth.id}.png`}
               alt={tooth.label}
-              className={`w-14 h-14 object-contain ${
-                selectedTeeth[tooth.id] ? "ring-2 ring-blue-500 rounded-md" : ""
-              }`}
+              className="w-14 h-14 object-contain"
             />
             <span className="text-[10px] text-center">{tooth.label}</span>
             <input
@@ -555,58 +553,63 @@ const FirstAdultDentistryForm = ({
         </button>
         <button
           onClick={handleSave}
-          className="bg-blue-900 text-white px-4 py-2 rounded"
+          className="bg-[#2B7A6F] text-white px-4 py-2 rounded"
         >
           Save
         </button>
       </div>
 
       {/* Saved Table */}
-      {saved && (
-        <div>
-          <h3 className="text-lg font-bold mb-2">Saved Records</h3>
-          <table className="w-full text-sm">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="px-3 py-2 border">Tooth Name</th>
-                <th className="px-3 py-2 border">Dental Condition</th>
-                <th className="px-3 py-2 border">Complaint</th>
-                <th className="px-3 py-2 border">Examination</th>
-                <th className="px-3 py-2 border">Advice</th>
-                <th className="px-3 py-2 border">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((rec, index) => (
-                <tr key={index} className="border border-blue-200">
-                  <td className="px-3 py-2 border">{rec.toothName}</td>
-                  <td className="px-3 py-2 border">{rec.dentalCondition}</td>
-                  <td className="px-3 py-2 border">{rec.complaint}</td>
-                  <td className="px-3 py-2 border">{rec.examination}</td>
-                  <td className="px-3 py-2 border">{rec.advice}</td>
-                  <td className="px-3 py-2 border">
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+     
+   {saved && (
+  <div>
+    <h3 className="text-lg font-bold mb-2">Saved Records</h3>
+    <table className="w-full text-sm bg-white">
+      <thead className="bg-[#2B7A6F] text-white">
+        <tr>
+          <th className="px-3 py-2 border border-white">Tooth Name</th>
+          <th className="px-3 py-2 border border-white">Dental Condition</th>
+          <th className="px-3 py-2 border border-white">Complaint</th>
+          <th className="px-3 py-2 border border-white">Examination</th>
+          <th className="px-3 py-2 border border-white">Advice</th>
+          <th className="px-3 py-2 border border-white">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {records.map((rec, index) => (
+          <tr key={index} className="border border-[#2B7A6F]">
+            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.toothName}</td>
+            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.dentalCondition}</td>
+            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.complaint}</td>
+            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.examination}</td>
+            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.advice}</td>
+            <td className="px-3 py-2 border border-[#2B7A6F]">
+              <button
+                onClick={() => handleDelete(index)}
+                className="text-red-600 hover:underline"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-          <div className="mt-4 text-right">
-            <button
-              onClick={handleNext}
-              className="bg-green-600 text-white px-6 py-2 rounded"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
+    <div className="mt-4 text-right">
+      <button
+        onClick={handleNext}
+        className="bg-[#2B7A6F] text-white px-6 py-2 rounded"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+
     </div>
   );
 };
