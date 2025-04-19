@@ -5,6 +5,7 @@ import AdminSidebar from "./AdminSidebar";
 import { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import BusinessForm from "./BusinessForm";
+import axios from "axios";
 
 
 const AdminLayout = () => {
@@ -20,7 +21,23 @@ const AdminLayout = () => {
   const [licenseNumber, setlicenseNumber] = useState("");
   const [address, setaddress] = useState("");
   const [financialYear, setfinancialYear] = useState("");
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
 
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/branch/getAllBranch`
+        );
+        setBranches(res.data.branches); 
+      } catch (error) {
+        console.error("Failed to fetch branches:", error);
+      }
+    };
+
+    fetchBranches();
+  }, []);
 
   // Check if this is the first load after login {"businessName":"Test","address":"gbhjk","contact":"5555555555","licenseNumber":"1235678","financialYear":"2025-2026","businessPhoto":{"url":"https://res.cloudinary.com/dbb8jigqx/image/upload/v1744963345/wsblkebmnoaippihwkfj.png","public_id":"wsblkebmnoaippihwkfj"},"_id":"680207105dbf1af9a42cf722","createdAt":"2025-04-18T08:02:24.783Z","updatedAt":"2025-04-18T08:02:24.783Z","__v":0}
   useEffect(() => {
@@ -126,6 +143,23 @@ const AdminLayout = () => {
 
           {/* Right section: time, welcome, and logout */}
           <div className="flex items-center gap-4 text-right font-bold">
+            <div className="w-64">
+              <select
+                value={selectedBranch}
+                onChange={(e) => setSelectedBranch(e.target.value)}
+                className="w-full px-4 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                {/* <option value="" disabled>
+                  Select Branch
+                </option> */}
+                {branches.map((branch) => (
+                  <option key={branch._id} value={branch._id}>
+                    {branch.name}{" "}
+                    
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm">{currentTime}</span>
               <span className="text-lg font-semibold">Welcome, {userRole}</span>
