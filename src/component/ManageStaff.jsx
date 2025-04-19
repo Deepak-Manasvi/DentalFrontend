@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Pencil, Trash, X } from "lucide-react"; 
+import { Pencil, Trash, X } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,8 +11,9 @@ export default function ManageStaff() {
 
   const getStafs = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/staff/getAllStaff`);
-      setStaffList(res.data.data.staff);
+      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`);
+      const receptionists = res.data.user.filter(user => user.role === "receptionist");
+      setStaffList(receptionists);
     } catch (error) {
       console.error("Error fetching staff:", error);
     }
@@ -47,7 +48,7 @@ export default function ManageStaff() {
   };
 
   const toggleDropdown = (index) => {
-    
+
     setDropdownOpen(dropdownOpen === index ? null : index);
   };
 
@@ -67,9 +68,9 @@ export default function ManageStaff() {
         <table className="w-full text-sm text-left text-gray-700">
           <thead className="bg-blue-900 text-white">
             <tr>
-              <th className="py-3 px-4">#</th>
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Username</th>
+              <th className="py-3 px-4">S.No</th>
+              <th className="py-3 px-4">First Name</th>
+              <th className="py-3 px-4">Last Name</th>
               <th className="py-3 px-4">Email</th>
               <th className="py-3 px-4">Address</th>
               <th className="py-3 px-4">Contact</th>
@@ -81,15 +82,15 @@ export default function ManageStaff() {
               staffList.map((staff, index) => (
                 <tr key={staff._id || index} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-4">{index + 1}</td>
-                  <td className="py-2 px-4">{staff.name}</td>
-                  <td className="py-2 px-4">{staff.username}</td>
+                  <td className="py-2 px-4">{staff.firstName}</td>
+                  <td className="py-2 px-4">{staff.lastName}</td>
                   <td className="py-2 px-4">{staff.email}</td>
                   <td className="py-2 px-4">{staff.address}</td>
-                  <td className="py-2 px-4">{staff.contactNumber}</td>
+                  <td className="py-2 px-4">{staff.phone}</td>
                   <td className="py-2 px-4 relative">
                     <div className="relative inline-block text-left">
                       <button
-                        onClick={() => toggleDropdown(index)} 
+                        onClick={() => toggleDropdown(index)}
                         className="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-700"
                       >
                         Actions

@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 export default function AddStaff() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: "",
-    username: "",
+    firstName: "",
+    lastName: "",
     password: "",
     address: "",
     email: "",
-    contactNumber: "",
+    phone: "",
+    role: "receptionist", 
   });
 
   const [errors, setErrors] = useState({});
@@ -26,13 +28,15 @@ export default function AddStaff() {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.username.trim()) newErrors.username = "Username is required";
+    if (!formData.firstName.trim()) newErrors.firstName = "First Name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last Name is required";
+
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
+
     if (!formData.address.trim()) newErrors.address = "Address is required";
 
     if (!formData.email.trim()) {
@@ -41,10 +45,10 @@ export default function AddStaff() {
       newErrors.email = "Email is invalid";
     }
 
-    if (!formData.contactNumber.trim()) {
-      newErrors.contactNumber = "Contact Number is required";
-    } else if (!/^[0-9]{10}$/.test(formData.contactNumber)) {
-      newErrors.contactNumber = "Contact Number must be 10 digits";
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^[0-9]{10}$/.test(formData.phone)) {
+      newErrors.phone = "Phone number must be 10 digits";
     }
 
     setErrors(newErrors);
@@ -57,13 +61,13 @@ export default function AddStaff() {
     if (validate()) {
       try {
         const res = await axios.post(
-          `${import.meta.env.VITE_APP_BASE_URL}/staff/createstaff`,
+          `${import.meta.env.VITE_APP_BASE_URL}/user/userRegister`,
           formData
         );
 
         if (res.status === 200 || res.status === 201) {
           alert("Staff added successfully!");
-          navigate("/admin/manage-staff"); // Corrected URL (always use lowercase for path)
+          navigate("/admin/manage-staff");
         } else {
           alert("Failed to add staff. Please try again.");
         }
@@ -76,16 +80,18 @@ export default function AddStaff() {
 
   const handleCancel = () => {
     setFormData({
-      name: "",
-      username: "",
+      firstName: "",
+      lastName: "",
       password: "",
       address: "",
       email: "",
-      contactNumber: "",
+      phone: "",
+      role: "receptionist",
     });
-    navigate("/admin/manage-staff");
     setErrors({});
+    navigate("/admin/manage-staff");
   };
+
   return (
     <>
       <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
@@ -93,39 +99,39 @@ export default function AddStaff() {
           Add Staff
         </h2>
         <form className="space-y-4" onSubmit={handleSave}>
-          {/* Staff Name */}
+          {/* First Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Name<span className="text-red-500">*</span>
+              First Name<span className="text-red-500">*</span>
             </label>
             <input
-              name="name"
-              value={formData.name}
+              name="firstName"
+              value={formData.firstName}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter staff name"
+              placeholder="Enter first name"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            {errors.firstName && (
+              <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
             )}
           </div>
 
-          {/* Username */}
+          {/* Last Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Username<span className="text-red-500">*</span>
+              Last Name<span className="text-red-500">*</span>
             </label>
             <input
-              name="username"
-              value={formData.username}
+              name="lastName"
+              value={formData.lastName}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter username"
+              placeholder="Enter last name"
             />
-            {errors.username && (
-              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            {errors.lastName && (
+              <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
             )}
           </div>
 
@@ -185,28 +191,26 @@ export default function AddStaff() {
             )}
           </div>
 
-          {/* Contact Number */}
+          {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Contact Number<span className="text-red-500">*</span>
+              Phone Number<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="contactNumber"
-              value={formData.contactNumber}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter 10-digit contact number"
+              placeholder="Enter 10-digit phone number"
             />
-            {errors.contactNumber && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.contactNumber}
-              </p>
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
             )}
           </div>
 
-          {/* Save Button */}
+          {/* Buttons */}
           <div className="flex justify-start gap-4 pt-4">
             <button
               type="submit"
