@@ -71,7 +71,7 @@ const InvoiceList = () => {
 
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="w-full table-auto border-collapse">
-          <thead className="bg-blue-900 text-white sticky top-0 z-10 text-sm md:text-base">
+          <thead className="bg-teal-900 text-white sticky top-0 z-10 text-sm md:text-base">
             <tr>
               <th className="py-2 px-4">Date</th>
               <th className="py-2 px-4">Invoice No</th>
@@ -106,13 +106,13 @@ const InvoiceList = () => {
                   <td className="py-2 px-4">{invoice.uhid}</td>
                   <td className="py-2 px-4">₹{invoice.subTotal.toFixed(2)}</td>
                   <td className="py-2 px-4">₹{invoice.discount.toFixed(2)}</td>
-                  <td className="py-2 px-4 font-semibold text-green-600">
+                  <td className="py-2 px-4 font-semibold text-teal-600">
                     ₹{invoice.netPayable.toFixed(2)}
                   </td>
                   <td className="py-2 px-4">
                     <div className="relative">
                       <button
-                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
                         onClick={() => toggleDropdown(index)}
                       >
                         Actions
@@ -132,7 +132,7 @@ const InvoiceList = () => {
                             </div>
                             <li>
                               <button
-                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                                 onClick={() => handleEdit(index)}
                               >
                                 <Edit size={18} /> Edit

@@ -121,7 +121,7 @@ const EditDentist = () => {
         <p className="text-red-600">{error}</p>
         <button
           onClick={() => navigate("/admin/manage-dentist")}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl"
+          className="mt-4 bg-teal-600 text-white px-4 py-2 rounded-xl"
         >
           Go Back
         </button>
@@ -130,7 +130,7 @@ const EditDentist = () => {
   }
 
   return (
-    <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Edit Dentist
       </h2>
@@ -233,7 +233,7 @@ const EditDentist = () => {
         <div className="flex gap-4">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+            className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition text-lg"
           >
             Update
           </button>

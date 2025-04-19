@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   BarChart,
   Bar,
@@ -11,6 +12,7 @@ import {
 } from "recharts";
 
 const RevenueByService = () => {
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedService, setSelectedService] = useState("");
@@ -43,7 +45,7 @@ const RevenueByService = () => {
 
   return (
     <div className="p-6 bg-white min-h-screen">
-      <h2 className="text-2xl font-semibold text-center mb-4">Revenue by Service</h2>
+      <h2 className="text-2xl font-semibold text-center mb-4 text-[#2e7e78]">Revenue by Service</h2>
 
       {/* Filters */}
       <div className="flex flex-wrap justify-center gap-4 mb-6">
@@ -85,7 +87,7 @@ const RevenueByService = () => {
       {/* Table */}
       <div className="overflow-x-auto mb-6">
         <table className="min-w-full border border-gray-300 text-center">
-          <thead className="bg-gray-100">
+          <thead className="bg-[#2e7e78] text-white">
             <tr>
               <th className="border px-4 py-2">Date</th>
               <th className="border px-4 py-2">Name</th>
@@ -97,13 +99,13 @@ const RevenueByService = () => {
           </thead>
           <tbody>
             {filteredData.map((row, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
+              <tr key={idx} className="hover:bg-[#e4f3f2]">
                 <td className="border px-4 py-2">{row.date}</td>
                 <td className="border px-4 py-2">{row.name}</td>
                 <td className="border px-4 py-2">{row.contact}</td>
                 <td className="border px-4 py-2">{row.doctor}</td>
                 <td className="border px-4 py-2">{row.treatment}</td>
-                <td className="border px-4 py-2 font-semibold">₹{row.amount}</td>
+                <td className="border px-4 py-2 font-semibold text-[#2e7e78]">₹{row.amount}</td>
               </tr>
             ))}
           </tbody>
@@ -111,18 +113,30 @@ const RevenueByService = () => {
       </div>
 
       {/* Total */}
-      <div className="text-right font-bold text-xl mb-4">Total: ₹{totalAmount}</div>
+      <div className="text-right font-bold text-xl mb-4 text-[#2e7e78]">
+        Total: ₹{totalAmount}
+      </div>
 
       {/* Chart */}
-      <div className="w-full h-[200px]">
+      <div className="w-full h-[200px] mb-6">
         <ResponsiveContainer width="50%" height="100%">
           <BarChart data={chartData}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="amount" fill="#3b82f6" barSize={30} />
+            <Bar dataKey="amount" fill="#2e7e78" barSize={30} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Back Button */}
+      <div className="flex justify-start mt-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-[#2e7e78] text-white px-6 py-2 rounded-md shadow hover:brightness-110 transition"
+        >
+          Back
+        </button>
       </div>
     </div>
   );

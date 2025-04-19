@@ -82,7 +82,7 @@ const PatientHistory = () => {
         <div className="relative">
           <div className="max-h-96 overflow-y-auto overflow-x-auto">
             <table className="w-full border-collapse table-fixed">
-              <thead className="bg-blue-900 text-white sticky top-0 z-10">
+              <thead className="bg-teal-900 text-white sticky top-0 z-10">
                 <tr className="text-sm md:text-base">
                   {tableHeaders.map((header) => (
                     <th key={header} className="py-2 px-4 text-left w-1/10">
@@ -114,7 +114,7 @@ const PatientHistory = () => {
                     <td className="py-2 px-4 w-1/10">{patient.bloodGroup || "N/A"}</td>
                     <td className="py-2 px-4 w-1/10 relative">
                       <button
-                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 focus:outline-none flex items-center gap-1"
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 focus:outline-none flex items-center gap-1"
                         onClick={() => toggleDropdown(patient._id || index)}
                       >
                         Actions <ChevronDown size={16} />
@@ -134,7 +134,7 @@ const PatientHistory = () => {
                                     `/admin/patient-details/${patient.appId}`
                                   )
                                 }
-                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white"
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white"
                               >
                                 View Details
                               </button>
@@ -146,7 +146,7 @@ const PatientHistory = () => {
                                     `/admin/prescription-history/${patient.appId}`
                                   )
                                 }
-                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white"
+                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white"
                               >
                                 View Prescription
                               </button>

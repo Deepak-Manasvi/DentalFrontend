@@ -212,7 +212,12 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleProcedureSave}
-        className="bg-gray-400 px-6 py-1 mb-4 rounded"
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
       >
         Save Procedure
       </button>
@@ -221,37 +226,37 @@ const TreatmentProcedure = ({
       
       {procedureList.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2 text-blue-700">
+          <h3 className="text-xl font-semibold mb-2 text-teal-700">
             Saved Procedure List
           </h3>
           <div className="overflow-x-auto rounded-lg shadow">
-            <table className="w-full text-sm text-left border border-blue-200">
-              <thead className="bg-blue-600 text-white">
+            <table className="w-full text-sm text-left border border-teal-200">
+              <thead className="bg-teal-600 text-white">
                 <tr>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     Procedure
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     Treatment
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">Sitting</th>
-                  <th className="px-4 py-2 border border-blue-200">Action</th>
+                  <th className="px-4 py-2 border border-teal-200">Sitting</th>
+                  <th className="px-4 py-2 border border-teal-200">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white text-gray-700">
                 {procedureList.map((item, index) => (
-                  <tr key={index} className="hover:bg-blue-50 transition">
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                  <tr key={index} className="hover:bg-teal-50 transition">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.procedure}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.treatment}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.sitting}
                     </td>
                     <td
-                      className="px-4 py-2 border border-blue-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
+                      className="px-4 py-2 border border-teal-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
                       onClick={() => handleDeleteProcedure(index)}
                     >
                       Delete
@@ -310,7 +315,7 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleFinalSave}
-        className="bg-green-500 text-white px-6 py-2 rounded mb-6"
+        className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
       >
         Save Today's Procedure
       </button>
@@ -319,48 +324,48 @@ const TreatmentProcedure = ({
      
       {finalProcedures.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2 text-blue-700">
+          <h3 className="text-xl font-semibold mb-2 text-teal-700">
             Saved Final Procedures
           </h3>
           <div className="overflow-x-auto rounded-lg shadow">
-            <table className="w-full text-sm text-left border border-blue-200">
-              <thead className="bg-blue-600 text-white">
+            <table className="w-full text-sm text-left border border-teal-200">
+              <thead className="bg-teal-600 text-white">
                 <tr>
-                  <th className="px-4 py-2 border border-blue-200">Date</th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">Date</th>
+                  <th className="px-4 py-2 border border-teal-200">
                     Tooth Name
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     Procedure Done
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     Materials Used
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">Notes</th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">Notes</th>
+                  <th className="px-4 py-2 border border-teal-200">
                     Next Date
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white text-gray-700">
                 {finalProcedures.map((item, index) => (
-                  <tr key={index} className="hover:bg-blue-50 transition">
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                  <tr key={index} className="hover:bg-teal-50 transition">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.date}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.toothName}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.procedureDone}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.materialsUsed}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.notes}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.nextDate}
                     </td>
                   </tr>
@@ -467,7 +472,12 @@ const TreatmentProcedure = ({
 
       <button
         onClick={handleMedicineAdd}
-        className="bg-purple-500 text-white px-6 py-2 rounded mb-4"
+        className="text-white px-6 py-1 mb-4 rounded"
+        style={{
+          backgroundColor: '#2B7A6F',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
       >
         Add Medicine
       </button>
@@ -476,53 +486,53 @@ const TreatmentProcedure = ({
      
       {medicineList.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2 text-blue-700">
+          <h3 className="text-xl font-semibold mb-2 text-teal-700">
             Prescribed Medicines
           </h3>
           <div className="overflow-x-auto rounded-lg shadow">
-            <table className="w-full text-sm text-left border border-blue-200">
-              <thead className="bg-blue-600 text-white">
+            <table className="w-full text-sm text-left border border-teal-200">
+              <thead className="bg-teal-600 text-white">
                 <tr>
-                  <th className="px-4 py-2 border border-blue-200">Name</th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">Name</th>
+                  <th className="px-4 py-2 border border-teal-200">
                     Frequency
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     Before Food
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">
                     After Food
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">Duration</th>
-                  <th className="px-4 py-2 border border-blue-200">
+                  <th className="px-4 py-2 border border-teal-200">Duration</th>
+                  <th className="px-4 py-2 border border-teal-200">
                     Instructions
                   </th>
-                  <th className="px-4 py-2 border border-blue-200">Action</th>
+                  <th className="px-4 py-2 border border-teal-200">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white text-gray-700">
                 {medicineList.map((med, index) => (
-                  <tr key={index} className="hover:bg-blue-50 transition">
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                  <tr key={index} className="hover:bg-teal-50 transition">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.name}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.frequency}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.beforeFood}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.afterFood}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.duration}
                     </td>
-                    <td className="px-4 py-2 border border-blue-200 text-center">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
                       {med.instructions}
                     </td>
                     <td
-                      className="px-4 py-2 border border-blue-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
+                      className="px-4 py-2 border border-teal-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
                       onClick={() => handleDeleteMedicine(index)}
                     >
                       Delete
@@ -542,11 +552,11 @@ const TreatmentProcedure = ({
       <div className="flex justify-between mt-16 px-10">
         <button
           onClick={() => setShowTreatment(true)}
-          className="bg-gray-500 text-white px-6 py-2 rounded"
+          className="bg-gray-500 text-white px-6 py-1  rounded"
         >
           Back
         </button>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded">
+        <button className="bg-teal-500 text-white px-6 py-2 rounded">
           Save All
         </button>
       </div>

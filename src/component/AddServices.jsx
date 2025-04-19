@@ -96,7 +96,7 @@ const AddServices = () => {
         onChange={handleChange}
         placeholder={placeholder}
         required={required}
-        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
       />
     </div>
   );
@@ -124,7 +124,7 @@ const AddServices = () => {
         </button>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+          className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save"}

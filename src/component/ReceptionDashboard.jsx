@@ -41,7 +41,7 @@ const ReceptionDashboard = () => {
       ].map((btn, idx) => (
         <button
           key={idx}
-          className="bg-blue-500 text-white py-2 px-4 rounded-xl shadow"
+          className="bg-teal-500 text-white py-2 px-4 rounded-xl shadow"
           onClick={() => navigate(`/${btn.path}`)}
         >
           {btn.label}

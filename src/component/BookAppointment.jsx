@@ -161,7 +161,7 @@ const AddAppointment = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+    <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
 
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">Patient Details</h2>
 
@@ -284,7 +284,7 @@ const AddAppointment = () => {
           >
             {selectedMedicalHistory.length > 0 ? (
               selectedMedicalHistory.map((condition) => (
-                <span key={condition} className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full">
+                <span key={condition} className="bg-teal-100 text-teal-700 text-sm px-2 py-1 rounded-full">
                   {condition}
                 </span>
               ))
@@ -301,7 +301,7 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition) ? "bg-blue-50 font-semibold" : ""}`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition) ? "bg-teal-50 font-semibold" : ""}`}
                 >
                   <input
                     type="checkbox"
@@ -513,7 +513,7 @@ const AddAppointment = () => {
 
       <div className="mt-10 flex justify-center gap-6">
         <button
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+          className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition text-lg"
           onClick={handleBookAppointment}
         >
           Book Appointment

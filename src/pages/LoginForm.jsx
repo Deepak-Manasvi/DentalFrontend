@@ -3,7 +3,8 @@ import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import Bg from "../assets/bg.png";
+import Bg from "../assets/bg1.png";
+import logo from "../assets/logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,26 +19,11 @@ export default function Login() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/user/userLogin`,
-        {
-          email,
-          password,
-          role,
-        }
+        { email, password, role }
       );
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", role);
-
-      // Remove any previous visit flag to ensure the form shows up
-      if (role === "admin") {
-        localStorage.removeItem("dashboardVisited");
-      }
-
-      // Navigate to the appropriate dashboard
-      if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/receptionist/dashboard");
-      }
+      navigate(role === "admin" ? "/admin/dashboard" : "/receptionist/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
@@ -45,109 +31,100 @@ export default function Login() {
 
   return (
     <div
-      className="h-screen w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat fixed inset-0 overflow-hidden"
-      style={{ backgroundImage: `url(${Bg})` }}
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center px-4 sm:px-8"
+      style={{
+        backgroundImage: `url(${Bg})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <div className="flex flex-col items-center justify-center max-w-lg w-full px-4 py-6">
-        {/* Header - Always at the top of the container */}
-        <div className="w-full text-center mb-6">
-          <h1 className="text-green-700 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold drop-shadow-lg">
-            Dental Care
-          </h1>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-[500px] bg-white/20 backdrop-blur-md rounded-2xl px-6 py-8 sm:px-10 sm:py-12 text-white shadow-lg"
+      >
+        <div className="text-center mb-6">
+          <img src={logo} className="mx-auto h-28 sm:h-36" alt="Logo" />
         </div>
 
-        {/* Form Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-[#2C7A7B] text-white rounded-3xl shadow-2xl w-full p-4 sm:p-6 md:p-8 mb-3"
-        >
-          <h2 className="text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2 text-center font-semibold">
-            Welcome To Dental Care
-          </h2>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 md:mb-6 text-center">
-            Log In
-          </h1>
+        <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-green-800">
+          Login
+        </h3>
 
-          <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm sm:text-base md:text-lg mb-1">
-                Select User
-              </label>
-              <select
-                className="w-full px-3 py-2 rounded-md bg-white text-[#2C7A7B] text-sm sm:text-base focus:outline-none"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="admin">Admin</option>
-                <option value="receptionist">Receptionist</option>
-              </select>
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm sm:text-base md:text-lg mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-md bg-white text-[#2C7A7B] text-sm sm:text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              />
-            </div>
-
-            {/* Password */}
-            <div className="relative">
-              <label className="block text-sm sm:text-base md:text-lg mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 rounded-md bg-white text-[#2C7A7B] text-sm sm:text-base placeholder-gray-500 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-                <div
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-black"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </div>
-              </div>
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <p className="text-red-300 text-xs sm:text-sm text-center font-semibold">
-                ⚠️ {error}
-              </p>
-            )}
-
-            {/* Forgot Password */}
-            <div className="w-full flex justify-end text-xs sm:text-sm">
-              <a href="#" className="hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-white text-[#2C7A7B] font-semibold py-2 rounded-md hover:bg-green-500 hover:text-white transition duration-300"
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label className="block text-base sm:text-lg mb-1 text-green-800">
+              Select User
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2 rounded-md bg-white text-[#2C7A7B] text-base focus:outline-none"
             >
-              Login
-            </button>
-          </form>
-        </motion.div>
-      </div>
+              <option value="admin">Admin</option>
+              <option value="receptionist">Receptionist</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-base sm:text-lg mb-1 text-green-800">
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 rounded-md bg-white text-[#2C7A7B] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
+          <div className="relative">
+            <label className="block text-base sm:text-lg mb-1 text-green-800">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter your password"
+              className="w-full px-4 py-2 pr-10 rounded-md bg-white text-[#2C7A7B] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[60%] -translate-y-1/2 cursor-pointer text-black"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </span>
+          </div>
+
+          {error && (
+            <p className="text-red-300 text-sm text-center font-semibold">
+              ⚠️ {error}
+            </p>
+          )}
+
+          <div className="text-sm text-right">
+            <a
+              onClick={() => navigate("/forgetpassword")}
+              className="hover:underline text-green-800 cursor-pointer"
+            >
+              Forgot Password?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-white text-[#2C7A7B] font-semibold py-2 rounded-md hover:bg-green-500 hover:text-white transition duration-300"
+          >
+            Login
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 }

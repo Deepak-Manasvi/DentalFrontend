@@ -143,7 +143,7 @@ const BusinessForm = ({ onClose }) => {
               name="businessName"
               value={formData.businessName}
               onChange={handleChange}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
               required
             />
           </div>
@@ -162,7 +162,7 @@ const BusinessForm = ({ onClose }) => {
               name="contact"
               value={formData.contact}
               onChange={handleChange}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
               required
             />
           </div>
@@ -181,7 +181,7 @@ const BusinessForm = ({ onClose }) => {
               name="licenseNumber"
               value={formData.licenseNumber}
               onChange={handleChange}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
               required
             />
           </div>
@@ -201,7 +201,7 @@ const BusinessForm = ({ onClose }) => {
               value={formData.financialYear}
               onChange={handleChange}
               placeholder="YYYY-YYYY"
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
               required
             />
           </div>
@@ -221,7 +221,7 @@ const BusinessForm = ({ onClose }) => {
             value={formData.address}
             onChange={handleChange}
             rows="2"
-            className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
             required
           />
         </div>
@@ -232,8 +232,8 @@ const BusinessForm = ({ onClose }) => {
             type="submit"
             disabled={isSubmitting}
             className={`w-full px-3 py-2 text-sm text-white font-medium rounded-md ${
-              isSubmitting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-            } focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500`}
+              isSubmitting ? "bg-teal-400" : "bg-teal-600 hover:bg-teal-700"
+            } focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-teal-500`}
           >
             {isSubmitting ? "Saving..." : "Save"}
           </button>
@@ -244,7 +244,7 @@ const BusinessForm = ({ onClose }) => {
           <div
             className={`mt-2 p-1 text-sm rounded-md text-center ${
               submissionStatus === "success"
-                ? "bg-green-100 text-green-700"
+                ? "bg-teal-100 text-teal-700"
                 : "bg-red-100 text-red-700"
             }`}
           >

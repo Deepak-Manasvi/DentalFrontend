@@ -199,7 +199,7 @@ const AdminAppointmentList = () => {
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-auto max-h-[70vh]">
           <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <thead className="bg-teal-900 text-white sticky top-0 z-10">
               <tr>
                 {tableHeaders.map((header) => (
                   <th
@@ -217,7 +217,7 @@ const AdminAppointmentList = () => {
                   <tr
                     key={app._id || index}
                     className={`border-b text-gray-700 hover:bg-gray-100 ${
-                      app.isCheckedIn ? "bg-green-50" : ""
+                      app.isCheckedIn ? "bg-teal-50" : ""
                     }`}
                   >
                     <td className="py-2 px-2 md:px-4 whitespace-nowrap">
@@ -246,12 +246,12 @@ const AdminAppointmentList = () => {
                     </td>
                     <td className="py-2 px-2 md:px-4 whitespace-nowrap font-semibold">
                       {app.isCheckedIn ? (
-                        <span className="text-green-600">Checked In</span>
+                        <span className="text-teal-600">Checked In</span>
                       ) : (
                         <span
                           className={
                             app.status === "Paid"
-                              ? "text-green-600"
+                              ? "text-teal-600"
                               : "text-red-600"
                           }
                         >
@@ -261,7 +261,7 @@ const AdminAppointmentList = () => {
                     </td>
                     <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       <button
-                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
                         onClick={(e) => toggleDropdown(app._id || index, e)}
                       >
                         Actions
@@ -307,7 +307,7 @@ const AdminAppointmentList = () => {
                     appointments.find((app) => app._id === dropdownOpen)
                   )
                 }
-                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
               >
                 <Eye size={16} />
                 <span>View</span>
@@ -329,7 +329,7 @@ const AdminAppointmentList = () => {
             <li>
               <button
                 onClick={() => handleCheckIn(dropdownOpen)}
-                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
               >
                 <CheckCircle size={16} />
                 <span>Check In</span>

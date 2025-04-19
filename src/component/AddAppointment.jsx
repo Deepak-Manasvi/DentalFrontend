@@ -13,6 +13,10 @@ const AddAppointment = () => {
   const [isMedicalDropdownOpen, setIsMedicalDropdownOpen] = useState(false);
   const [isAllergyDropdownOpen, setIsAllergyDropdownOpen] = useState(false);
 
+  const [drList, setDrList] = useState([]); // list from API
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [appointmentTimeOptions, setAppointmentTimeOptions] = useState([]);
+
   const role = localStorage.getItem("role");
 
   const [formData, setFormData] = useState({
@@ -35,7 +39,7 @@ const AddAppointment = () => {
     transactionId: "",
     status: "",
     paymentMode: "Cash",
-    opdAmount: "500", // Fixed to 500
+    opdAmount: "", // Fixed to 500
   });
 
   const medicalDropdownRef = useRef();
@@ -70,19 +74,45 @@ const AddAppointment = () => {
 
   const drNameOptions = ["Dr MS Dhoni", "Dr Rohit Sharma", "Dr Virat Kohli"];
 
-  const appointmentTimeOptions = [
-    "10Am - 11Am",
-    "11Am - 12Am",
-    "12Am - 1Pm",
-    "1Pm - 2Pm",
-    "4Pm - 5Pm",
-    "5Pm - 6Pm",
-  ];
+  // const appointmentTimeOptions = [
+  //   "10Am - 11Am",
+  //   "11Am - 12Am",
+  //   "12Am - 1Pm",
+  //   "1Pm - 2Pm",
+  //   "4Pm - 5Pm",
+  //   "5Pm - 6Pm",
+  // ];
 
   // Get next appointment ID on component mount
   useEffect(() => {
     fetchNextAppointmentId();
+
+    const getDentistsByBranch = async (branchId) => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/dentist/branch/${1}`
+        );
+        console.log(res.data.dentists);
+        setDrList(res.data.dentists);
+      } catch (err) {
+        console.error("Error fetching dentists:", err);
+      }
+    };
+    getDentistsByBranch();
   }, []);
+
+  const handleDoctorChange = (e) => {
+    const selectedId = e.target.value;
+    const doctor = drList.find((doc) => doc._id === selectedId);
+    setSelectedDoctor(doctor);
+    setFormData({
+      ...formData,
+      doctorName: doctor.name,
+      opdAmount: doctor.opdAmount,
+    });
+    setAppointmentTimeOptions(doctor.timeSlots);
+  };
+
 
   // Fetch next available appointment ID
   const fetchNextAppointmentId = async () => {
@@ -318,7 +348,7 @@ const AddAppointment = () => {
       transactionId: "",
       status: "",
       paymentMode: "Cash",
-      opdAmount: "500",
+      opdAmount: "",
     });
   };
 
@@ -351,7 +381,7 @@ const AddAppointment = () => {
   };
 
   return (
-    <div className=" mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+    <div className=" mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Patient Details
       </h2>
@@ -503,7 +533,7 @@ const AddAppointment = () => {
               selectedMedicalHistory.map((condition) => (
                 <span
                   key={condition}
-                  className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full"
+                  className="bg-[blue-500] text-blue-700 text-sm px-2 py-1 rounded-full"
                 >
                   {condition}
                 </span>
@@ -523,11 +553,10 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                    selectedMedicalHistory.includes(condition)
-                      ? "bg-blue-50 font-semibold"
-                      : ""
-                  }`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition)
+                    ? "bg-teal-50 font-semibold"
+                    : ""
+                    }`}
                 >
                   <input
                     type="checkbox"
@@ -572,11 +601,10 @@ const AddAppointment = () => {
                 <div
                   key={allergy}
                   onClick={() => handleAllergySelect(allergy)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
-                    selectedAllergies.includes(allergy)
-                      ? "bg-red-50 font-semibold"
-                      : ""
-                  }`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedAllergies.includes(allergy)
+                    ? "bg-red-50 font-semibold"
+                    : ""
+                    }`}
                 >
                   <input
                     type="checkbox"
@@ -685,6 +713,29 @@ const AddAppointment = () => {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Doctor Name<span className="text-red-500">*</span>
+          </label>
+          <select
+            name="doctorName"
+            value={selectedDoctor?._id || ""}
+            onChange={handleDoctorChange}
+            className="w-full p-3 border rounded-xl"
+          >
+            <option value="">Select Doctor</option>
+            {drList.map((doctor) => (
+              <option key={doctor._id} value={doctor._id}>
+                {doctor.name}
+              </option>
+            ))}
+          </select>
+          {errors.doctorName && (
+            <p className="text-red-500 text-sm mt-1">{errors.doctorName}</p>
+          )}
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Appointment Date<span className="text-red-500">*</span>
@@ -705,6 +756,7 @@ const AddAppointment = () => {
           )}
         </div>
 
+
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Appointment Time<span className="text-red-500">*</span>
@@ -724,47 +776,28 @@ const AddAppointment = () => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-600">
-            Doctor Name<span className="text-red-500">*</span>
-          </label>
-          <select
-            name="doctorName"
-            value={formData.doctorName}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-xl"
-          >
-            <option value="">Select Doctor</option>
-            {drNameOptions.map((doctor, index) => (
-              <option key={index} value={doctor}>
-                {doctor}
-              </option>
-            ))}
-          </select>
-          {errors.doctorName && (
-            <p className="text-red-500 text-sm mt-1">{errors.doctorName}</p>
-          )}
-        </div>
-      </div>
 
-      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
-        Payment Details
-      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* OPD Amount Display (read-only) */}
         <div>
           <label className="block text-sm font-medium text-gray-600">
             OPD Amount
           </label>
           <input
             type="text"
-            name="opdAmount"
-            value="500"
-            className="w-full p-3 border rounded-xl bg-gray-100"
+            value={formData.opdAmount}
             readOnly
+            className="w-full p-3 border rounded-xl bg-gray-100"
           />
         </div>
+      </div>
 
+
+      <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
+        Payment Details
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Payment Mode
@@ -833,7 +866,7 @@ const AddAppointment = () => {
           Cancel
         </button>
         <button
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+          className="bg-[#2B7A6F] text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition text-lg"
           onClick={handleBookAppointment}
         >
           Book Appointment

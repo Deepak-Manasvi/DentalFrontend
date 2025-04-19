@@ -33,7 +33,7 @@ const Dashboard = () => {
   // card data
   const cards = [
     {
-      icon: <FaUserMd className="text-2xl text-blue-500" />,
+      icon: <FaUserMd className="text-2xl text-teal-500" />,
       title: 'Total Doctors',
       count: data.totalDoctors,
       options: data.doctorNames,
@@ -61,7 +61,7 @@ const Dashboard = () => {
       },
     },
     {
-      icon: <FaMoneyBill className="text-2xl text-green-500" />,
+      icon: <FaMoneyBill className="text-2xl text-teal-500" />,
       title: 'Total Revenue',
       options: ['700','800','900','1000'],
     },
@@ -83,7 +83,7 @@ const Dashboard = () => {
           {/* Revenue Chart Block */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <button
-              className="flex items-center justify-between w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+              className="flex items-center justify-between w-full px-4 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-600"
               onClick={() => setShowRevenue(!showRevenue)}
             >
               <span>Revenue Chart</span>
@@ -99,7 +99,7 @@ const Dashboard = () => {
           {/* Patient Trends Block */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <button
-              className="flex items-center justify-between w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+              className="flex items-center justify-between w-full px-4 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-600"
               onClick={() => setShowTrends(!showTrends)}
             >
               <span>Patient Trends</span>

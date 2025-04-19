@@ -1,109 +1,129 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const toothNames = [
-    "Upper Right Second Molar",
-    "Upper Right First Molar",
-    "Upper Right Canine (Cuspid)",
-    "Upper Right Lateral Incisor",
-    "Upper Right Lateral Incisor",
-    "Upper Left Central Incisor",
-    "Upper Left Lateral Incisor  ",
-    "Upper Left Canine (Cuspid)",
-    "Upper Left First Molar",
-    "Lower Left Second Molar)",
-    "Lower Left First Molar",
-    "Lower Left Canine (Cuspid)",
-    "Lower Left Lateral Incisor",
-    "Lower Left Central Incisor",
-    "Lower Right Central Incisor",
-    "Lower Right Lateral Incisor",
-    "Lower Right Canine (Cuspid)",
-    "Lower Right First Molar",
-    "Lower Right Second Molar"
+  "Upper Right Second Molar",
+  "Upper Right First Molar",
+  "Upper Right Canine (Cuspid)",
+  "Upper Right Lateral Incisor",
+  "Upper Right Central Incisor",
+  "Upper Left Central Incisor",
+  "Upper Left Lateral Incisor",
+  "Upper Left Canine (Cuspid)",
+  "Upper Left First Molar",
+  "Upper Left Second Molar",
+  "Lower Left Second Molar",
+  "Lower Left First Molar",
+  "Lower Left Canine (Cuspid)",
+  "Lower Left Lateral Incisor",
+  "Lower Left Central Incisor",
+  "Lower Right Central Incisor",
+  "Lower Right Lateral Incisor",
+  "Lower Right Canine (Cuspid)",
+  "Lower Right First Molar",
+  "Lower Right Second Molar",
 ];
 
 const teethData = toothNames.map((name, index) => ({
-    id: index + 1,
-    label: name,
+  id: index + 1,
+  label: name,
 }));
 
-const FirstAdultDentistryForm = ({
-    id,
-    saved,
-    setSaved,
-    records,
-    setRecords,
-    patient,
-    selectedTeeth,
-    showTreatment,
-    setSelectedTeeth,
-    formData,
-    handleNext,
-    setFormData,
+const FirstPediatricDentistryForm = ({
+  saved,
+  setSaved,
+  records,
+  setRecords,
+  patient,
+  selectedTeeth,
+  showTreatment,
+  setSelectedTeeth,
+  formData,
+  handleNext,
+  setFormData,
 }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleDelete = (index) => {
-        const updatedRecords = [...records];
-        updatedRecords.splice(index, 1);
-        setRecords(updatedRecords);
-    };
+  const handleDelete = (index) => {
+    const updated = [...records];
+    updated.splice(index, 1);
+    setRecords(updated);
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const handleCheckboxChange = (toothId) => {
-        setSelectedTeeth((prev) => {
-            const updated = { ...prev, [toothId]: !prev[toothId] };
-            const selectedNames = teethData
-                .filter((tooth) => updated[tooth.id])
-                .map((tooth) => tooth.label)
-                .join(", ");
-            setFormData((form) => ({ ...form, toothName: selectedNames }));
-            return updated;
-        });
-    };
+  const handleCheckboxChange = (toothId) => {
+    setSelectedTeeth((prev) => {
+      const updated = { ...prev, [toothId]: !prev[toothId] };
+      const selectedNames = teethData
+        .filter((t) => updated[t.id])
+        .map((t) => t.label)
+        .join(", ");
+      setFormData((form) => ({ ...form, toothName: selectedNames }));
+      return updated;
+    });
+  };
 
-    const handleSave = () => {
-        const { toothName, dentalCondition, complaint, examination, advice } = formData;
-        console.log(formData)
+  const handleSave = () => {
+    const { toothName, dentalCondition, complaint, examination, advice } = formData;
+    if (!toothName || !dentalCondition || !complaint || !examination || !advice) return;
 
-        if (!toothName || !dentalCondition || !complaint || !examination || !advice) {
-            return;
-        }
+    setRecords([...records, formData]);
+    setFormData({
+      toothName: "",
+      dentalCondition: "",
+      complaint: "",
+      examination: "",
+      advice: "",
+    });
+    setSelectedTeeth({});
+    setSaved(true);
+  };
 
-        setRecords([...records, formData]);
-        setFormData({
-            toothName: "",
-            dentalCondition: "",
-            complaint: "",
-            examination: "",
-            advice: ""
-        });
-        setSelectedTeeth({});
-        setSaved(true);
-    };
+  return (
+    <div className="p-4 md:p-6">
+      <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
 
-    return (
-        <div className="p-4 ml-10">
-            <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
+      {/* Patient Info */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm md:text-base mb-6">
+        <div><strong>UHID:</strong> {patient?.uhid}</div>
+        <div><strong>Name:</strong> {patient?.patientName}</div>
+        <div><strong>Contact:</strong> {patient?.mobileNumber}</div>
+        <div><strong>Age:</strong> {patient?.age}</div>
+        <div><strong>BP:</strong> {patient?.bp}</div>
+        <div><strong>Medical History:</strong> {patient?.medicalHistory}</div>
+        <div><strong>Allergies:</strong> {patient?.allergies}</div>
+        <div><strong>Weight:</strong> {patient?.weight}</div>
+      </div>
 
-            {/* Patient Info */}
-            <div className="grid grid-cols-4 gap-2 text-xl mb-6">
-                <div><strong>UHID:</strong> {patient?.uhid}</div>
-                <div><strong>Name:</strong> {patient?.patientName}</div>
-                <div><strong>Contact:</strong> {patient?.mobileNumber}</div>
-                <div><strong>Age:</strong> {patient?.age}</div>
-                <div><strong>BP:</strong> {patient?.bp}</div>
-                <div><strong>Medical History:</strong> {patient?.medicalHistory}</div>
-                <div><strong>Allergies:</strong> {patient?.allergies}</div>
-                <div><strong>Weight:</strong> {patient?.weight}</div>
-            </div>
+      <h2 className="text-xl font-bold mb-4">Select Teeth</h2>
 
-            <h2 className="text-3xl font-bold mb-4">Select Teeth</h2>
+      {/* Teeth Selection Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        {[...Array(6)].map((_, rowIndex) => (
+          <div key={rowIndex} className="grid grid-cols-1 gap-2">
+            {teethData.slice(rowIndex * 3, rowIndex * 3 + 3).map((tooth) => (
+              <div key={tooth.id} className="flex flex-col items-center p-2">
+                <img
+                  src={`/pediatricTeeth/tooth${tooth.id}.png`}
+                  alt={tooth.label}
+                  className="w-12 h-12 mb-1"
+                />
+                <p className="text-center text-[10px]">{tooth.label}</p>
+                <input
+                  type="checkbox"
+                  checked={selectedTeeth[tooth.id] || false}
+                  onChange={() => handleCheckboxChange(tooth.id)}
+                  className="mt-1"
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
 
             {/* Top 16 Teeth Row */}
             {/* Top 10 Teeth Row */}
@@ -115,7 +135,7 @@ const FirstAdultDentistryForm = ({
                                 <img
                                     src={`/pediatricTeeth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
-                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
+                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-teal-500 rounded" : ""}`}
                                 />
                             </div>
                             <span className="text-xs text-center">{tooth.label}</span>
@@ -138,7 +158,7 @@ const FirstAdultDentistryForm = ({
                                 <img
                                     src={`/pediatricTeeth/tooth${tooth.id}.png`}
                                     alt={tooth.label}
-                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-blue-500 rounded" : ""}`}
+                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-teal-500 rounded" : ""}`}
                                 />
                             </div>
                             <span className="text-xs text-center">{tooth.label}</span>
@@ -246,7 +266,7 @@ const FirstAdultDentistryForm = ({
                         </button>
                         <button
                             onClick={handleSave}
-                            className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+                            className="bg-teal-900 text-white px-6 py-2 rounded shadow"
                         >
                             Save
                         </button>
@@ -255,7 +275,7 @@ const FirstAdultDentistryForm = ({
                     <div className="ml-auto">
                         <button
                             onClick={handleSave}
-                            className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+                            className="bg-teal-900 text-white px-6 py-2 rounded shadow"
                         >
                             Save
                         </button>
@@ -305,7 +325,7 @@ const FirstAdultDentistryForm = ({
                         </button>
                         <button
                             onClick={handleNext}
-                            className="bg-green-600 text-white px-6 py-2 rounded shadow"
+                            className="bg-teal-600 text-white px-6 py-2 rounded shadow"
                         >
                             Next
                         </button>
@@ -316,4 +336,4 @@ const FirstAdultDentistryForm = ({
     );
 };
 
-export default FirstAdultDentistryForm;
+export default FirstPediatricDentistryForm;

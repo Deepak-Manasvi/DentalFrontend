@@ -39,7 +39,7 @@ const BranchTable = ({
         <table
           className={`w-full table-auto border-collapse text-sm md:text-base ${tableClassName}`}
         >
-          <thead className="bg-blue-900 text-white sticky top-0 z-20">
+          <thead className="bg-teal-900 text-white sticky top-0 z-20">
             <tr>
               <th className={`py-3 px-4 text-center ${headerClassName}`}>
                 S/N
@@ -66,7 +66,7 @@ const BranchTable = ({
               data.map((row, index) => (
                 <tr
                   key={row._id || index}
-                  className={`even:bg-gray-50 hover:bg-blue-50 transition-colors ${rowClassName}`}
+                  className={`even:bg-gray-50 hover:bg-teal-50 transition-colors ${rowClassName}`}
                 >
                   <td className="py-2 px-4 text-center">{index + 1}</td>
                   {columns.map((col) => (

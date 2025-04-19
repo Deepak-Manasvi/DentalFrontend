@@ -77,7 +77,7 @@ const PrescriptionForm = () => {
     <div className="max-w-7xl mx-auto p-10 shadow-2xl font-sans bg-white text-lg">
       {/* Header */}
       <div className="pb-6 mb-6">
-        {/* <h1 className="text-4xl font-bold text-blue-900">{clinicName}</h1> */}
+        {/* <h1 className="text-4xl font-bold text-teal-900">{clinicName}</h1> */}
         <p className="text-2xl text-gray-700 mt-1">{patientData.doctorName}</p>
 
         {/* Patient Info */}
@@ -158,7 +158,7 @@ const PrescriptionForm = () => {
         </button>
         <button
           onClick={handleSave}
-          className="px-6 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
+          className="px-6 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition"
         >
           Save
         </button>
@@ -169,7 +169,7 @@ const PrescriptionForm = () => {
 
 const Section = ({ title, children }) => (
   <div className="border border-gray-300 rounded-md overflow-hidden">
-    <h3 className="bg-blue-900 text-white px-4 py-2 text-lg font-semibold">
+    <h3 className="bg-teal-900 text-white px-4 py-2 text-lg font-semibold">
       {title}
     </h3>
     <div className="p-4 bg-gray-50">{children}</div>

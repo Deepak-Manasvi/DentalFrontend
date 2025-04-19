@@ -11,18 +11,18 @@ const Setting = () => {
     {
       id: "insurance",
       title: "Insurance",
-      icon: <Shield size={24} className="text-blue-600" />,
-      color: "bg-blue-100 hover:bg-blue-200",
-      borderColor: "border-blue-300",
-      iconColor: "text-blue-500",
+      icon: <Shield size={24} className="text-teal-600" />,
+      color: "bg-teal-100 hover:bg-teal-200",
+      borderColor: "border-teal-300",
+      iconColor: "text-teal-500",
     },
     {
       id: "clinic",
       title: "Clinic Configuration",
-      icon: <Settings size={24} className="text-green-600" />,
-      color: "bg-green-100 hover:bg-green-200",
-      borderColor: "border-green-300",
-      iconColor: "text-green-500",
+      icon: <Settings size={24} className="text-teal-600" />,
+      color: "bg-teal-100 hover:bg-teal-200",
+      borderColor: "border-teal-300",
+      iconColor: "text-teal-500",
     },
     {
       id: "user",
@@ -130,7 +130,7 @@ const Setting = () => {
         </div>
         <div className="overflow-auto bg-white shadow-md rounded-lg">
           <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <thead className="bg-teal-900 text-white sticky top-0 z-10">
               <tr>
                 <th className="py-3 px-4 text-left whitespace-nowrap">S No</th>
                 <th className="py-3 px-4 text-left whitespace-nowrap">
@@ -176,7 +176,7 @@ const Setting = () => {
                   </td>
                   <td className="py-2 px-4 whitespace-nowrap">
                     <button
-                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                      className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
                       onClick={(e) => toggleDropdown(`insurance-${item.id}`, e)}
                     >
                       Actions
@@ -205,7 +205,7 @@ const Setting = () => {
         </div>
         <div className="overflow-auto bg-white shadow-md rounded-lg">
           <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <thead className="bg-teal-900 text-white sticky top-0 z-10">
               <tr>
                 <th className="py-3 px-4 text-left whitespace-nowrap">
                   Company Header
@@ -269,7 +269,7 @@ const Setting = () => {
         </div>
         <div className="overflow-auto bg-white shadow-md rounded-lg">
           <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <thead className="bg-teal-900 text-white sticky top-0 z-10">
               <tr>
                 <th className="py-3 px-4 text-left whitespace-nowrap">S No</th>
                 <th className="py-3 px-4 text-left whitespace-nowrap">
@@ -313,7 +313,7 @@ const Setting = () => {
                     <span
                       className={
                         user.status === "Active"
-                          ? "text-green-600"
+                          ? "text-teal-600"
                           : "text-red-600"
                       }
                     >
@@ -322,7 +322,7 @@ const Setting = () => {
                   </td>
                   <td className="py-2 px-4 whitespace-nowrap">
                     <button
-                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                      className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
                       onClick={(e) => toggleDropdown(`user-${user.id}`, e)}
                     >
                       Actions
@@ -401,7 +401,7 @@ const Setting = () => {
             <li>
               <button
                 onClick={() => handleView(dropdownOpen)}
-                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
               >
                 <Eye size={16} />
                 <span>View</span>

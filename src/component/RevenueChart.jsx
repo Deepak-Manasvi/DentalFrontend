@@ -27,7 +27,7 @@ const data = [
 const RevenueChart = () => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md w-full">
-      <h3 className="text-lg font-semibold mb-4 text-blue-600">Revenue Chart</h3>
+      <h3 className="text-lg font-semibold mb-4 text-teal-600">Revenue Chart</h3>
       <div className="overflow-hidden">
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">

@@ -42,8 +42,8 @@ export default function AppointmentDetails({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-lg text-blue-800 mb-3">
+              <div className="bg-teal-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-lg text-teal-800 mb-3">
                   Patient Information
                 </h3>
                 <div className="space-y-2">
@@ -78,8 +78,8 @@ export default function AppointmentDetails({
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-lg text-green-800 mb-3">
+              <div className="bg-teal-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-lg text-teal-800 mb-3">
                   Medical Details
                 </h3>
                 <div className="space-y-2">
@@ -149,7 +149,7 @@ export default function AppointmentDetails({
                 <div className="space-y-2">
                   <p>
                     <span className="font-medium">Payment Status:</span>{" "}
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
+                    <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-sm">
                       {appointmentData.status}
                     </span>
                   </p>
@@ -188,7 +188,7 @@ export default function AppointmentDetails({
                 onClick={() => {
                   navigate(`/admin/edit-appointment/${appointmentData._id}`);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+                className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded"
               >
                 Update Details
               </button>

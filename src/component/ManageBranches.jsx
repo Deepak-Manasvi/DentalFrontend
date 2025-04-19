@@ -97,7 +97,7 @@ const ManageBranches = () => {
               <strong>Pincode:</strong> {selectedBranch?.pincode}
             </p>
             <button
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
               onClick={() => setShowModal(false)}
             >
               Close
@@ -128,7 +128,7 @@ const ManageBranches = () => {
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-auto max-h-[70vh]">
           <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-blue-900 text-white sticky top-0 z-10">
+            <thead className="bg-teal-900 text-white sticky top-0 z-10">
               <tr>
                 {tableHeaders.map((header) => (
                   <th
@@ -154,7 +154,7 @@ const ManageBranches = () => {
                     <td className="py-2 px-2 md:px-4">{branch.pincode}</td>
                     <td className="py-2 px-2 md:px-4 relative">
                       <button
-                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           setDropdownOpen(
@@ -180,7 +180,7 @@ const ManageBranches = () => {
                           </div>
                           <button
                             onClick={() => handleView(branch)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-blue-500 hover:text-white w-full text-left"
+                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-teal-500 hover:text-white w-full text-left"
                           >
                             <Eye size={16} /> View
                           </button>

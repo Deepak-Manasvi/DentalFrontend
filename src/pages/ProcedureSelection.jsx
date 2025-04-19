@@ -18,18 +18,18 @@ const ProcedureSelection = () => {
         <div
 
           onClick={() => navigate(`/admin/procedure-adult/${id}`)}
-          className="w-full h-48 bg-blue-100 hover:bg-blue-200 cursor-pointer rounded-xl shadow-md flex flex-col items-center justify-center text-center transition-all duration-200"
+          className="w-full h-48 bg-teal-100 hover:bg-teal-200 cursor-pointer rounded-xl shadow-md flex flex-col items-center justify-center text-center transition-all duration-200"
         >
-          <h2 className="text-2xl font-semibold text-blue-900 mb-2">Adult Dentistry</h2>
+          <h2 className="text-2xl font-semibold text-teal-900 mb-2">Adult Dentistry</h2>
           <p className="text-gray-700 px-4">Dental care and procedures for adults.</p>
         </div>
 
         {/* Pediatric Dentistry Card */}
         <div
           onClick={() => navigate(`/admin/procedure-pediatric/${id}`)}
-          className="w-full h-48 bg-green-100 hover:bg-green-200 cursor-pointer rounded-xl shadow-md flex flex-col items-center justify-center text-center transition-all duration-200"
+          className="w-full h-48 bg-teal-100 hover:bg-teal-200 cursor-pointer rounded-xl shadow-md flex flex-col items-center justify-center text-center transition-all duration-200"
         >
-          <h2 className="text-2xl font-semibold text-green-900 mb-2">Pediatric Dentistry</h2>
+          <h2 className="text-2xl font-semibold text-teal-900 mb-2">Pediatric Dentistry</h2>
           <p className="text-gray-700 px-4">Special dental care for children.</p>
         </div>
       </div></>
