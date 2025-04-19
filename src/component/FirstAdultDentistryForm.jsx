@@ -156,7 +156,7 @@
 //             src={`/adultdentistryTooth/tooth${tooth.id}.png`}
 //             alt={tooth.label}
 //             className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id]
-//               ? "border-2 border-blue-500 rounded"
+//               ? "border-2 border-teal-500 rounded"
 //               : ""
 //             }`}
 //           />
@@ -265,7 +265,7 @@
 //             </button>
 //             <button
 //               onClick={handleSave}
-//               className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+//               className="bg-teal-900 text-white px-6 py-2 rounded shadow"
 //             >
 //               Save
 //             </button>
@@ -274,7 +274,7 @@
 //           <div className="ml-auto">
 //             <button
 //               onClick={handleSave}
-//               className="bg-blue-900 text-white px-6 py-2 rounded shadow"
+//               className="bg-teal-900 text-white px-6 py-2 rounded shadow"
 //             >
 //               Save
 //             </button>
@@ -328,7 +328,7 @@
 //             </button>
 //             <button
 //               onClick={handleNext}
-//               className="bg-green-600 text-white px-6 py-2 rounded shadow"
+//               className="bg-teal-600 text-white px-6 py-2 rounded shadow"
 //             >
 //               Next
 //             </button>
@@ -461,7 +461,9 @@ const FirstAdultDentistryForm = ({
             <img
               src={`/adultdentistryTooth/tooth${tooth.id}.png`}
               alt={tooth.label}
-              className="w-14 h-14 object-contain"
+              className={`w-14 h-14 object-contain ${
+                selectedTeeth[tooth.id] ? "ring-2 ring-teal-500 rounded-md" : ""
+              }`}
             />
             <span className="text-[10px] text-center">{tooth.label}</span>
             <input
@@ -553,13 +555,14 @@ const FirstAdultDentistryForm = ({
         </button>
         <button
           onClick={handleSave}
-          className="bg-[#2B7A6F] text-white px-4 py-2 rounded"
+          className="bg-teal-900 text-white px-4 py-2 rounded"
         >
           Save
         </button>
       </div>
 
       {/* Saved Table */}
+<<<<<<< Updated upstream
      
    {saved && (
   <div>
@@ -595,21 +598,53 @@ const FirstAdultDentistryForm = ({
         ))}
       </tbody>
     </table>
+=======
+      {saved && (
+        <div>
+          <h3 className="text-lg font-bold mb-2">Saved Records</h3>
+          <table className="w-full text-sm">
+            <thead className="bg-teal-900 text-white">
+              <tr>
+                <th className="px-3 py-2 border">Tooth Name</th>
+                <th className="px-3 py-2 border">Dental Condition</th>
+                <th className="px-3 py-2 border">Complaint</th>
+                <th className="px-3 py-2 border">Examination</th>
+                <th className="px-3 py-2 border">Advice</th>
+                <th className="px-3 py-2 border">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((rec, index) => (
+                <tr key={index} className="border border-teal-200">
+                  <td className="px-3 py-2 border">{rec.toothName}</td>
+                  <td className="px-3 py-2 border">{rec.dentalCondition}</td>
+                  <td className="px-3 py-2 border">{rec.complaint}</td>
+                  <td className="px-3 py-2 border">{rec.examination}</td>
+                  <td className="px-3 py-2 border">{rec.advice}</td>
+                  <td className="px-3 py-2 border">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+>>>>>>> Stashed changes
 
-    <div className="mt-4 text-right">
-      <button
-        onClick={handleNext}
-        className="bg-[#2B7A6F] text-white px-6 py-2 rounded"
-      >
-        Next
-      </button>
-    </div>
-  </div>
-)}
-
-
-
-
+          <div className="mt-4 text-right">
+            <button
+              onClick={handleNext}
+              className="bg-teal-600 text-white px-6 py-2 rounded"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

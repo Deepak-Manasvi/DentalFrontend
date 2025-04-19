@@ -102,7 +102,7 @@ const ReceptionPatientList = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={handleCloseView}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
               >
                 Close
               </button>
@@ -115,7 +115,7 @@ const ReceptionPatientList = () => {
         <div className="relative">
           <div className="max-h-[28rem] overflow-y-auto">
             <table className="w-full table-auto border-collapse">
-              <thead className="bg-blue-900 text-white sticky top-0 z-10 text-sm md:text-base">
+              <thead className="bg-teal-900 text-white sticky top-0 z-10 text-sm md:text-base">
                 <tr>
                   <th className="py-2 px-4">Date</th>
                   <th className="py-2 px-4">App ID</th>
@@ -152,7 +152,7 @@ const ReceptionPatientList = () => {
                       <td className="py-2 px-4">
                         <div className="relative">
                           <button
-                            className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                            className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
                             onClick={() => toggleDropdown(index)}
                           >
                             Actions
@@ -172,7 +172,7 @@ const ReceptionPatientList = () => {
                                 </div>
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                                     onClick={() => handleView(patient)}
                                   >
                                     <Eye size={18} /> View
@@ -180,7 +180,7 @@ const ReceptionPatientList = () => {
                                 </li>
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                                     onClick={() => handleReceipt(patient)}
                                   >
                                     <Edit size={18} /> Receipt

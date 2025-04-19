@@ -105,7 +105,7 @@ const ViewReceipt = () => {
         <div className="relative">
           <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
             <table className="w-full border-collapse table-fixed">
-              <thead className="bg-blue-900 text-white sticky top-0 z-10">
+              <thead className="bg-teal-900 text-white sticky top-0 z-10">
                 <tr className="text-sm md:text-base">
                   {tableHeaders.map((header, idx) => (
                     <th key={idx} className="py-2 px-4 text-left w-1/10">{header}</th>
@@ -128,7 +128,7 @@ const ViewReceipt = () => {
                       <td className="py-2 px-4">{receipt.paymentMode}</td>
                       <td className="py-2 px-4 relative" ref={dropdownRef}>
                         <button
-                          className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                          className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
                           onClick={() => toggleDropdown(index)}
                         >
                           Actions
@@ -145,7 +145,7 @@ const ViewReceipt = () => {
                             <ul className="text-left">
                               <li>
                                 <button
-                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                                   onClick={() => handleView(receipt)}
                                 >
                                   <Eye size={16} /><span>View</span>
@@ -161,7 +161,7 @@ const ViewReceipt = () => {
                               </li>
                               <li>
                                 <button
-                                  className="w-full text-left px-4 py-2 text-green-600 hover:bg-green-100 flex items-center gap-2"
+                                  className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
                                   onClick={() => handlePrint(receipt.id)}
                                 >
                                   <CheckCircle size={16} /><span>Print</span>
@@ -169,7 +169,7 @@ const ViewReceipt = () => {
                               </li>
                               <li>
                                 <button
-                                  className="w-full text-left px-4 py-2 text-blue-600 hover:bg-blue-100 flex items-center gap-2"
+                                  className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
                                   onClick={() => handleGenerateInvoice(receipt)}
                                 >
                                   <CheckCircle size={16} /><span>Generate Invoice</span>
@@ -212,7 +212,7 @@ const ViewReceipt = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={handleCloseView}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
               >
                 Close
               </button>
@@ -271,7 +271,7 @@ const ViewReceipt = () => {
             <div className="flex justify-end mt-6 gap-3">
               <button
                 onClick={handleSave}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
               >
                 Save
               </button>

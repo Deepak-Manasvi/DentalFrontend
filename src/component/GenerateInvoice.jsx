@@ -57,7 +57,7 @@ const GenerateInvoice = () => {
           <div className="relative">
             <div className="max-h-[500px] overflow-y-auto">
               <table className="w-full border-collapse table-fixed">
-                <thead className="bg-blue-900 text-white sticky top-0 z-10">
+                <thead className="bg-teal-900 text-white sticky top-0 z-10">
                   <tr className="text-sm md:text-base">
                     {tableHeaders.map((header) => (
                       <th key={header} className="py-2 px-4 text-left">{header}</th>
@@ -78,7 +78,7 @@ const GenerateInvoice = () => {
                         <td className="py-2 px-4">{invoice.paymentMode}</td>
                         <td className="py-2 px-4 relative" ref={dropdownRef}>
                           <button
-                            className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                            className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
                             onClick={() => toggleDropdown(index)}
                           >
                             Actions
@@ -97,7 +97,7 @@ const GenerateInvoice = () => {
                               <ul className="text-left">
                                 <li>
                                   <button
-                                    className="w-full text-left px-4 py-2 text-blue-700 hover:bg-blue-100 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-teal-700 hover:bg-teal-100 flex items-center gap-2"
                                     onClick={() => handleGenerateInvoice(invoice)}
                                   >
                                     <Eye size={16} /><span>Invoice</span>

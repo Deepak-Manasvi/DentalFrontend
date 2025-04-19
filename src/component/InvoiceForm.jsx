@@ -16,7 +16,7 @@ const InvoiceForm = ({ data, onBack }) => {
         </div>
       </div>
 
-      <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-4 border-b pb-2 text-center">Invoice</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-teal-700 mb-4 border-b pb-2 text-center">Invoice</h2>
 
       {/* ... Keep your table and calculation logic unchanged */}
 
@@ -27,7 +27,7 @@ const InvoiceForm = ({ data, onBack }) => {
         >
           Back
         </button>
-        <button className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-900 w-full sm:w-auto">
+        <button className="bg-teal-700 text-white px-6 py-2 rounded hover:bg-teal-900 w-full sm:w-auto">
           Save
         </button>
         <button className="bg-amber-600 text-white px-6 py-2 rounded hover:bg-gray-800 w-full sm:w-auto">

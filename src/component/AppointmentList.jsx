@@ -34,10 +34,10 @@ const AppointmentList = () => {
                   <td className="py-2 px-4 border">{appointment.date}</td>
                   <td className="py-2 px-4 border">{appointment.doctor}</td>
                   <td className="py-2 px-4 border">{appointment.treatment}</td>
-                  <td className={`py-2 px-4 border font-semibold ${appointment.status === "Cancelled" ? "text-red-600" : "text-blue-600"}`}>
+                  <td className={`py-2 px-4 border font-semibold ${appointment.status === "Cancelled" ? "text-red-600" : "text-teal-600"}`}>
                     {appointment.status}
                   </td>
-                  <td className={`py-2 px-4 border font-semibold ${appointment.payment === "Unpaid" ? "text-red-600" : "text-green-600"}`}>
+                  <td className={`py-2 px-4 border font-semibold ${appointment.payment === "Unpaid" ? "text-red-600" : "text-teal-600"}`}>
                     {appointment.payment}
                   </td>
                 </tr>

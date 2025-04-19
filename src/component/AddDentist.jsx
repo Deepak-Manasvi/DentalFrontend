@@ -215,7 +215,7 @@ const AddDentist = () => {
             <button
               type="button"
               onClick={handleAddTimeSlot}
-              className="bg-green-500 text-white px-4 py-2 rounded-xl"
+              className="bg-teal-500 text-white px-4 py-2 rounded-xl"
             >
               Add
             </button>
@@ -224,7 +224,7 @@ const AddDentist = () => {
             {formData.timeSlots.map((slot, index) => (
               <span
                 key={index}
-                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center"
+                className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full flex items-center"
               >
                 {slot}
                 <button
@@ -246,7 +246,7 @@ const AddDentist = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+            className="bg-teal-600 text-white px-6 py-2 rounded-xl hover:bg-teal-700 transition"
           >
             Add Dentist
           </button>

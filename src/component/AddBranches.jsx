@@ -68,7 +68,7 @@ const AddBranches = () => {
   };
 
   return (
-    <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Add Branch
       </h2>
@@ -148,7 +148,7 @@ const AddBranches = () => {
         {/* Save Button */}
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+          className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition text-lg"
         >
           Save
         </button>

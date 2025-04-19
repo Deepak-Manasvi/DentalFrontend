@@ -10,7 +10,7 @@ const ShowRecords = ({ procedureList, setProcedureList }) => {
 
   return (
     <table className="w-full text-base mb-8 border border-gray-200 shadow-sm rounded overflow-hidden mt-6">
-      <thead className="bg-blue-100 text-gray-700 uppercase text-sm">
+      <thead className="bg-teal-100 text-gray-700 uppercase text-sm">
         <tr>
           <th className="p-3 text-left">Procedure</th>
           <th className="p-3 text-left">Treatment</th>
@@ -22,7 +22,7 @@ const ShowRecords = ({ procedureList, setProcedureList }) => {
         {procedureList.map((item, i) => (
           <tr
             key={i}
-            className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}
+            className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-teal-50 transition-colors`}
           >
             <td className="p-3">{item.procedure}</td>
             <td className="p-3">{item.treatment}</td>

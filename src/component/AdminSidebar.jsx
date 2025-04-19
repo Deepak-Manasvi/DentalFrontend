@@ -54,7 +54,7 @@ const AdminSidebar = ({
       {/* Mobile Toggle Button */}
       <div>
         <button
-          className="md:hidden p-3 text-white bg-blue-900 fixed top-2 left-2 z-50 rounded"
+          className="md:hidden p-3 text-white bg-teal-900 fixed top-2 left-2 z-50 rounded"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
           <FaBars className="text-xl" />
@@ -112,7 +112,7 @@ const AdminSidebar = ({
         {/* Sidebar Sections */}
         <div className="mt-6">
           <div
-            className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+            className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
             onClick={() => navigate("dashboard")}
           >
             <span>Dashboard</span>
@@ -126,7 +126,7 @@ const AdminSidebar = ({
           {isSectionVisible("appointment") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("appointment")}
               >
                 <span>Appointment</span>
@@ -140,13 +140,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/add-appointment`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Add Appointment
                   </Link>
                   <Link
                     to={`/${userRole}/appointment-list`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Appointment List
                   </Link>
@@ -159,7 +159,7 @@ const AdminSidebar = ({
           {isSectionVisible("patients") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("patients")}
               >
                 <span>Patients</span>
@@ -173,13 +173,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/patient-list`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Patient List
                   </Link>
                   <Link
                     to={`/${userRole}/patient-history`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Patient History
                   </Link>
@@ -192,7 +192,7 @@ const AdminSidebar = ({
           {isSectionVisible("services") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("services")}
               >
                 <span>Services</span>
@@ -206,13 +206,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/add-services`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Add Services
                   </Link>
                   <Link
                     to={`/${userRole}/manage-services`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Manage Services
                   </Link>
@@ -225,7 +225,7 @@ const AdminSidebar = ({
           {isSectionVisible("branches") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("branches")}
               >
                 <span>Branches</span>
@@ -239,13 +239,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/add-branches`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Add Branches
                   </Link>
                   <Link
                     to={`/${userRole}/manage-branches`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Manage Branches
                   </Link>
@@ -258,7 +258,7 @@ const AdminSidebar = ({
           {isSectionVisible("dentist") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("dentist")}
               >
                 <span>Dentist</span>
@@ -272,13 +272,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/add-dentist`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Add Dentist
                   </Link>
                   <Link
                     to={`/${userRole}/manage-dentist`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Manage Dentist
                   </Link>
@@ -291,7 +291,7 @@ const AdminSidebar = ({
           {isSectionVisible("staff") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("staff")}
               >
                 <span>Staff</span>
@@ -305,13 +305,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/add-staff`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Add Staff
                   </Link>
                   <Link
                     to={`/${userRole}/manage-staff`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Manage Staff
                   </Link>
@@ -324,7 +324,7 @@ const AdminSidebar = ({
           {isSectionVisible("billing") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("billing")}
               >
                 <span>Billing</span>
@@ -338,26 +338,26 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/reception-patient`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Receipt
                   </Link>
                   <Link
                     to={`/${userRole}/ViewReceipt`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Receipt List
                   </Link>
                   <Link
                     to={`/${userRole}/invoiceform`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Generate Invoice
                   </Link>
                   {userRole === "admin" && (
                     <Link
                       to={`/${userRole}/invoicelist`}
-                      className="block p-2 hover:bg-blue-700"
+                      className="block p-2 hover:bg-teal-700"
                     >
                       Invoice List
                     </Link>
@@ -371,7 +371,7 @@ const AdminSidebar = ({
           {isSectionVisible("report") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("report")}
               >
                 <span>Report</span>
@@ -385,13 +385,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/revenue-report`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Revenue Report
                   </Link>
                   <Link
                     to={`/${userRole}/revenue-report`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Patient Report
                   </Link>
@@ -404,7 +404,7 @@ const AdminSidebar = ({
           {isSectionVisible("setting") && (
             <>
               <div
-                className="flex items-center justify-between p-2 cursor-pointer hover:bg-blue-700"
+                className="flex items-center justify-between p-2 cursor-pointer hover:bg-teal-700"
                 onClick={() => toggleSection("setting")}
               >
                 <span>Setting</span>
@@ -418,13 +418,13 @@ const AdminSidebar = ({
                 <div className="ml-4">
                   <Link
                     to={`/${userRole}/setting`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     Clinic Configuration
                   </Link>
                   <Link
                     to={`/${userRole}/setting`}
-                    className="block p-2 hover:bg-blue-700"
+                    className="block p-2 hover:bg-teal-700"
                   >
                     User profile
                   </Link>

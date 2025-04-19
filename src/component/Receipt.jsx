@@ -155,13 +155,13 @@ const Receipt = () => {
       <div className="text-center mt-8 space-x-4">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
         >
           Back
         </button>
         {/* <button
           onClick={downloadReceipt}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
         >
           Download Receipt
         </button> */}

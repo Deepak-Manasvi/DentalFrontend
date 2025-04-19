@@ -83,7 +83,7 @@ const DentalTrialForm = () => {
             name="clientName"
             placeholder="Enter your name"
             required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300"
             onChange={handleChange}
           />
         </div>
@@ -96,7 +96,7 @@ const DentalTrialForm = () => {
             name="DoctorName"
             placeholder="Doctor's Name"
             required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300"
             onChange={handleChange}
           />
         </div>
@@ -109,7 +109,7 @@ const DentalTrialForm = () => {
             name="phone"
             placeholder="Your Phone Number"
             required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300"
             onChange={handleChange}
           />
         </div>
@@ -122,7 +122,7 @@ const DentalTrialForm = () => {
             name="email"
             placeholder="Your Email Address"
             required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300"
             onChange={handleChange}
           />
         </div>
@@ -135,7 +135,7 @@ const DentalTrialForm = () => {
             name="address"
             placeholder="Your Address"
             required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300"
             onChange={handleChange}
           />
         </div>
@@ -145,7 +145,7 @@ const DentalTrialForm = () => {
           <input
             type="checkbox"
             name="termsAccepted"
-            className="h-5 w-5 text-blue-500"
+            className="h-5 w-5 text-teal-500"
             onChange={handleChange}
           />
           <label className="text-gray-600">I agree to the Terms & Conditions</label>
@@ -156,7 +156,7 @@ const DentalTrialForm = () => {
           <input
             type="checkbox"
             name="consentGiven"
-            className="h-5 w-5 text-blue-500"
+            className="h-5 w-5 text-teal-500"
             onChange={handleChange}
           />
           <label className="text-gray-600">I consent to receive reminders</label>
@@ -167,7 +167,7 @@ const DentalTrialForm = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold p-3 rounded-lg hover:shadow-lg transition duration-300"
+          className="w-full bg-gradient-to-r from-teal-500 to-teal-700 text-white font-semibold p-3 rounded-lg hover:shadow-lg transition duration-300"
         >
           ✅ Book Trial Session
         </motion.button>

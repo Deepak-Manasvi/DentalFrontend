@@ -232,7 +232,7 @@ const ManageServices = () => {
                 dropdownRef={dropdownRef}
                 customColumns={getCustomColumns()}
                 containerClassName=""
-                headerClassName="bg-blue-900 text-white"
+                headerClassName="bg-teal-900 text-white"
                 dropdownClassName="absolute top-0 right-0 z-10 mt-2 bg-white shadow-lg rounded-lg p-2"
               />
             )}
@@ -263,7 +263,7 @@ const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
                 {key.replace(/([A-Z])/g, " $1").trim()}
               </label>
               <input
-                className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
                 value={value || ""}
                 onChange={(e) => onChange(e, key)}
               />
@@ -278,7 +278,7 @@ const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
           Cancel
         </button>
         <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded"
           onClick={onSave}
         >
           Save Changes

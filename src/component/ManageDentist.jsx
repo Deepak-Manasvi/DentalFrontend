@@ -100,7 +100,7 @@ const ManageDentist = () => {
               <strong>Email:</strong> {selectedDentist?.email}
             </p>
             <button
-              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-6 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
               onClick={() => setShowModal(false)}
             >
               Close
@@ -124,7 +124,7 @@ const ManageDentist = () => {
       {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full text-sm text-gray-700">
-          <thead className="bg-blue-900 text-white sticky top-0 z-10">
+          <thead className="bg-teal-900 text-white sticky top-0 z-10">
             <tr>
               {tableHeaders.map((header) => (
                 <th key={header} className="py-3 px-4 text-left font-medium">
@@ -147,7 +147,7 @@ const ManageDentist = () => {
                   <td className="py-3 px-4">{dentist.email}</td>
                   <td className="py-3 px-4 relative">
                     <button
-                      className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center gap-1"
+                      className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
                       onClick={() => toggleDropdown(dentist._id || index)}
                     >
                       Actions
@@ -171,7 +171,7 @@ const ManageDentist = () => {
                           <li>
                             <button
                               onClick={() => handleView(dentist)}
-                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                             >
                               <Eye size={16} /> View
                             </button>
@@ -179,7 +179,7 @@ const ManageDentist = () => {
                           <li>
                             <button
                               onClick={() => handleEdit(dentist)}
-                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-green-500 hover:text-white flex items-center gap-2"
+                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                             >
                               <Pencil size={16} /> Edit
                             </button>

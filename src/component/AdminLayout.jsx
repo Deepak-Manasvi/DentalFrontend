@@ -130,7 +130,7 @@ const AdminLayout = () => {
               </button>
             )}
             {/* <button
-              className="flex items-center gap-2 text-xl font-semibold bg-blue-700 hover:bg-blue-600 ml-60 px-4 py-2 rounded transition"
+              className="flex items-center gap-2 text-xl font-semibold bg-teal-700 hover:bg-teal-600 ml-60 px-4 py-2 rounded transition"
               onClick={handleOpenBusinessForm}
             >
               <span>Business Name</span>
@@ -146,7 +146,7 @@ const AdminLayout = () => {
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2B7A6F] focus:border-blue-500 text-white bg-[#2B7A6F]"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2B7A6F] focus:border-teal-500 text-white bg-[#2B7A6F]"
               >
                 {branches.map((branch) => (
                   <option key={branch._id} value={branch._id}>
@@ -162,7 +162,7 @@ const AdminLayout = () => {
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 hover:bg-blue-700 transition p-2 rounded-md"
+              className="flex items-center gap-2 hover:bg-teal-700 transition p-2 rounded-md"
               title="Logout"
             >
               <FaUserCircle className="text-2xl" />

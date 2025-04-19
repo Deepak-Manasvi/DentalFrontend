@@ -59,14 +59,14 @@ export default function ManageStaff() {
         <input
           type="text"
           placeholder="Search staff..."
-          className="w-full md:w-1/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full md:w-1/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-blue-900 text-white">
+          <thead className="bg-teal-900 text-white">
             <tr>
               <th className="py-3 px-4">S.No</th>
               <th className="py-3 px-4">First Name</th>
@@ -91,7 +91,7 @@ export default function ManageStaff() {
                     <div className="relative inline-block text-left">
                       <button
                         onClick={() => toggleDropdown(index)}
-                        className="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-700"
+                        className="bg-teal-900 text-white px-3 py-1 rounded hover:bg-teal-700"
                       >
                         Actions
                       </button>

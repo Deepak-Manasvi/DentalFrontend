@@ -110,7 +110,7 @@ const PatientList = () => {
           <input
             type="text"
             placeholder="Search patients..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -135,7 +135,7 @@ const PatientList = () => {
 
       <div className="overflow-x-auto bg-white rounded-lg shadow max-w-full">
         <table className="min-w-full text-xs sm:text-sm md:text-base border-collapse">
-          <thead className="bg-blue-900 text-white sticky top-0 z-10">
+          <thead className="bg-teal-900 text-white sticky top-0 z-10">
             <tr>
               {tableHeaders.map((header) => (
                 <th
@@ -173,7 +173,7 @@ const PatientList = () => {
                     <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
                       <button
                         onClick={(e) => toggleDropdown(patient.appId, e)}
-                        className="bg-blue-900 text-white px-3 py-1 rounded-md hover:bg-blue-600 text-sm"
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 text-sm"
                       >
                         Actions
                       </button>
@@ -213,7 +213,7 @@ const PatientList = () => {
               <li>
                 <button
                   onClick={() => handleAction("view", dropdownOpen)}
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
                 >
                   <Eye size={16} />
                   <span>Start Procedure</span>

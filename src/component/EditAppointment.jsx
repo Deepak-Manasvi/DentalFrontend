@@ -294,7 +294,7 @@ const EditAppointment = () => {
   }
 
   return (
-    <div className="mx-auto p-8 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-2xl">
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Edit Patient Details
       </h2>
@@ -450,7 +450,7 @@ const EditAppointment = () => {
               selectedMedicalHistory.map((condition) => (
                 <span
                   key={condition}
-                  className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full"
+                  className="bg-teal-100 text-teal-700 text-sm px-2 py-1 rounded-full"
                 >
                   {condition}
                 </span>
@@ -472,7 +472,7 @@ const EditAppointment = () => {
                   onClick={() => handleMedicalHistorySelect(condition)}
                   className={`p-2 cursor-pointer hover:bg-gray-100 ${
                     selectedMedicalHistory.includes(condition)
-                      ? "bg-blue-50 font-semibold"
+                      ? "bg-teal-50 font-semibold"
                       : ""
                   }`}
                 >
@@ -768,7 +768,7 @@ const EditAppointment = () => {
           Cancel
         </button>
         <button
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition text-lg"
+          className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition text-lg"
           onClick={handleUpdateAppointment}
         >
           Update Appointment

@@ -31,7 +31,7 @@ const ActionDropdown = ({
   return (
     <div className="relative inline-block text-left">
       <button
-        className="bg-blue-900 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition"
+        className="bg-teal-900 text-white px-4 py-2 rounded-md shadow hover:bg-teal-700 transition"
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
@@ -69,7 +69,7 @@ const ActionDropdown = ({
                   }}
                   className="flex items-center gap-2 px-4 py-2 w-full hover:bg-gray-100 text-sm text-left"
                 >
-                  <FaEye className="text-green-500" /> View
+                  <FaEye className="text-teal-500" /> View
                 </button>
               </li>
             )}
@@ -80,9 +80,9 @@ const ActionDropdown = ({
                     onEdit(item);
                     setIsOpen(false);
                   }}
-                  className="flex items-center gap-2 px-4 py-2 w-full hover:bg-blue-100 text-sm text-left"
+                  className="flex items-center gap-2 px-4 py-2 w-full hover:bg-teal-100 text-sm text-left"
                 >
-                  <AiFillEdit className="text-blue-500" /> Edit
+                  <AiFillEdit className="text-teal-500" /> Edit
                 </button>
               </li>
             )}
@@ -106,9 +106,9 @@ const ActionDropdown = ({
                     onApprove(item._id);
                     setIsOpen(false);
                   }}
-                  className="flex items-center gap-2 px-4 py-2 w-full hover:bg-green-100 text-sm text-left"
+                  className="flex items-center gap-2 px-4 py-2 w-full hover:bg-teal-100 text-sm text-left"
                 >
-                  <FaCheckCircle className="text-green-500" /> Approve
+                  <FaCheckCircle className="text-teal-500" /> Approve
                 </button>
               </li>
             )}

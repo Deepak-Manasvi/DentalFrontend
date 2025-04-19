@@ -19,7 +19,7 @@ const QuickLinks = () => {
           <button
             key={i}
             onClick={() => navigate(link.to)}
-            className="bg-gray-100 p-3 rounded-md text-center hover:bg-blue-100 hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+            className="bg-gray-100 p-3 rounded-md text-center hover:bg-teal-100 hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
           >
             {link.label}
           </button>

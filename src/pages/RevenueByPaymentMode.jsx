@@ -12,7 +12,7 @@ const dummyData = [
   { date: "2025-04-05", name: "Eva", contact: "6667778888", doctor: "Dr. Banner", treatment: "Whitening", amount: 1800, mode: "UPI" },
 ];
 
-const COLORS = ["#3b82f6", "#10b981", "#facc15"]; // Blue, Green, Yellow
+const COLORS = ["#3b82f6", "#10b981", "#facc15"]; // teal, teal, Yellow
 
 const RevenueByPaymentMode = () => {
   const [startDate, setStartDate] = useState(null);
@@ -105,7 +105,7 @@ const RevenueByPaymentMode = () => {
                   <td className="border px-4 py-2">{item.treatment}</td>
                   <td className="border px-4 py-2 font-semibold">₹{item.amount}</td>
                   <td className="border px-4 py-2 font-medium">
-                    <span className={isSelected ? "text-white" : "text-green-600"}>Paid</span>
+                    <span className={isSelected ? "text-white" : "text-teal-600"}>Paid</span>
                   </td>
                 </tr>
               );
