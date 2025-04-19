@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Eye, Pencil, Trash2, Search, X } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageBranches = () => {
   const [branches, setBranches] = useState([]);
@@ -20,6 +22,7 @@ const ManageBranches = () => {
       setBranches(res.data.branches);
     } catch (error) {
       console.error("Error fetching branches:", error);
+      toast.error("Failed to fetch branches");
     }
   };
 
@@ -54,9 +57,11 @@ const ManageBranches = () => {
         await axios.delete(
           `${import.meta.env.VITE_APP_BASE_URL}/branch/deleteBranchById/${id}`
         );
+        toast.success("Branch deleted successfully");
         fetchBranches();
       } catch (error) {
         console.error("Error deleting branch:", error);
+        toast.error("Failed to delete branch");
       } finally {
         setDropdownOpen(null);
       }
@@ -80,6 +85,18 @@ const ManageBranches = () => {
 
   return (
     <div className="mx-auto px-2 md:px-4 py-4">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-2xl w-11/12 md:w-1/2">

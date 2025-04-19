@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddBranches = () => {
   const token = localStorage.getItem("token");
@@ -43,30 +45,40 @@ const AddBranches = () => {
       setErrors(validationErrors);
       return;
     }
-
-    const res = await axios.post(
-      `${import.meta.env.VITE_APP_BASE_URL}/branch/createBranch`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    alert("Branch Created successfully!");
-
-    navigate("/admin/manage-branches");
-
-    // ✅ Reset form after submit
-    setFormData({
-      name: "",
-      address: "",
-      contact: "",
-      pincode: "",
-    });
+  
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/branch/createBranch`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+  
+      // Show success toast notification
+      toast.success("Branch created successfully!");
+  
+      // Delay the redirect to allow the toast to be visible
+      setTimeout(() => {
+        navigate("/admin/manage-branches");
+      }, 1500); // Redirect after 1.5 seconds
+  
+      // Reset form after submit
+      setFormData({
+        name: "",
+        address: "",
+        contact: "",
+        pincode: "",
+      });
+    } catch (error) {
+      // Show error toast notification
+      toast.error("Failed to create branch. Please try again.");
+      console.error("Error creating branch:", error);
+    }
   };
-
+  
   return (
     <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
@@ -153,6 +165,9 @@ const AddBranches = () => {
           Save
         </button>
       </form>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };

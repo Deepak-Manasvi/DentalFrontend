@@ -1,12 +1,18 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
 
-const PrescriptionForm = () => {
-  const { id } = useParams();
+export default function PrescriptionForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [prescriptionData, setPrescriptionData] = useState(null);
-  const [patientData, setPatientData] = useState(null)
+  const [patientData, setPatientData] = useState(null);
+
+  // Save prescription items to localStorage
+  const savePrescriptionItems = (items) => {
+    localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,6 +22,13 @@ const PrescriptionForm = () => {
         }/appointments/getAppointmentByAppId/${id}`
       );
       setPatientData(res.data.appointment);
+      
+      // Load saved prescription items from localStorage
+      const savedItems = localStorage.getItem(`prescription_${id}`);
+      if (savedItems) {
+        setPrescriptionItems(JSON.parse(savedItems));
+      }
+      
       const dummyData = {
         clinicName: "Smiles Dental Care",
         doctorName: "Dr. XYZ (BDS, MDS)",
@@ -25,7 +38,7 @@ const PrescriptionForm = () => {
           gender: "female",
           date: "07-Apr-2025",
         },
-        diagnosis: ["Toothache", "Sensitivity"],
+        medicalHistory: ["Toothache", "Sensitivity"],
         tests: "X-Ray",
         advice: "Avoid cold drinks and sweets.",
         prescriptionItems: [
@@ -46,110 +59,429 @@ const PrescriptionForm = () => {
 
     fetchData();
   }, [id]);
-  console.log(patientData)
- 
+  console.log(patientData);
+  
 
-  // useEffect(() => {
-  //   fetchDataForPatient();
-  // }, []);
+  const [diagnosisList, setDiagnosisList] = useState([
+    "Toothache",
+    "Sensitivity",
+  ]);
+  const [diagnosis, setDiagnosis] = useState("");
+  const [tests, setTests] = useState("X-Ray");
+  const [advice, setAdvice] = useState("Avoid cold drinks and sweets");
 
-  const handleSave = () => {
-    console.log("Saving Prescription:", prescriptionData);
-    alert("Prescription saved!");
+  const [medicineSearch, setMedicineSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [prescriptionItems, setPrescriptionItems] = useState([]);
+
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [dosage, setDosage] = useState("");
+  const [timing, setTiming] = useState("");
+
+  // API call to fetch medicines
+  const fetchMedicines = async () => {
+    if (!medicineSearch.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3500/api/services/getAllMedicine`
+      );
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.medicines)) {
+        const filtered = data.medicines.filter((med) =>
+          med.name.toLowerCase().includes(medicineSearch.toLowerCase())
+        );
+        setSearchResults(filtered);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error fetching medicines:", error);
+      setSearchResults([]);
+    }
+    setLoading(false);
   };
 
-  if (!prescriptionData) return <div className="p-10 text-xl">Loading...</div>;
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (medicineSearch.trim()) {
+        fetchMedicines();
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
 
-  const {
-    clinicName,
-    doctorName,
-    patientName,
-    diagnosis,
-    tests,
-    gender,
-    advice,
-    age,
-    appointmentDate,
-    prescriptionItems,
-  } = prescriptionData;
+    return () => clearTimeout(delayDebounce);
+  }, [medicineSearch]);
+
+  const handleSearchClick = () => {
+    fetchMedicines();
+  };
+
+  const handleSelectMedicine = (medicine) => {
+    setSelectedMedicine(medicine);
+    setSearchResults([]);
+    setMedicineSearch("");
+  };
+
+  const addDiagnosis = () => {
+    if (diagnosis.trim()) {
+      setDiagnosisList([...diagnosisList, diagnosis.trim()]);
+      setDiagnosis("");
+    }
+  };
+
+  const removeDiagnosis = (index) => {
+    const updatedList = [...diagnosisList];
+    updatedList.splice(index, 1);
+    setDiagnosisList(updatedList);
+  };
+
+  const addMedicineToPrescription = () => {
+    if (!selectedMedicine || !dosage.trim() || !timing.trim()) return;
+    const updatedItems = [
+      ...prescriptionItems,
+      {
+        name: selectedMedicine.name,
+        dosage,
+        timing,
+      },
+    ];
+    setPrescriptionItems(updatedItems);
+    savePrescriptionItems(updatedItems);
+    setSelectedMedicine(null);
+    setDosage("");
+    setTiming("");
+  };
+
+  const removePrescriptionItem = (index) => {
+    const updatedItems = [...prescriptionItems];
+    updatedItems.splice(index, 1);
+    setPrescriptionItems(updatedItems);
+    savePrescriptionItems(updatedItems); 
+  };
+
+  const handlePrintPDF = () => {
+    const doc = new jsPDF();
+
+    const lineSpacing = 8;
+    let y = 10;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Smiles Dental Care", 105, y, null, null, "center");
+
+    y += lineSpacing;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Dr. XYZ (BDS, MDS)", 105, y, null, null, "center");
+
+    y += lineSpacing + 2;
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(10, y, 200, y);
+
+    y += lineSpacing;
+    doc.setFont("helvetica", "bold");
+    doc.text("Patient Details", 10, y);
+    y += lineSpacing;
+
+    doc.setFont("helvetica", "normal");
+    doc.text(`Name: ${prescriptionData?.patient.name}`, 10, y);
+    doc.text(`Age: ${prescriptionData?.patient.age}`, 80, y);
+    doc.text(`Gender: ${prescriptionData?.patient.gender}`, 130, y);
+
+    y += lineSpacing;
+    doc.text(`Date: ${prescriptionData?.patient.date}`, 10, y);
+
+    y += lineSpacing + 2;
+    doc.setFont("helvetica", "bold");
+    doc.text("Diagnosis", 10, y);
+    y += lineSpacing;
+
+    doc.setFont("helvetica", "normal");
+    prescriptionData?.medicalHistory.forEach((item, index) => {
+      doc.text(`- ${item}`, 12, y + index * lineSpacing);
+    });
+
+    y += prescriptionData?.medicalHistory.length * lineSpacing + 4;
+    doc.setFont("helvetica", "bold");
+    doc.text("Tests", 10, y);
+    y += lineSpacing;
+    doc.setFont("helvetica", "normal");
+    doc.text(prescriptionData?.tests, 12, y);
+
+    y += lineSpacing + 2;
+    doc.setFont("helvetica", "bold");
+    doc.text("Advice", 10, y);
+    y += lineSpacing;
+    doc.setFont("helvetica", "normal");
+    doc.text(prescriptionData?.advice, 12, y, { maxWidth: 180 });
+
+    y += lineSpacing * 2;
+    doc.setFont("helvetica", "bold");
+    doc.text("Prescribed Medicines", 10, y);
+    y += lineSpacing;
+
+    doc.setFont("helvetica", "normal");
+    // Use the prescriptionItems state for up-to-date medicine information
+    prescriptionItems.length > 0 
+      ? prescriptionItems.forEach((item, index) => {
+          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
+            item.timing
+          }`;
+          doc.text(itemText, 12, y + index * lineSpacing);
+        })
+      : prescriptionData?.prescriptionItems.forEach((item, index) => {
+          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
+            item.timing
+          }`;
+          doc.text(itemText, 12, y + index * lineSpacing);
+        });
+
+    y += (prescriptionItems.length > 0 ? prescriptionItems.length : prescriptionData?.prescriptionItems.length) * lineSpacing + 10;
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      "Get well soon! For any concerns, call us at +91-XXXXXXXXXX",
+      105,
+      290,
+      null,
+      null,
+      "center"
+    );
+
+    doc.save(`prescription-${prescriptionData?.patient.name}.pdf`);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto p-10 shadow-2xl font-sans bg-white text-lg">
-      {/* Header */}
-      <div className="pb-6 mb-6">
-        {/* <h1 className="text-4xl font-bold text-teal-900">{clinicName}</h1> */}
-        <p className="text-2xl text-gray-700 mt-1">{patientData.doctorName}</p>
-
-        {/* Patient Info */}
-        <div className="grid grid-cols-2 gap-4 text-lg mt-6 bg-white p-4 rounded-md border border-gray-300">
-          
-          <div className="flex gap-2">
-            <h1 className="font-semibold">Name:</h1>
-            <p>{patientData.patientName}</p>
-
-            </div>
-            <div className="flex gap-2">
-            <h1 className="font-semibold">Age:</h1>
-            <p>{patientData.age}</p>
-
-            </div>
-            <div className="flex gap-2">
-            <h1 className="font-semibold">Gender:</h1>
-            <p>{patientData.gender}</p>
-
-            </div>
-            <div className="flex gap-2">
-            <h1 className="font-semibold">Date:</h1>
-            <p>{patientData.appointmentDate}</p>
-
-            </div>
+    <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
+      <div className="pb-4 mb-6 border-b-2 border-teal-700">
+        <h1 className="text-3xl font-bold text-teal-700">Prescription</h1>
+        <div className="flex justify-between items-end mt-2">
+          <p className="text-xl text-gray-700">{patientData?.doctorName}</p>
+          <p className="text-sm text-gray-600">
+            Date: {new Date().toLocaleDateString()}
+          </p>
         </div>
-      </div>
-
-      {/* Body Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Left Column */}
-        <div className="col-span-1 space-y-6">
-          {diagnosis?.length > 0 && (
-            <Section title="Diagnosis">
-              <ul className="list-disc pl-6 text-base">
-                {diagnosis.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </Section>
-          )}
-
-          {tests && (
-            <Section title="Tests">
-              <p className="text-base">{tests}</p>
-            </Section>
-          )}
-
-          {advice && (
-            <Section title="Advice">
-              <p className="text-base">{advice}</p>
-            </Section>
-          )}
-        </div>
-
-        {/* Right Column */}
-        <div className="col-span-3 pl-8">
-          <h2 className="text-3xl font-bold mb-4">Rx</h2>
-          <div className="space-y-6">
-            {prescriptionItems?.length > 0 ? (
-              prescriptionItems.map((item, index) => (
-                <PrescriptionItem key={index} {...item} />
-              ))
-            ) : (
-              <p className="text-gray-600">No prescriptions added.</p>
-            )}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+          <div>
+            <span className="font-bold text-black">Patient: </span>
+            {patientData?.patientName}
+          </div>
+          <div>
+            <span className="font-bold text-black">Age: </span>
+            {patientData?.age}
+          </div>
+          <div>
+            <span className="font-bold text-black">Gender: </span>
+            {patientData?.gender}
+          </div>
+          <div>
+            <span className="font-bold text-black">Appt. Date: </span>
+            {patientData?.appointmentDate}
           </div>
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="flex justify-between mt-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="col-span-1">
+          <div className="mt-4">
+            <h3 className="text-2xl font-bold mb-4 text-teal-700">
+              2. Diagnosis
+            </h3>
+            <ul className="list-disc pl-5">
+              {patientData?.medicalHistory?.map((historyItem, index) => (
+                <li key={index} className="text-sm text-gray-700">
+                  {historyItem}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-md font-semibold mb-2 text-teal-700">
+              2. Tests
+            </h3>
+            <textarea
+              value={tests}
+              onChange={(e) => setTests(e.target.value)}
+              placeholder="Recommended tests"
+              className="w-full p-2 border border-gray-300 rounded text-sm h-20"
+            />
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-md font-semibold mb-2 text-teal-700">
+              3. Advice
+            </h3>
+            <textarea
+              value={advice}
+              onChange={(e) => setAdvice(e.target.value)}
+              placeholder="Advice for patient"
+              className="w-full p-2 border border-gray-300 rounded text-sm h-20"
+            />
+          </div>
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <div className="bg-gray-50 p-4 rounded border border-gray-200">
+            <h2 className="text-2xl font-bold mb-4 text-teal-700 border-b border-teal-700 pb-2">
+              Rx
+            </h2>
+
+            <div className="mb-4">
+              <div className="flex mb-2">
+                <input
+                  type="text"
+                  value={medicineSearch}
+                  onChange={(e) => setMedicineSearch(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearchClick()}
+                  placeholder="Search medicine..."
+                  className="flex-1 p-2 border border-gray-300 rounded-l text-sm"
+                />
+                <button
+                  onClick={handleSearchClick}
+                  className="px-4 py-2 bg-teal-700 text-white rounded-r hover:bg-teal-800 text-sm"
+                >
+                  {loading ? "Loading..." : "Search"}
+                </button>
+              </div>
+
+              {loading && (
+                <div className="text-center py-2 text-sm text-gray-500 bg-gray-100 rounded">
+                  <p>Searching medicines from API...</p>
+                  <p className="text-xs text-gray-400">
+                    http://localhost:3500/api/services/getAllMedicine
+                  </p>
+                </div>
+              )}
+
+              {searchResults.length > 0 && (
+                <div className="bg-white border border-gray-200 rounded shadow-sm max-h-40 overflow-y-auto">
+                  <div className="bg-gray-100 px-2 py-1 text-xs text-gray-500">
+                    Found {searchResults.length} medicine(s)
+                  </div>
+                  <ul className="divide-y divide-gray-100">
+                    {searchResults.map((medicine) => (
+                      <li
+                        key={medicine.id}
+                        onClick={() => handleSelectMedicine(medicine)}
+                        className="p-2 hover:bg-gray-50 cursor-pointer text-sm flex justify-between items-center"
+                      >
+                        <span>{medicine.name}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSearchResults(
+                              searchResults.filter(
+                                (med) => med.id !== medicine.id
+                              )
+                            );
+                          }}
+                          className="text-gray-400 hover:text-red-500 p-1 text-xs"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {medicineSearch && searchResults.length === 0 && !loading && (
+                <div className="text-center py-2 text-sm text-gray-500 bg-gray-100 rounded">
+                  No medicines found matching "{medicineSearch}"
+                </div>
+              )}
+            </div>
+
+            {selectedMedicine && (
+              <div className="bg-white p-3 rounded border border-gray-200 mb-4 relative">
+                <button
+                  onClick={() => {
+                    setSelectedMedicine(null);
+                    setDosage("");
+                    setTiming("");
+                  }}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1 text-xl"
+                >
+                  ✕
+                </button>
+
+                <p className="font-medium text-sm mb-2">
+                  {selectedMedicine.name}
+                </p>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <input
+                    type="text"
+                    value={dosage}
+                    onChange={(e) => setDosage(e.target.value)}
+                    placeholder="Dosage (e.g. 1 tablet)"
+                    className="p-2 border border-gray-300 rounded text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={timing}
+                    onChange={(e) => setTiming(e.target.value)}
+                    placeholder="Timing (e.g. After meals)"
+                    className="p-2 border border-gray-300 rounded text-sm"
+                  />
+                </div>
+                <button
+                  onClick={addMedicineToPrescription}
+                  className="w-full p-2 bg-teal-700 text-white rounded hover:bg-teal-800 text-sm"
+                >
+                  Add Medicine to Prescription
+                </button>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {prescriptionItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-3 rounded border border-gray-200 relative flex items-start"
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-teal-700">{item.name}</p>
+                    <div className="grid grid-cols-2 gap-2 mt-1 text-sm">
+                      <p>
+                        <span className="text-gray-600">Dosage:</span>{" "}
+                        {item.dosage}
+                      </p>
+                      <p>
+                        <span className="text-gray-600">Timing:</span>{" "}
+                        {item.timing}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removePrescriptionItem(index)}
+                    className="text-gray-400 hover:text-red-500 p-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              {prescriptionItems.length === 0 && (
+                <p className="text-gray-500 text-sm italic text-center py-2">
+                  No medicines prescribed yet
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8">
         <button
           onClick={() => navigate(-1)}
           className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
@@ -157,31 +489,12 @@ const PrescriptionForm = () => {
           ⬅ Back
         </button>
         <button
-          onClick={handleSave}
-          className="px-6 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition"
+          onClick={handlePrintPDF}
+          className="px-5 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition text-sm"
         >
-          Save
+          Print PDF
         </button>
       </div>
     </div>
   );
-};
-
-const Section = ({ title, children }) => (
-  <div className="border border-gray-300 rounded-md overflow-hidden">
-    <h3 className="bg-teal-900 text-white px-4 py-2 text-lg font-semibold">
-      {title}
-    </h3>
-    <div className="p-4 bg-gray-50">{children}</div>
-  </div>
-);
-
-const PrescriptionItem = ({ name, dosage, timing }) => (
-  <div className="border border-gray-300 p-6 rounded-lg bg-white shadow-sm">
-    <p className="font-semibold text-xl">{name}</p>
-    <p className="text-base mt-1">Dosage: {dosage}</p>
-    <p className="text-base">Timing: {timing}</p>
-  </div>
-);
-
-export default PrescriptionForm;
+}

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios"
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddDentist = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +12,7 @@ const AddDentist = () => {
     password: "",
     opdAmount: "",
     timeSlots: [],
-    branch:(localStorage.getItem("branch") || 1)
+    branch: (localStorage.getItem("branch") || 1),
   });
 
   const [newSlot, setNewSlot] = useState("");
@@ -45,10 +47,8 @@ const AddDentist = () => {
     if (!formData.contact.trim()) newErrors.contact = "Contact is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
-    if (!formData.opdAmount.trim())
-      newErrors.opdAmount = "OPD Amount is required";
-    if (formData.timeSlots.length === 0)
-      newErrors.timeSlots = "At least one time slot is required";
+    if (!formData.opdAmount.trim()) newErrors.opdAmount = "OPD Amount is required";
+    if (formData.timeSlots.length === 0) newErrors.timeSlots = "At least one time slot is required";
     return newErrors;
   };
 
@@ -61,7 +61,6 @@ const AddDentist = () => {
     }
 
     try {
-      console.log("called")
       const res = await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/dentist/createDentist`,
         formData
@@ -80,13 +79,16 @@ const AddDentist = () => {
       });
       setNewSlot("");
       setErrors({});
-      alert("Dentist added successfully!");
+
+      // Show success toast notification
+      toast.success("Dentist added successfully!");
     } catch (error) {
       console.error("Error adding dentist:", error);
-      alert("Failed to add dentist. Please try again.");
+
+      // Show error toast notification
+      toast.error("Failed to add dentist. Please try again.");
     }
   };
-
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
@@ -242,7 +244,7 @@ const AddDentist = () => {
           )}
         </div>
 
-        {/* Submit Button */}
+
         <div className="text-center">
           <button
             type="submit"
@@ -252,6 +254,9 @@ const AddDentist = () => {
           </button>
         </div>
       </form>
+
+
+      <ToastContainer />
     </div>
   );
 };

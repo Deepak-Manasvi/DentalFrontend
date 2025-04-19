@@ -2,6 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { Eye, Pencil, Trash, X } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const ManageDentist = () => {
   const [dentist, setDentist] = useState([]);
@@ -58,15 +61,16 @@ const ManageDentist = () => {
           `${import.meta.env.VITE_APP_BASE_URL}/dentist/deleteDentistById/${id}`
         );
         if (res.status === 200) {
-          alert("Dentist deleted successfully!");
+          toast.success("Dentist deleted successfully!");
           fetchDentist();
         }
       } catch (error) {
         console.error("Error deleting dentist:", error);
-        alert("Failed to delete dentist. Please try again.");
+        toast.error("Failed to delete dentist. Please try again.");
       }
     }
   };
+  
 
   const dentistList = Array.isArray(dentist) ? dentist : [];
 
@@ -82,6 +86,7 @@ const ManageDentist = () => {
 
   return (
     <div className="mx-auto px-4 lg:px-8 py-6 overflow-x-auto max-w-screen-xl">
+        <ToastContainer />
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">

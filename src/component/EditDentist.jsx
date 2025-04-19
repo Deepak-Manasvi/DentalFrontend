@@ -1,6 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const EditDentist = () => {
   const { id } = useParams();
@@ -71,7 +74,6 @@ const EditDentist = () => {
 
     return newErrors;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -79,33 +81,33 @@ const EditDentist = () => {
       setErrors(validationErrors);
       return;
     }
-
+  
     try {
-      // Create data object, only include password if provided
       const updateData = {
         name: formData.name,
         address: formData.address,
         contact: formData.contact,
         email: formData.email,
       };
-
-      // Only include password in update if user entered one
+  
       if (formData.password.trim()) {
         updateData.password = formData.password;
       }
-
+  
       await axios.patch(
         `${import.meta.env.VITE_APP_BASE_URL}/dentist/updateDentistById/${id}`,
         updateData
       );
-
-      alert("Dentist updated successfully!");
-      navigate("/admin/manage-dentist");
+  
+      toast.success("Dentist updated successfully!");
+      setTimeout(() => navigate("/admin/manage-dentist"), 2000); // wait for toast to show
     } catch (err) {
       setError("Failed to update dentist information. Please try again.");
+      toast.error("Failed to update dentist. Please try again.");
       console.error("Error updating dentist:", err);
     }
   };
+  
 
   if (loading) {
     return (
@@ -118,6 +120,7 @@ const EditDentist = () => {
   if (error) {
     return (
       <div className="mx-auto p-8 bg-red-50 shadow-xl rounded-2xl">
+           <ToastContainer position="top-right" autoClose={3000} />
         <p className="text-red-600">{error}</p>
         <button
           onClick={() => navigate("/admin/manage-dentist")}

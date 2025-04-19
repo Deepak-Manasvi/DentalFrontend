@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ServiceCard from "../ui/ServiceCard";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const serviceTypes = [
   { id: 1, title: "Chief Complaint", icon: "🩺", endpoint: "createChief" },
@@ -67,12 +69,14 @@ const AddServices = () => {
         dataToSend
       );
 
-      alert(`${activeService} created successfully!`);
+      // Show success toast notification
+      toast.success(`${activeService} created successfully!`);
       setFormData(initialFormState);
       setShowForm(false);
     } catch (error) {
       console.error("Error creating service:", error);
-      alert(`Error creating ${activeService}. Please try again.`);
+      // Show error toast notification
+      toast.error(`Error creating ${activeService}. Please try again.`);
     } finally {
       setIsLoading(false);
     }
@@ -159,6 +163,9 @@ const AddServices = () => {
           {renderForm()}
         </div>
       )}
+
+   
+      <ToastContainer />
     </div>
   );
 };
