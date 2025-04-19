@@ -1,14 +1,18 @@
-/* eslint-disable no-unused-vars */
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AddBranches = () => {
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+
   const [formData, setFormData] = useState({
     name: "",
     address: "",
     contact: "",
     pincode: "",
+    adminId: adminId,
   });
 
   const navigate = useNavigate();
@@ -40,11 +44,14 @@ const AddBranches = () => {
       return;
     }
 
-    // ✅ Print form data in console
-
     const res = await axios.post(
       `${import.meta.env.VITE_APP_BASE_URL}/branch/createBranch`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
 
     alert("Branch Created successfully!");
