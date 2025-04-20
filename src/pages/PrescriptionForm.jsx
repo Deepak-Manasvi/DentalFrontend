@@ -6,10 +6,9 @@ import jsPDF from "jspdf";
 export default function PrescriptionForm() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [prescriptionData, setPrescriptionData] = useState(null);
+
   const [patientData, setPatientData] = useState(null);
 
-  // Save prescription items to localStorage
   const savePrescriptionItems = (items) => {
     localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
   };
@@ -23,7 +22,6 @@ export default function PrescriptionForm() {
       );
       setPatientData(res.data.appointment);
 
-      // Load saved prescription items from localStorage
       const savedItems = localStorage.getItem(`prescription_${id}`);
       if (savedItems) {
         setPrescriptionItems(JSON.parse(savedItems));
@@ -54,7 +52,6 @@ export default function PrescriptionForm() {
           },
         ],
       };
-
     };
 
     fetchData();
@@ -77,7 +74,6 @@ export default function PrescriptionForm() {
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [dosage, setDosage] = useState("");
   const [timing, setTiming] = useState("");
-
 
   const fetchMedicines = async () => {
     if (!medicineSearch.trim()) {
@@ -168,10 +164,10 @@ export default function PrescriptionForm() {
 
   const handlePrintPDF = () => {
     const doc = new jsPDF();
-  
+
     const lineSpacing = 8;
     let y = 10;
-  
+
     const prescriptionInfo = {
       clinicName: "Smiles Dental Care",
       doctorName: patientData?.doctorName || "Dr. XYZ (BDS, MDS)",
@@ -181,76 +177,78 @@ export default function PrescriptionForm() {
         gender: patientData?.gender || "N/A",
         date: patientData?.appointmentDate || new Date().toLocaleDateString(),
       },
-      medicalHistory: diagnosisList,
+      medicalHistory: patientData?.medicalHistory || diagnosisList,
       tests: tests || "N/A",
       advice: advice || "N/A",
       prescriptionItems: prescriptionItems,
     };
-  
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text(prescriptionInfo.clinicName, 105, y, null, null, "center");
-  
+
     y += lineSpacing;
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.text(prescriptionInfo.doctorName, 105, y, null, null, "center");
-  
+
     y += lineSpacing + 2;
     doc.setDrawColor(0);
     doc.setLineWidth(0.5);
     doc.line(10, y, 200, y);
-  
+
     y += lineSpacing;
     doc.setFont("helvetica", "bold");
     doc.text("Patient Details", 10, y);
     y += lineSpacing;
-  
+
     doc.setFont("helvetica", "normal");
     doc.text(`Name: ${prescriptionInfo.patient.name}`, 10, y);
     doc.text(`Age: ${prescriptionInfo.patient.age}`, 80, y);
     doc.text(`Gender: ${prescriptionInfo.patient.gender}`, 130, y);
-  
+
     y += lineSpacing;
     doc.text(`Date: ${prescriptionInfo.patient.date}`, 10, y);
-  
+
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
     doc.text("Diagnosis", 10, y);
     y += lineSpacing;
-  
+
     doc.setFont("helvetica", "normal");
-    prescriptionInfo.medicalHistory.forEach((item, index) => {
-      doc.text(`- ${item}`, 12, y + index * lineSpacing);
+    prescriptionInfo.medicalHistory.forEach((item) => {
+      doc.text(`- ${item}`, 12, y);
+      y += lineSpacing; // ✅ Advance y here after each diagnosis
     });
-  
-    y += prescriptionInfo.medicalHistory.length * lineSpacing + 4;
+
+    y += 4;
     doc.setFont("helvetica", "bold");
     doc.text("Tests", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
     doc.text(prescriptionInfo.tests, 12, y);
-  
+
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
     doc.text("Advice", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
     doc.text(prescriptionInfo.advice, 12, y, { maxWidth: 180 });
-  
+
     y += lineSpacing * 2;
     doc.setFont("helvetica", "bold");
     doc.text("Prescribed Medicines", 10, y);
     y += lineSpacing;
-  
+
     doc.setFont("helvetica", "normal");
-    prescriptionInfo.prescriptionItems.forEach((item, index) => {
-      const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${item.timing}`;
-      doc.text(itemText, 12, y + index * lineSpacing);
+    prescriptionInfo.prescriptionItems.forEach((item) => {
+      const itemText = `• ${item.name} - ${item.dosage} - ${item.timing}`;
+      doc.text(itemText, 12, y);
+      y += lineSpacing;
     });
-  
-    y += prescriptionInfo.prescriptionItems.length * lineSpacing + 10;
-  
+
+    y += 10;
+
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     doc.text(
@@ -261,10 +259,9 @@ export default function PrescriptionForm() {
       null,
       "center"
     );
-  
+
     doc.save(`prescription-${prescriptionInfo.patient.name}.pdf`);
   };
-  
 
   return (
     <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
