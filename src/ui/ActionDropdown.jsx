@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { FaEye, FaCheckCircle } from "react-icons/fa";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { X } from "lucide-react";
 
 const ActionDropdown = ({
   isOpen,
@@ -14,7 +13,6 @@ const ActionDropdown = ({
 }) => {
   const dropdownRef = useRef(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -55,7 +53,7 @@ const ActionDropdown = ({
               className="p-1 rounded hover:bg-gray-200"
               aria-label="Close actions menu"
             >
-              <X size={14} />
+              X
             </button>
           </div>
 
