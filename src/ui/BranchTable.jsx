@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import ActionDropdown from "./ActionDropdown";
 
@@ -110,5 +109,3 @@ const BranchTable = ({
 };
 
 export default BranchTable;
-
-
