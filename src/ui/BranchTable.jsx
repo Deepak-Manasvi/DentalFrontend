@@ -15,7 +15,7 @@ const BranchTable = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
-  const hasActions = onView || onEdit || onDelete || onApprove;
+  const hasActions = Boolean(onView || onEdit || onDelete || onApprove);
 
   const dynamicKeys =
     data.length > 0
@@ -30,19 +30,12 @@ const BranchTable = ({
     }));
 
   return (
-    <div
-      className={`bg-white shadow-md rounded-lg border border-gray-200 ${containerClassName}`}
-    >
-      {/* Set overflow-visible here to allow dropdown overflow */}
-      <div className="overflow-x-auto max-h-[70vh] w-full overflow-visible relative">
-        <table
-          className={`w-full table-auto border-collapse text-sm md:text-base ${tableClassName}`}
-        >
+    <div className={`bg-white shadow-md rounded-lg border border-gray-200 ${containerClassName}`}>
+      <div className="overflow-x-auto max-h-[70vh] w-full relative">
+        <table className={`w-full table-auto border-collapse text-sm md:text-base ${tableClassName}`}>
           <thead className="bg-teal-900 text-white sticky top-0 z-20">
             <tr>
-              <th className={`py-3 px-4 text-center ${headerClassName}`}>
-                S/N
-              </th>
+              <th className={`py-3 px-4 text-center ${headerClassName}`}>S/N</th>
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -52,9 +45,7 @@ const BranchTable = ({
                 </th>
               ))}
               {hasActions && (
-                <th
-                  className={`py-3 px-4 text-center whitespace-nowrap ${headerClassName}`}
-                >
+                <th className={`py-3 px-4 text-center whitespace-nowrap ${headerClassName}`}>
                   Actions
                 </th>
               )}
@@ -75,12 +66,9 @@ const BranchTable = ({
                   ))}
                   {hasActions && (
                     <td className="py-2 px-4 text-center relative">
-                      {/* Add relative here to position dropdown absolutely inside */}
                       <ActionDropdown
                         isOpen={dropdownOpen === index}
-                        setIsOpen={(isOpen) =>
-                          setDropdownOpen(isOpen ? index : null)
-                        }
+                        setIsOpen={(isOpen) => setDropdownOpen(isOpen ? index : null)}
                         item={row}
                         onView={onView}
                         onEdit={onEdit}
