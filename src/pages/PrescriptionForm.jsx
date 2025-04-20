@@ -22,13 +22,13 @@ export default function PrescriptionForm() {
         }/appointments/getAppointmentByAppId/${id}`
       );
       setPatientData(res.data.appointment);
-      
+
       // Load saved prescription items from localStorage
       const savedItems = localStorage.getItem(`prescription_${id}`);
       if (savedItems) {
         setPrescriptionItems(JSON.parse(savedItems));
       }
-      
+
       const dummyData = {
         clinicName: "Smiles Dental Care",
         doctorName: "Dr. XYZ (BDS, MDS)",
@@ -54,13 +54,12 @@ export default function PrescriptionForm() {
           },
         ],
       };
-      setPrescriptionData(dummyData);
+
     };
 
     fetchData();
   }, [id]);
   console.log(patientData);
-  
 
   const [diagnosisList, setDiagnosisList] = useState([
     "Toothache",
@@ -79,7 +78,7 @@ export default function PrescriptionForm() {
   const [dosage, setDosage] = useState("");
   const [timing, setTiming] = useState("");
 
-  // API call to fetch medicines
+
   const fetchMedicines = async () => {
     if (!medicineSearch.trim()) {
       setSearchResults([]);
@@ -164,89 +163,94 @@ export default function PrescriptionForm() {
     const updatedItems = [...prescriptionItems];
     updatedItems.splice(index, 1);
     setPrescriptionItems(updatedItems);
-    savePrescriptionItems(updatedItems); 
+    savePrescriptionItems(updatedItems);
   };
 
   const handlePrintPDF = () => {
     const doc = new jsPDF();
-
+  
     const lineSpacing = 8;
     let y = 10;
-
+  
+    const prescriptionInfo = {
+      clinicName: "Smiles Dental Care",
+      doctorName: patientData?.doctorName || "Dr. XYZ (BDS, MDS)",
+      patient: {
+        name: patientData?.patientName || "N/A",
+        age: patientData?.age || "N/A",
+        gender: patientData?.gender || "N/A",
+        date: patientData?.appointmentDate || new Date().toLocaleDateString(),
+      },
+      medicalHistory: diagnosisList,
+      tests: tests || "N/A",
+      advice: advice || "N/A",
+      prescriptionItems: prescriptionItems,
+    };
+  
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("Smiles Dental Care", 105, y, null, null, "center");
-
+    doc.text(prescriptionInfo.clinicName, 105, y, null, null, "center");
+  
     y += lineSpacing;
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Dr. XYZ (BDS, MDS)", 105, y, null, null, "center");
-
+    doc.text(prescriptionInfo.doctorName, 105, y, null, null, "center");
+  
     y += lineSpacing + 2;
     doc.setDrawColor(0);
     doc.setLineWidth(0.5);
     doc.line(10, y, 200, y);
-
+  
     y += lineSpacing;
     doc.setFont("helvetica", "bold");
     doc.text("Patient Details", 10, y);
     y += lineSpacing;
-
+  
     doc.setFont("helvetica", "normal");
-    doc.text(`Name: ${prescriptionData?.patient.name}`, 10, y);
-    doc.text(`Age: ${prescriptionData?.patient.age}`, 80, y);
-    doc.text(`Gender: ${prescriptionData?.patient.gender}`, 130, y);
-
+    doc.text(`Name: ${prescriptionInfo.patient.name}`, 10, y);
+    doc.text(`Age: ${prescriptionInfo.patient.age}`, 80, y);
+    doc.text(`Gender: ${prescriptionInfo.patient.gender}`, 130, y);
+  
     y += lineSpacing;
-    doc.text(`Date: ${prescriptionData?.patient.date}`, 10, y);
-
+    doc.text(`Date: ${prescriptionInfo.patient.date}`, 10, y);
+  
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
     doc.text("Diagnosis", 10, y);
     y += lineSpacing;
-
+  
     doc.setFont("helvetica", "normal");
-    prescriptionData?.medicalHistory.forEach((item, index) => {
+    prescriptionInfo.medicalHistory.forEach((item, index) => {
       doc.text(`- ${item}`, 12, y + index * lineSpacing);
     });
-
-    y += prescriptionData?.medicalHistory.length * lineSpacing + 4;
+  
+    y += prescriptionInfo.medicalHistory.length * lineSpacing + 4;
     doc.setFont("helvetica", "bold");
     doc.text("Tests", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionData?.tests, 12, y);
-
+    doc.text(prescriptionInfo.tests, 12, y);
+  
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
     doc.text("Advice", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionData?.advice, 12, y, { maxWidth: 180 });
-
+    doc.text(prescriptionInfo.advice, 12, y, { maxWidth: 180 });
+  
     y += lineSpacing * 2;
     doc.setFont("helvetica", "bold");
     doc.text("Prescribed Medicines", 10, y);
     y += lineSpacing;
-
+  
     doc.setFont("helvetica", "normal");
-    // Use the prescriptionItems state for up-to-date medicine information
-    prescriptionItems.length > 0 
-      ? prescriptionItems.forEach((item, index) => {
-          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
-            item.timing
-          }`;
-          doc.text(itemText, 12, y + index * lineSpacing);
-        })
-      : prescriptionData?.prescriptionItems.forEach((item, index) => {
-          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
-            item.timing
-          }`;
-          doc.text(itemText, 12, y + index * lineSpacing);
-        });
-
-    y += (prescriptionItems.length > 0 ? prescriptionItems.length : prescriptionData?.prescriptionItems.length) * lineSpacing + 10;
-
+    prescriptionInfo.prescriptionItems.forEach((item, index) => {
+      const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${item.timing}`;
+      doc.text(itemText, 12, y + index * lineSpacing);
+    });
+  
+    y += prescriptionInfo.prescriptionItems.length * lineSpacing + 10;
+  
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     doc.text(
@@ -257,9 +261,10 @@ export default function PrescriptionForm() {
       null,
       "center"
     );
-
-    doc.save(`prescription-${prescriptionData?.patient.name}.pdf`);
+  
+    doc.save(`prescription-${prescriptionInfo.patient.name}.pdf`);
   };
+  
 
   return (
     <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
