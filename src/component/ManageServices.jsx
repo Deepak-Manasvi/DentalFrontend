@@ -131,7 +131,6 @@ const ManageServices = () => {
   };
 
   const handleSaveEdit = async () => {
-    console.log("Before Save:", editingService); // Log current service
     try {
       const category = serviceTypes.find(
         (type) => type.title === activeCategory
@@ -141,12 +140,13 @@ const ManageServices = () => {
 
       toast.success("Service updated successfully!");
 
-      setEditingService(null); // This should collapse the edit mode
+      setEditingService(null);
+      setIsModalOpen(false);
+      setDropdownOpen(null);
 
-      // Fetch and refresh services list
       fetchServices(activeCategory);
 
-      console.log("After Save:", editingService); // Log should be null now
+      console.log("After Save:", editingService);
     } catch (err) {
       console.error("Error updating service:", err);
       toast.error("Update failed. Please try again.");
@@ -166,10 +166,17 @@ const ManageServices = () => {
         await axios.delete(
           `${baseURL}/services${category.deleteEndpoint}${serviceId}`
         );
+
+        toast.success("Service deleted successfully!");
+
+        setIsModalOpen(false);
+        setDropdownOpen(null);
+        setEditingService(null);
+
         fetchServices(activeCategory);
       } catch (err) {
         console.error("Error deleting service:", err);
-        alert("Delete failed");
+        toast.error("Delete failed. Please try again.");
       }
     }
   };
@@ -191,6 +198,7 @@ const ManageServices = () => {
         dropdownOpen ? "blurred-background" : ""
       }`}
     >
+      <ToastContainer position="top-right" autoClose={3000} />
       <h2 className="text-2xl font-bold mb-6 text-center">Manage Services</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         {serviceTypes.map((service) => (
@@ -262,7 +270,7 @@ const ManageServices = () => {
 const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold mb-4">Edit Service</h3>
+      ß<h3 className="text-lg font-semibold mb-4">Edit Service</h3>
       <div className="space-y-4">
         {Object.entries(service)
           .filter(([key]) => key !== "__v" && key !== "_id")
@@ -293,7 +301,6 @@ const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
           Save Changes
         </button>
       </div>
-      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
