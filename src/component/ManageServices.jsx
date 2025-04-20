@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import ServiceCard from "../ui/ServiceCard";
+import ServiceCard from "./ServiceCard";
 import ServiceDetailsModal from "./ServiceDetailsModal";
 import ReusableTable from "./ReusableTable";
 import { toast, ToastContainer } from "react-toastify";
