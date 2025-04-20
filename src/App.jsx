@@ -117,6 +117,8 @@ function App() {
           <Route path="revenue/service" element={<RevenueByService/>}/>
           <Route path="revenue/payment" element={<RevenueByPaymentMode/>}/>
         </Route>
+
+        
         <Route
           path="/receptionist"
           element={<ReceptionRoute element={<AdminLayout />} />}
