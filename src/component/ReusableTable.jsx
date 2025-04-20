@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ActionDropdown from "./ActionDropdown";
+import ActionDropdown from "../ui/ActionDropdown";
 
-const BranchTable = ({
+const ReusableTable = ({
   data = [],
   onView,
   onEdit,
@@ -26,7 +26,7 @@ const BranchTable = ({
     customColumns ||
     dynamicKeys.map((key) => ({
       key,
-      label: key,
+      label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
     }));
 
   return (
@@ -106,4 +106,4 @@ const BranchTable = ({
   );
 };
 
-export default BranchTable;
+export default ReusableTable;

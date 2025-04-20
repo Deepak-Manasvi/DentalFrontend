@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ServiceCard from "../ui/ServiceCard";
-import BranchTable from "../ui/BranchTable";
 import ServiceDetailsModal from "./ServiceDetailsModal";
+import ReusableTable from "./ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageServices = () => {
   const [activeCategory, setActiveCategory] = useState(null);
@@ -129,17 +131,25 @@ const ManageServices = () => {
   };
 
   const handleSaveEdit = async () => {
+    console.log("Before Save:", editingService); // Log current service
     try {
       const category = serviceTypes.find(
         (type) => type.title === activeCategory
       );
       const endpoint = `${baseURL}/services${category.updateEndpoint}${editingService._id}`;
       await axios.patch(endpoint, editingService);
-      setEditingService(null);
+
+      toast.success("Service updated successfully!");
+
+      setEditingService(null); // This should collapse the edit mode
+
+      // Fetch and refresh services list
       fetchServices(activeCategory);
+
+      console.log("After Save:", editingService); // Log should be null now
     } catch (err) {
       console.error("Error updating service:", err);
-      alert("Update failed");
+      toast.error("Update failed. Please try again.");
     }
   };
 
@@ -190,7 +200,7 @@ const ManageServices = () => {
             title={service.title}
             onClick={() => handleCardClick(service.title)}
             showDescription={false}
-           />
+          />
         ))}
       </div>
 
@@ -220,7 +230,7 @@ const ManageServices = () => {
                 onChange={handleInputChange}
               />
             ) : (
-              <BranchTable
+              <ReusableTable
                 data={services}
                 loading={loading}
                 error={error}
@@ -231,7 +241,6 @@ const ManageServices = () => {
                 setDropdownOpen={setDropdownOpen}
                 dropdownRef={dropdownRef}
                 customColumns={getCustomColumns()}
-                containerClassName=""
                 headerClassName="bg-teal-900 text-white"
                 dropdownClassName="absolute top-0 right-0 z-10 mt-2 bg-white shadow-lg rounded-lg p-2"
               />
@@ -284,6 +293,7 @@ const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
           Save Changes
         </button>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
