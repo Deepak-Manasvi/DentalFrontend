@@ -269,11 +269,11 @@ export default function PrescriptionForm() {
         <h1 className="text-3xl font-bold text-teal-700">Prescription</h1>
         <div className="flex justify-between items-end mt-2">
           <p className="text-xl text-gray-700">{patientData?.doctorName}</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 px-16">
             Date: {new Date().toLocaleDateString()}
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mt-4 text-sm">
           <div>
             <span className="font-bold text-black">Patient: </span>
             {patientData?.patientName}
@@ -287,7 +287,7 @@ export default function PrescriptionForm() {
             {patientData?.gender}
           </div>
           <div>
-            <span className="font-bold text-black">Appt. Date: </span>
+            <span className="font-bold text-black py-16">Appt. Date: </span>
             {patientData?.appointmentDate}
           </div>
         </div>
