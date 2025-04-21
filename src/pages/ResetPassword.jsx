@@ -15,17 +15,27 @@ export default function ResetPassword() {
 
   const handleReset = async (e) => {
     e.preventDefault();
+
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
+    const email = localStorage.getItem("resetEmail");
+    if (!email) {
+      setError("Email is missing. Please restart the reset process.");
+      return;
+    }
+
     try {
-      await axios.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/user/resetPassword`,
-        { newPassword }
-      );
-      navigate("/login");
+      await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/user/resetPassword`, {
+        email,
+        newPassword,
+        confirmPassword,
+      });
+
+      localStorage.removeItem("resetEmail");
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Password reset failed");
     }

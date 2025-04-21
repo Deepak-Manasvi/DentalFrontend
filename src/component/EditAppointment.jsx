@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditAppointment = () => {
   const navigate = useNavigate();
@@ -113,7 +116,7 @@ const EditAppointment = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching appointment data:", error);
-        alert("Failed to fetch appointment data");
+        toast.error("Failed to fetch appointment data");
         setLoading(false);
       }
     };
@@ -277,11 +280,11 @@ const EditAppointment = () => {
         formData
       );
       console.log("Appointment updated successfully", response.data);
-      alert("Appointment updated successfully!");
+      toast.success("Appointment updated successfully!");
       navigate(`/${role}/appointment-list`);
     } catch (error) {
       console.error("Error updating appointment:", error);
-      alert("Failed to update appointment");
+      toast.error("Failed to update appointment");
     }
   };
 

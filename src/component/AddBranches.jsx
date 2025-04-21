@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -74,7 +75,7 @@ const AddBranches = () => {
       });
     } catch (error) {
       // Show error toast notification
-      toast.error("Failed to create branch. Please try again.");
+      toast.error("Maximum limit reached in creating branch. Please try again.");
       console.error("Error creating branch:", error);
     }
   };

@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddAppointment = () => {
   const [selectedMedicalHistory, setSelectedMedicalHistory] = useState([]);
@@ -359,11 +362,11 @@ const AddAppointment = () => {
         finalData
       );
       console.log("Appointment booked successfully", response.data);
-      alert("Appointment booked successfully!");
+      toast.success("Appointment booked successfully!");
       resetForm();
     } catch (error) {
       console.error("Error booking appointment:", error);
-      alert("Failed to book appointment");
+      toast.error("Failed to book appointment");
     }
   };
 

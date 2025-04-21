@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const EditBranches = () => {
   const { id } = useParams();
@@ -69,7 +70,7 @@ const EditBranches = () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;x
+      return;
     }
 
     try {
@@ -78,7 +79,7 @@ const EditBranches = () => {
         formData
       );
 
-      alert("Branch updated successfully!");
+      toast.success("Branch updated successfully!");
       navigate("/admin/manage-branches");
     } catch (err) {
       setError("Failed to update branch. Please try again.");

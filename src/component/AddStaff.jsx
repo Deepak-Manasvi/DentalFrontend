@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddStaff() {
   const navigate = useNavigate();
@@ -66,14 +68,16 @@ export default function AddStaff() {
         );
 
         if (res.status === 200 || res.status === 201) {
-          alert("Staff added successfully!");
+          toast.success("Staff added successfully!");
           navigate("/admin/manage-staff");
         } else {
-          alert("Failed to add staff. Please try again.");
+          toast.error("Failed to add staff. Please try again.");
         }
       } catch (error) {
         console.error("Error adding staff:", error);
-        alert("An error occurred while adding staff. Please try again.");
+        toast.error(
+          "An error occurred while adding staff. Please try again."
+        );
       }
     }
   };

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ReceiptGenerator = () => {
   const selectedBranch = localStorage.getItem("selectedBranch");
@@ -76,10 +78,10 @@ const ReceiptGenerator = () => {
         `${import.meta.env.VITE_APP_BASE_URL}/receipts/create`,
         formData
       );
-      alert("Receipt saved successfully!");
+      toast.success("Receipt saved successfully!");
     } catch (err) {
       console.error("Failed to save receipt", err);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
     }
   };
 

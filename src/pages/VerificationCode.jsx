@@ -1,3 +1,4 @@
+// src/pages/VerificationCode.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -7,17 +8,28 @@ import logo from "../assets/logo.png";
 
 export default function VerificationCode() {
   const navigate = useNavigate();
-  const [code, setCode] = useState("");
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
 
   const handleVerification = async (e) => {
     e.preventDefault();
+    const email = localStorage.getItem("resetEmail"); // retrieved from localStorage
+    if (!email) {
+      setError("Email not found. Please restart the reset process.");
+      return;
+    }
+
     try {
-      // TODO: Replace with actual API call
-      // const res = await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/user/verify`, { code });
-      navigate("/reset-password");
+      const res = await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/user/verifyOtp`, {
+        email,
+        otp,
+      });
+
+      if (res.data.success) {
+        navigate("/reset-password");
+      }
     } catch (err) {
-      setError("Verification failed. Please try again.");
+      setError(err.response?.data?.message || "Verification failed. Please try again.");
     }
   };
 
@@ -57,8 +69,8 @@ export default function VerificationCode() {
             <input
               type="text"
               placeholder="Enter your verification code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               className="w-full px-4 py-2 sm:py-3 rounded-md bg-white text-[#2C7A7B] text-base sm:text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />

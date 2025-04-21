@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import Bg from "../assets/bg1.png"; // Using same background as login
-import logo from "../assets/logo.png"; // Same logo as login
+import Bg from "../assets/bg1.png"; 
+import logo from "../assets/logo.png"; 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
 export default function ForgetPassword() {
   const navigate = useNavigate();
@@ -15,10 +17,11 @@ export default function ForgetPassword() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/user/forgot-password`,
+        `${import.meta.env.VITE_APP_BASE_URL}/user/forgetPassword`,
         { email: emailOrPhone }
       );
-      alert("Reset link sent to your email!");
+      localStorage.setItem("resetEmail", emailOrPhone);
+      toast.success("Reset link sent to your email!");
       navigate("/verification-code");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send reset link");
@@ -49,17 +52,17 @@ export default function ForgetPassword() {
         </h3>
 
         <p className="text-sm sm:text-base text-center mb-6 text-black">
-          Enter your registered email or phone number to receive a password reset link.
+          Enter your registered email to receive a password reset link.
         </p>
 
         <form onSubmit={handleResetRequest} className="space-y-5">
           <div>
             <label className="block text-base sm:text-lg mb-2 text-green-800">
-              Email Address or Phone Number
+              Email Address 
             </label>
             <input
               type="text"
-              placeholder="example@domain.com or +1234567890"
+              placeholder="example@domain.com"
               value={emailOrPhone}
               onChange={(e) => setEmailOrPhone(e.target.value)}
               className="w-full px-4 py-3 rounded-md bg-white text-[#2C7A7B] text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -82,7 +85,7 @@ export default function ForgetPassword() {
             type="submit"
             className="w-full bg-white text-[#2C7A7B] font-semibold py-2 sm:py-3 rounded-md hover:bg-green-500 hover:text-white transition duration-300"
           >
-            Send Reset Link
+            Send OTP
           </button>
         </form>
       </motion.div>

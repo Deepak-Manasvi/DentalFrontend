@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import axios from "axios";
 import "animate.css"; // Import animate.css for animations
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DentalTrialForm = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +27,7 @@ const DentalTrialForm = () => {
         today.getMonth() === sessionEndDate.getMonth() &&
         today.getDate() === sessionEndDate.getDate()
       ) {
-        alert("Your trial session is ending in 3 days. Please renew your session.");
+        toast.error("Your trial session is ending in 3 days. Please renew your session.");
       }
     }
   }, [formData.isApproved, formData.sessionStartDate]);
@@ -41,7 +44,7 @@ const DentalTrialForm = () => {
     e.preventDefault();
 
     if (!formData.termsAccepted || !formData.consentGiven) {
-      alert("Please accept terms and consent to proceed.");
+      toast.success("Please accept terms and consent to proceed.");
       return;
     }
 
@@ -57,10 +60,10 @@ const DentalTrialForm = () => {
         formData
       );
 
-      alert("Trial session request submitted. Admin will approve it.");
+      toast.success("Trial session request submitted. Admin will approve it.");
     } catch (error) {
       console.error("Error submitting trial request:", error);
-      alert("Failed to submit trial request. Please try again.");
+      toast.error("Failed to submit trial request. Please try again.");
     }
   };
 
