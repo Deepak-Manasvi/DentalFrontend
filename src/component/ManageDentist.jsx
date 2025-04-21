@@ -17,9 +17,13 @@ const ManageDentist = () => {
 
   const fetchDentist = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`);
-      const receptionists = res.data.user.filter(user => user.role === "receptionist");
-      setDentist(receptionists);
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/dentist/getAllDentist`
+      );
+      const dentists = res.data.dentists.filter(
+        (user) => user.branchId === localStorage.getItem("selectedBranch")
+      );
+      setDentist(dentists);
     } catch (error) {
       console.error("Error fetching dentists:", error);
     }
@@ -68,7 +72,6 @@ const ManageDentist = () => {
       }
     }
   };
-
 
   const dentistList = Array.isArray(dentist) ? dentist : [];
 

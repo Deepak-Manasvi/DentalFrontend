@@ -31,6 +31,7 @@ const ReceiptGenerator = () => {
     treatmentType: "",
     receiptId: uuidv4().slice(0, 8).toUpperCase(),
     createdAt: new Date().toLocaleString(),
+    branchId : selectedBranch,
   });
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const ReceiptGenerator = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
-        const filtered = response.data.appointmentList.filter((p) => p.isPatient);
+        const filtered = response.data.appointmentList.filter((p) => p.isPatient && p.branchId === selectedBranch);
         setPatients(filtered);
       } catch (error) {
         console.error("Error fetching patients", error);

@@ -13,8 +13,14 @@ export default function ManageStaff() {
 
   const getStafs = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`);
-      const receptionists = res.data.user.filter(user => user.role === "receptionist");
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`
+      );
+      const receptionists = res.data.user.filter(
+        (user) =>
+          user.role === "receptionist" &&
+          user.branchId === localStorage.getItem("selectedBranch")
+      );
       setStaffList(receptionists);
     } catch (error) {
       console.error("Error fetching staff:", error);
@@ -36,7 +42,9 @@ export default function ManageStaff() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/user/deleteUserById/${id}`);
+      await axios.delete(
+        `${import.meta.env.VITE_APP_BASE_URL}/user/deleteUserById/${id}`
+      );
       toast.success("Staff deleted successfully!");
       getStafs();
     } catch (error) {
@@ -50,7 +58,6 @@ export default function ManageStaff() {
   };
 
   const toggleDropdown = (index) => {
-
     setDropdownOpen(dropdownOpen === index ? null : index);
   };
 
@@ -82,7 +89,10 @@ export default function ManageStaff() {
           <tbody>
             {staffList.length > 0 ? (
               staffList.map((staff, index) => (
-                <tr key={staff._id || index} className="border-b hover:bg-gray-50">
+                <tr
+                  key={staff._id || index}
+                  className="border-b hover:bg-gray-50"
+                >
                   <td className="py-2 px-4">{index + 1}</td>
                   <td className="py-2 px-4">{staff.firstName}</td>
                   <td className="py-2 px-4">{staff.lastName}</td>
@@ -152,12 +162,21 @@ export default function ManageStaff() {
       <div className="md:hidden space-y-4">
         {staffList.length > 0 ? (
           staffList.map((staff, index) => (
-            <div key={staff._id || index} className="bg-white rounded-lg shadow-md p-4">
+            <div
+              key={staff._id || index}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
               <div className="mb-2 font-bold text-lg">{staff.name}</div>
-              <div className="text-sm text-gray-600">Username: {staff.username}</div>
+              <div className="text-sm text-gray-600">
+                Username: {staff.username}
+              </div>
               <div className="text-sm text-gray-600">Email: {staff.email}</div>
-              <div className="text-sm text-gray-600">Address: {staff.address}</div>
-              <div className="text-sm text-gray-600">Contact: {staff.contactNumber}</div>
+              <div className="text-sm text-gray-600">
+                Address: {staff.address}
+              </div>
+              <div className="text-sm text-gray-600">
+                Contact: {staff.contactNumber}
+              </div>
 
               <div className="flex justify-end mt-4 gap-2">
                 <button
@@ -178,7 +197,9 @@ export default function ManageStaff() {
             </div>
           ))
         ) : (
-          <div className="text-center text-gray-500 py-6">No staff available.</div>
+          <div className="text-center text-gray-500 py-6">
+            No staff available.
+          </div>
         )}
       </div>
     </div>

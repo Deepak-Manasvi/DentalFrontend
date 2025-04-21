@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import ServiceCard from "./ServiceCard"
+import ServiceCard from "./ServiceCard";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -21,7 +21,10 @@ const initialFormState = {
   treatmentName: "",
   price: "",
   name: "",
+  branchId: localStorage.getItem("selectedBranch"),
 };
+
+console.log(initialFormState.branchId, "brbbabfjadsjfsdfjdsa");
 
 const AddServices = () => {
   const [showForm, setShowForm] = useState(false);
@@ -58,10 +61,11 @@ const AddServices = () => {
           procedureName,
           treatmentName,
           price: price || "0",
+          branchId: formData.branchId,
         };
       } else {
         if (!formData.name.trim()) return;
-        dataToSend = { name: formData.name };
+        dataToSend = { name: formData.name, branchId: formData.branchId };
       }
 
       await axios.post(
@@ -164,7 +168,6 @@ const AddServices = () => {
         </div>
       )}
 
-   
       <ToastContainer />
     </div>
   );

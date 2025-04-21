@@ -16,6 +16,7 @@ const AddBranches = () => {
     contact: "",
     pincode: "",
     adminId: adminId,
+    branchId: localStorage.getItem("selectedBranch"),
   });
 
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const AddBranches = () => {
       setErrors(validationErrors);
       return;
     }
-  
+
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/branch/createBranch`,
@@ -57,29 +58,32 @@ const AddBranches = () => {
           },
         }
       );
-  
+
       // Show success toast notification
       toast.success("Branch created successfully!");
-  
+
       // Delay the redirect to allow the toast to be visible
       setTimeout(() => {
         navigate("/admin/manage-branches");
       }, 1500); // Redirect after 1.5 seconds
-  
+
       // Reset form after submit
       setFormData({
         name: "",
         address: "",
         contact: "",
         pincode: "",
+        branchId: localStorage.getItem("selectedBranch"),
       });
     } catch (error) {
       // Show error toast notification
-      toast.error("Maximum limit reached in creating branch. Please try again.");
+      toast.error(
+        "Maximum limit reached in creating branch. Please try again."
+      );
       console.error("Error creating branch:", error);
     }
   };
-  
+
   return (
     <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">

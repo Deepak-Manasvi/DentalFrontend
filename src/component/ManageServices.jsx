@@ -100,7 +100,12 @@ const ManageServices = () => {
       const key = Object.keys(response.data).find((k) =>
         Array.isArray(response.data[k])
       );
-      setServices(response.data[key] || []);
+
+      const filteredServices = response.data[key].filter(
+        (service) => service.branchId === localStorage.getItem("selectedBranch")
+      );
+
+      setServices(filteredServices || []);
     } catch (err) {
       console.error("Error fetching services:", err);
       setError("Failed to load services.");
