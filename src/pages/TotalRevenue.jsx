@@ -54,7 +54,7 @@ const TotalRevenue = () => {
         <table className="min-w-full text-sm text-center">
           <thead className="bg-[#2e7e78] text-white text-base">
             <tr>
-              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">S.no</th>
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Contact</th>

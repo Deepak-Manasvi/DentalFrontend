@@ -5,12 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const ManageDentist = () => {
   const [dentist, setDentist] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDentist, setSelectedDentist] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(null); 
+  const [dropdownOpen, setDropdownOpen] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
 
@@ -18,10 +17,9 @@ const ManageDentist = () => {
 
   const fetchDentist = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/dentist/getAllDentist`
-      );
-      setDentist(res.data.dentists);
+      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`);
+      const receptionists = res.data.user.filter(user => user.role === "receptionist");
+      setDentist(receptionists);
     } catch (error) {
       console.error("Error fetching dentists:", error);
     }
@@ -34,7 +32,7 @@ const ManageDentist = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null); 
+        setDropdownOpen(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -42,7 +40,7 @@ const ManageDentist = () => {
   }, []);
 
   const toggleDropdown = (id) => {
-    setDropdownOpen(dropdownOpen === id ? null : id); 
+    setDropdownOpen(dropdownOpen === id ? null : id);
   };
 
   const handleView = (dentist) => {
@@ -58,7 +56,7 @@ const ManageDentist = () => {
     if (window.confirm("Are you sure you want to delete this dentist?")) {
       try {
         const res = await axios.delete(
-          `${import.meta.env.VITE_APP_BASE_URL}/dentist/deleteDentistById/${id}`
+          `${import.meta.env.VITE_APP_BASE_URL}/user/deleteUserById/${id}`
         );
         if (res.status === 200) {
           toast.success("Dentist deleted successfully!");
@@ -70,7 +68,7 @@ const ManageDentist = () => {
       }
     }
   };
-  
+
 
   const dentistList = Array.isArray(dentist) ? dentist : [];
 
@@ -82,18 +80,16 @@ const ManageDentist = () => {
     )
   );
 
-  const tableHeaders = ["#", "Name", "Address", "Contact", "Email", "Action"];
-
   return (
     <div className="mx-auto px-4 lg:px-8 py-6 overflow-x-auto max-w-screen-xl">
-        <ToastContainer />
+      <ToastContainer />
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-6 md:p-10 rounded-lg shadow-2xl w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Dentist Details</h2>
             <p>
-              <strong>Name:</strong> {selectedDentist?.name}
+              <strong>Name:</strong> {selectedDentist?.firstName}
             </p>
             <p>
               <strong>Address:</strong> {selectedDentist?.address}
@@ -129,13 +125,15 @@ const ManageDentist = () => {
       {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full text-sm text-gray-700">
-          <thead className="bg-teal-900 text-white sticky top-0 z-10">
+          <thead className="bg-teal-900 text-white">
             <tr>
-              {tableHeaders.map((header) => (
-                <th key={header} className="py-3 px-4 text-left font-medium">
-                  {header}
-                </th>
-              ))}
+              <th className="py-3 px-4">S.No</th>
+              <th className="py-3 px-4">First Name</th>
+              <th className="py-3 px-4">Last Name</th>
+              <th className="py-3 px-4">Email</th>
+              <th className="py-3 px-4">Address</th>
+              <th className="py-3 px-4">Contact</th>
+              <th className="py-3 px-4">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -146,10 +144,11 @@ const ManageDentist = () => {
                   className="border-b hover:bg-gray-100"
                 >
                   <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">{dentist.name}</td>
-                  <td className="py-3 px-4">{dentist.address}</td>
-                  <td className="py-3 px-4">{dentist.contact}</td>
-                  <td className="py-3 px-4">{dentist.email}</td>
+                  <td className="py-2 px-4">{dentist.firstName}</td>
+                  <td className="py-2 px-4">{dentist.lastName}</td>
+                  <td className="py-2 px-4">{dentist.email}</td>
+                  <td className="py-2 px-4">{dentist.address}</td>
+                  <td className="py-2 px-4">{dentist.phone}</td>
                   <td className="py-3 px-4 relative">
                     <button
                       className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"

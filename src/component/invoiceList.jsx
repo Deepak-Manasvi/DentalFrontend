@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { X, Edit, CheckCircle } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([
@@ -43,7 +45,7 @@ const InvoiceList = () => {
   };
 
   const handleEdit = (index) => {
-    alert(`Editing invoice: ${invoices[index].invoiceNo}`);
+    toast.success(`Editing invoice: ${invoices[index].invoiceNo}`);
   };
 
   const toggleDropdown = (index) => {

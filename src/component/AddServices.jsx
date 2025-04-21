@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import ServiceCard from "../ui/ServiceCard";
+import ServiceCard from "./ServiceCard"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

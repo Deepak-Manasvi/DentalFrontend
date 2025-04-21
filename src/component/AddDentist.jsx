@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddDentist = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     address: "",
-    contact: "",
+    phone: "",
     email: "",
     password: "",
     opdAmount: "",
     timeSlots: [],
-    branch: (localStorage.getItem("branch") || 1),
+    branchId: localStorage.getItem("branch") || 1,
+    role: "receptionist",
   });
 
   const [newSlot, setNewSlot] = useState("");
@@ -42,75 +47,115 @@ const AddDentist = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
+
+    if (!formData.firstName.trim()) newErrors.firstName = "First Name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last Name is required";
+
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
     if (!formData.address.trim()) newErrors.address = "Address is required";
-    if (!formData.contact.trim()) newErrors.contact = "Contact is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!formData.password.trim()) newErrors.password = "Password is required";
-    if (!formData.opdAmount.trim()) newErrors.opdAmount = "OPD Amount is required";
-    if (formData.timeSlots.length === 0) newErrors.timeSlots = "At least one time slot is required";
-    return newErrors;
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Contact number is required";
+    } else if (!/^[0-9]{10}$/.test(formData.phone)) {
+      newErrors.phone = "Contact number must be 10 digits";
+    }
+
+    if (!formData.opdAmount) {
+      newErrors.opdAmount = "OPD Amount is required";
+    }
+
+    if (formData.timeSlots.length === 0) {
+      newErrors.timeSlots = "At least one time slot is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formErrors = validate();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
+    if (validate()) {
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_APP_BASE_URL}/user/userRegister`,
+          formData
+        );
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/dentist/createDentist`,
-        formData
-      );
-      console.log("Dentist added successfully:", res.data);
-
-      // Optional: reset form
-      setFormData({
-        name: "",
-        address: "",
-        contact: "",
-        email: "",
-        password: "",
-        opdAmount: "",
-        timeSlots: [],
-      });
-      setNewSlot("");
-      setErrors({});
-
-      // Show success toast notification
-      toast.success("Dentist added successfully!");
-    } catch (error) {
-      console.error("Error adding dentist:", error);
-
-      // Show error toast notification
-      toast.error("Failed to add dentist. Please try again.");
+        if (res.status === 200 || res.status === 201) {
+          toast.success("Dentist added successfully!");
+          navigate("/admin/manage-staff");
+        } else {
+          toast.error("Failed to add dentist. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error adding dentist:", error);
+        toast.error("An error occurred while adding dentist.");
+      }
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      address: "",
+      phone: "",
+      email: "",
+      password: "",
+      opdAmount: "",
+      timeSlots: [],
+      branchId: localStorage.getItem("branch") || 1,
+      role: "receptionist",
+    });
+    setErrors({});
+    navigate("/admin/manage-staff");
+  };
+
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
+      <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Add Dentist
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name */}
+        {/* First Name */}
         <div>
           <label className="block text-sm font-medium text-gray-600">
-            Name <span className="text-red-500">*</span>
+            First Name<span className="text-red-500">*</span>
           </label>
           <input
-            name="name"
-            value={formData.name}
+            name="firstName"
+            value={formData.firstName}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
-            placeholder="Enter name"
+            placeholder="Enter first name"
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-          )}
+          {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+        </div>
+
+        {/* Last Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Last Name<span className="text-red-500">*</span>
+          </label>
+          <input
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-xl"
+            placeholder="Enter last name"
+          />
+          {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
         </div>
 
         {/* Address */}
@@ -125,9 +170,7 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter address"
           />
-          {errors.address && (
-            <p className="text-red-500 text-sm mt-1">{errors.address}</p>
-          )}
+          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
         </div>
 
         {/* Contact */}
@@ -136,15 +179,13 @@ const AddDentist = () => {
             Contact <span className="text-red-500">*</span>
           </label>
           <input
-            name="contact"
-            value={formData.contact}
+            name="phone"
+            value={formData.phone}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
             placeholder="Enter contact number"
           />
-          {errors.contact && (
-            <p className="text-red-500 text-sm mt-1">{errors.contact}</p>
-          )}
+          {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
         </div>
 
         {/* Email */}
@@ -160,9 +201,7 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter email"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
 
         {/* Password */}
@@ -178,9 +217,7 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter password"
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-          )}
+          {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
 
         {/* OPD Amount */}
@@ -196,9 +233,7 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter OPD Amount"
           />
-          {errors.opdAmount && (
-            <p className="text-red-500 text-sm mt-1">{errors.opdAmount}</p>
-          )}
+          {errors.opdAmount && <p className="text-red-500 text-sm">{errors.opdAmount}</p>}
         </div>
 
         {/* Time Slots */}
@@ -239,12 +274,10 @@ const AddDentist = () => {
               </span>
             ))}
           </div>
-          {errors.timeSlots && (
-            <p className="text-red-500 text-sm mt-1">{errors.timeSlots}</p>
-          )}
+          {errors.timeSlots && <p className="text-red-500 text-sm">{errors.timeSlots}</p>}
         </div>
 
-
+        {/* Submit */}
         <div className="text-center">
           <button
             type="submit"
@@ -254,8 +287,6 @@ const AddDentist = () => {
           </button>
         </div>
       </form>
-
-
       <ToastContainer />
     </div>
   );

@@ -23,6 +23,7 @@ export default function AdultDentistry() {
   const [records, setRecords] = useState([]);
 
   const fetchDataForPatient = async () => {
+
     const res = await axios.get(
       `${
         import.meta.env.VITE_APP_BASE_URL

@@ -6,10 +6,9 @@ import jsPDF from "jspdf";
 export default function PrescriptionForm() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [prescriptionData, setPrescriptionData] = useState(null);
+
   const [patientData, setPatientData] = useState(null);
 
-  // Save prescription items to localStorage
   const savePrescriptionItems = (items) => {
     localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
   };
@@ -22,13 +21,12 @@ export default function PrescriptionForm() {
         }/appointments/getAppointmentByAppId/${id}`
       );
       setPatientData(res.data.appointment);
-      
-      // Load saved prescription items from localStorage
+
       const savedItems = localStorage.getItem(`prescription_${id}`);
       if (savedItems) {
         setPrescriptionItems(JSON.parse(savedItems));
       }
-      
+
       const dummyData = {
         clinicName: "Smiles Dental Care",
         doctorName: "Dr. XYZ (BDS, MDS)",
@@ -54,13 +52,11 @@ export default function PrescriptionForm() {
           },
         ],
       };
-      setPrescriptionData(dummyData);
     };
 
     fetchData();
   }, [id]);
   console.log(patientData);
-  
 
   const [diagnosisList, setDiagnosisList] = useState([
     "Toothache",
@@ -79,7 +75,6 @@ export default function PrescriptionForm() {
   const [dosage, setDosage] = useState("");
   const [timing, setTiming] = useState("");
 
-  // API call to fetch medicines
   const fetchMedicines = async () => {
     if (!medicineSearch.trim()) {
       setSearchResults([]);
@@ -164,7 +159,7 @@ export default function PrescriptionForm() {
     const updatedItems = [...prescriptionItems];
     updatedItems.splice(index, 1);
     setPrescriptionItems(updatedItems);
-    savePrescriptionItems(updatedItems); 
+    savePrescriptionItems(updatedItems);
   };
 
   const handlePrintPDF = () => {
@@ -173,14 +168,29 @@ export default function PrescriptionForm() {
     const lineSpacing = 8;
     let y = 10;
 
+    const prescriptionInfo = {
+      clinicName: "Smiles Dental Care",
+      doctorName: patientData?.doctorName || "Dr. XYZ (BDS, MDS)",
+      patient: {
+        name: patientData?.patientName || "N/A",
+        age: patientData?.age || "N/A",
+        gender: patientData?.gender || "N/A",
+        date: patientData?.appointmentDate || new Date().toLocaleDateString(),
+      },
+      medicalHistory: patientData?.medicalHistory || diagnosisList,
+      tests: tests || "N/A",
+      advice: advice || "N/A",
+      prescriptionItems: prescriptionItems,
+    };
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("Smiles Dental Care", 105, y, null, null, "center");
+    doc.text(prescriptionInfo.clinicName, 105, y, null, null, "center");
 
     y += lineSpacing;
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Dr. XYZ (BDS, MDS)", 105, y, null, null, "center");
+    doc.text(prescriptionInfo.doctorName, 105, y, null, null, "center");
 
     y += lineSpacing + 2;
     doc.setDrawColor(0);
@@ -193,12 +203,12 @@ export default function PrescriptionForm() {
     y += lineSpacing;
 
     doc.setFont("helvetica", "normal");
-    doc.text(`Name: ${prescriptionData?.patient.name}`, 10, y);
-    doc.text(`Age: ${prescriptionData?.patient.age}`, 80, y);
-    doc.text(`Gender: ${prescriptionData?.patient.gender}`, 130, y);
+    doc.text(`Name: ${prescriptionInfo.patient.name}`, 10, y);
+    doc.text(`Age: ${prescriptionInfo.patient.age}`, 80, y);
+    doc.text(`Gender: ${prescriptionInfo.patient.gender}`, 130, y);
 
     y += lineSpacing;
-    doc.text(`Date: ${prescriptionData?.patient.date}`, 10, y);
+    doc.text(`Date: ${prescriptionInfo.patient.date}`, 10, y);
 
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
@@ -206,23 +216,24 @@ export default function PrescriptionForm() {
     y += lineSpacing;
 
     doc.setFont("helvetica", "normal");
-    prescriptionData?.medicalHistory.forEach((item, index) => {
-      doc.text(`- ${item}`, 12, y + index * lineSpacing);
+    prescriptionInfo.medicalHistory.forEach((item) => {
+      doc.text(`- ${item}`, 12, y);
+      y += lineSpacing; 
     });
 
-    y += prescriptionData?.medicalHistory.length * lineSpacing + 4;
+    y += 4;
     doc.setFont("helvetica", "bold");
     doc.text("Tests", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionData?.tests, 12, y);
+    doc.text(prescriptionInfo.tests, 12, y);
 
     y += lineSpacing + 2;
     doc.setFont("helvetica", "bold");
     doc.text("Advice", 10, y);
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionData?.advice, 12, y, { maxWidth: 180 });
+    doc.text(prescriptionInfo.advice, 12, y, { maxWidth: 180 });
 
     y += lineSpacing * 2;
     doc.setFont("helvetica", "bold");
@@ -230,22 +241,13 @@ export default function PrescriptionForm() {
     y += lineSpacing;
 
     doc.setFont("helvetica", "normal");
-    // Use the prescriptionItems state for up-to-date medicine information
-    prescriptionItems.length > 0 
-      ? prescriptionItems.forEach((item, index) => {
-          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
-            item.timing
-          }`;
-          doc.text(itemText, 12, y + index * lineSpacing);
-        })
-      : prescriptionData?.prescriptionItems.forEach((item, index) => {
-          const itemText = `${index + 1}. ${item.name} - ${item.dosage} - ${
-            item.timing
-          }`;
-          doc.text(itemText, 12, y + index * lineSpacing);
-        });
+    prescriptionInfo.prescriptionItems.forEach((item) => {
+      const itemText = `• ${item.name} - ${item.dosage} - ${item.timing}`;
+      doc.text(itemText, 12, y);
+      y += lineSpacing;
+    });
 
-    y += (prescriptionItems.length > 0 ? prescriptionItems.length : prescriptionData?.prescriptionItems.length) * lineSpacing + 10;
+    y += 10;
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
@@ -258,7 +260,7 @@ export default function PrescriptionForm() {
       "center"
     );
 
-    doc.save(`prescription-${prescriptionData?.patient.name}.pdf`);
+    doc.save(`prescription-${prescriptionInfo.patient.name}.pdf`);
   };
 
   return (
@@ -267,11 +269,11 @@ export default function PrescriptionForm() {
         <h1 className="text-3xl font-bold text-teal-700">Prescription</h1>
         <div className="flex justify-between items-end mt-2">
           <p className="text-xl text-gray-700">{patientData?.doctorName}</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 px-16">
             Date: {new Date().toLocaleDateString()}
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mt-4 text-sm">
           <div>
             <span className="font-bold text-black">Patient: </span>
             {patientData?.patientName}
@@ -285,7 +287,7 @@ export default function PrescriptionForm() {
             {patientData?.gender}
           </div>
           <div>
-            <span className="font-bold text-black">Appt. Date: </span>
+            <span className="font-bold text-black py-16">Appt. Date: </span>
             {patientData?.appointmentDate}
           </div>
         </div>
@@ -357,10 +359,8 @@ export default function PrescriptionForm() {
 
               {loading && (
                 <div className="text-center py-2 text-sm text-gray-500 bg-gray-100 rounded">
-                  <p>Searching medicines from API...</p>
-                  <p className="text-xs text-gray-400">
-                    http://localhost:3500/api/services/getAllMedicine
-                  </p>
+                  <p>Searching medicines...</p>
+                  
                 </div>
               )}
 
@@ -420,13 +420,20 @@ export default function PrescriptionForm() {
                   {selectedMedicine.name}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <input
-                    type="text"
+                  <select
                     value={dosage}
                     onChange={(e) => setDosage(e.target.value)}
-                    placeholder="Dosage (e.g. 1 tablet)"
-                    className="p-2 border border-gray-300 rounded text-sm"
-                  />
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="">Select Dosage</option>
+                    <option value="1 tablet">1 tablet</option>
+                    <option value="1 tsp">1 tsp</option>
+                    <option value="1-0-1">1-0-1</option>
+                    <option value="0-1-0">0-1-0</option>
+                    <option value="1-1-1">1-1-1</option>
+                    <option value="As directed">As directed</option>
+                  </select>
+
                   <input
                     type="text"
                     value={timing}

@@ -37,6 +37,10 @@ import CashlessTreatment from "./pages/CashlessTreatment";
 import DiscountRefund from "./pages/DiscountRefund";
 import RevenueByService from "./pages/RevenueByService";
 import RevenueByPaymentMode from "./pages/RevenueByPaymentMode";
+import PatientHistory from "./component/PatienHistory";
+import ForgetPassword from "./pages/ForgetPassword";
+import VerificationCode from "./pages/VerificationCode";
+import ResetPassword from "./pages/ResetPassword";
 
 let userRole;
 // Function to get the user role
@@ -71,13 +75,16 @@ function App() {
             )
           }
         />
+        <Route path="/forgetpassword" element={<ForgetPassword />}/>
+        <Route path="/verification-code" element={<VerificationCode />}/>
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
-          <Route path="patient-History" element={<PatientList />} />
+          <Route path="patient-History" element={<PatientHistory />} />
 
           <Route
             path="procedure-selection/:id"

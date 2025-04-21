@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import ServiceCard from "../ui/ServiceCard";
-import BranchTable from "../ui/BranchTable";
+import ServiceCard from "./ServiceCard";
 import ServiceDetailsModal from "./ServiceDetailsModal";
+import ReusableTable from "./ReusableTable";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageServices = () => {
   const [activeCategory, setActiveCategory] = useState(null);
@@ -135,11 +137,19 @@ const ManageServices = () => {
       );
       const endpoint = `${baseURL}/services${category.updateEndpoint}${editingService._id}`;
       await axios.patch(endpoint, editingService);
+
+      toast.success("Service updated successfully!");
+
       setEditingService(null);
+      setIsModalOpen(false);
+      setDropdownOpen(null);
+
       fetchServices(activeCategory);
+
+      console.log("After Save:", editingService);
     } catch (err) {
       console.error("Error updating service:", err);
-      alert("Update failed");
+      toast.error("Update failed. Please try again.");
     }
   };
 
@@ -156,10 +166,17 @@ const ManageServices = () => {
         await axios.delete(
           `${baseURL}/services${category.deleteEndpoint}${serviceId}`
         );
+
+        toast.success("Service deleted successfully!");
+
+        setIsModalOpen(false);
+        setDropdownOpen(null);
+        setEditingService(null);
+
         fetchServices(activeCategory);
       } catch (err) {
         console.error("Error deleting service:", err);
-        alert("Delete failed");
+        toast.error("Delete failed. Please try again.");
       }
     }
   };
@@ -181,6 +198,7 @@ const ManageServices = () => {
         dropdownOpen ? "blurred-background" : ""
       }`}
     >
+      <ToastContainer position="top-right" autoClose={3000} />
       <h2 className="text-2xl font-bold mb-6 text-center">Manage Services</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         {serviceTypes.map((service) => (
@@ -190,7 +208,7 @@ const ManageServices = () => {
             title={service.title}
             onClick={() => handleCardClick(service.title)}
             showDescription={false}
-           />
+          />
         ))}
       </div>
 
@@ -220,7 +238,7 @@ const ManageServices = () => {
                 onChange={handleInputChange}
               />
             ) : (
-              <BranchTable
+              <ReusableTable
                 data={services}
                 loading={loading}
                 error={error}
@@ -231,7 +249,6 @@ const ManageServices = () => {
                 setDropdownOpen={setDropdownOpen}
                 dropdownRef={dropdownRef}
                 customColumns={getCustomColumns()}
-                containerClassName=""
                 headerClassName="bg-teal-900 text-white"
                 dropdownClassName="absolute top-0 right-0 z-10 mt-2 bg-white shadow-lg rounded-lg p-2"
               />
@@ -253,7 +270,7 @@ const ManageServices = () => {
 const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold mb-4">Edit Service</h3>
+      ß<h3 className="text-lg font-semibold mb-4">Edit Service</h3>
       <div className="space-y-4">
         {Object.entries(service)
           .filter(([key]) => key !== "__v" && key !== "_id")

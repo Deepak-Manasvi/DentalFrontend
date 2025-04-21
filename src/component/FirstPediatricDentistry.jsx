@@ -84,11 +84,11 @@ const FirstPediatricDentistryForm = ({
   };
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
 
       {/* Patient Info */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm md:text-base mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm md:text-base mb-6"> {/* ✅ Fixed overlap with more cols & gaps */}
         <div><strong>UHID:</strong> {patient?.uhid}</div>
         <div><strong>Name:</strong> {patient?.patientName}</div>
         <div><strong>Contact:</strong> {patient?.mobileNumber}</div>
@@ -101,7 +101,6 @@ const FirstPediatricDentistryForm = ({
 
       <h2 className="text-xl font-bold mb-4">Select Teeth</h2>
 
-      {/* Teeth Selection Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {[...Array(6)].map((_, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-1 gap-2">
@@ -125,215 +124,168 @@ const FirstPediatricDentistryForm = ({
         ))}
       </div>
 
-            {/* Top 16 Teeth Row */}
-            {/* Top 10 Teeth Row */}
-            <div className="overflow-x-auto mb-6">
-                <div className="grid grid-cols-10 gap-2">
-                    {teethData.slice(0, 10).map((tooth) => (
-                        <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
-                            <div className=" p-1 rounded">
-                                <img
-                                    src={`/pediatricTeeth/tooth${tooth.id}.png`}
-                                    alt={tooth.label}
-                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-teal-500 rounded" : ""}`}
-                                />
-                            </div>
-                            <span className="text-xs text-center">{tooth.label}</span>
-                            <input
-                                type="checkbox"
-                                checked={selectedTeeth[tooth.id] || false}
-                                onChange={() => handleCheckboxChange(tooth.id)}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Bottom 10 Teeth Row */}
-            <div className="overflow-x-auto mb-6">
-                <div className="grid grid-cols-10 gap-2">
-                    {teethData.slice(10).map((tooth) => (
-                        <div key={tooth.id} className="flex flex-col items-center p-2 rounded shadow-sm">
-                            <div className=" p-1 rounded">
-                                <img
-                                    src={`/pediatricTeeth/tooth${tooth.id}.png`}
-                                    alt={tooth.label}
-                                    className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${selectedTeeth[tooth.id] ? "border-2 border-teal-500 rounded" : ""}`}
-                                />
-                            </div>
-                            <span className="text-xs text-center">{tooth.label}</span>
-                            <input
-                                type="checkbox"
-                                checked={selectedTeeth[tooth.id] || false}
-                                onChange={() => handleCheckboxChange(tooth.id)}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-
-            {/* Form Fields */}
-            <div className="mt-6 grid grid-cols-5 gap-4">
-                <div>
-                    <label>Tooth Name*</label>
-                    <input
-                        name="toothName"
-                        value={formData.toothName}
-                        onChange={handleChange}
-                        className="border rounded px-2 py-1 w-full"
-                        required
-                        readOnly
-                    />
-                </div>
-                <div>
-                    <label>Dental Condition*</label>
-                    <select
-                        name="dentalCondition"
-                        value={formData.dentalCondition}
-                        onChange={handleChange}
-                        className="border rounded px-2 py-1 w-full"
-                        required
-                    >
-                        <option value="">Select</option>
-                        <option value="Cavity">Cavity</option>
-                        <option value="Gingivitis">Gingivitis</option>
-                        <option value="Tooth Decay">Tooth Decay</option>
-                        <option value="Broken Tooth">Broken Tooth</option>
-                        <option value="Staining">Staining</option>
-                        <option value="Impacted Tooth">Impacted Tooth</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Chief Complaint*</label>
-                    <select
-                        name="complaint"
-                        value={formData.complaint}
-                        onChange={handleChange}
-                        className="border rounded px-2 py-1 w-full"
-                        required
-                    >
-                        <option value="" disabled>Select a Complaint</option>
-                        <option value="Headache">Headache</option>
-                        <option value="Cough">Cough</option>
-                        <option value="Fever">Fever</option>
-                        <option value="Fatigue">Fatigue</option>
-                        <option value="Nausea">Nausea</option>
-                        {/* Add more options as needed */}
-                    </select>
-                </div>
-
-                <div>
-                    <label>Examination*</label>
-                    <select
-                        name="examination"
-                        value={formData.examination}
-                        onChange={handleChange}
-                        className="border rounded px-2 py-1 w-full"
-                        required
-                    >
-                        <option value="" disabled>Select an Examination</option>
-                        <option value="Blood Pressure">Blood Pressure</option>
-                        <option value="ECG">ECG</option>
-                        <option value="Blood Test">Blood Test</option>
-                        <option value="X-Ray">X-Ray</option>
-                        <option value="CT Scan">CT Scan</option>
-                        {/* Add more options as needed */}
-                    </select>
-                </div>
-                <div>
-                    <label>Advice*</label>
-                    <input
-                        name="advice"
-                        value={formData.advice}
-                        onChange={handleChange}
-                        className="border rounded px-2 py-1 w-full"
-                        required
-                    />
-                </div>
-            </div>
-
-            {/* Buttons: Save and Back */}
-            <div className="mt-4 flex justify-between">
-                {!saved ? (
-                    <>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="bg-gray-500 text-white px-6 py-2 rounded shadow"
-                        >
-                            Back
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            className="bg-teal-900 text-white px-6 py-2 rounded shadow"
-                        >
-                            Save
-                        </button>
-                    </>
-                ) : (
-                    <div className="ml-auto">
-                        <button
-                            onClick={handleSave}
-                            className="bg-teal-900 text-white px-6 py-2 rounded shadow"
-                        >
-                            Save
-                        </button>
-                    </div>
-                )}
-            </div>
-
-
-            {/* Saved Table */}
-            {records.length > 0 && (
-                <div className="mt-8">
-                    <h3 className="text-2xl mb-4">Saved Records</h3>
-                    <table className="w-full border text-lg">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="border px-4 py-2">Tooth Name</th>
-                                <th className="border px-4 py-2">Dental Condition</th>
-                                <th className="border px-4 py-2">Chief Complaint</th>
-                                <th className="border px-4 py-2">Examination</th>
-                                <th className="border px-4 py-2">Advice</th>
-                                <th className="border px-4 py-2">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {records.map((rec, index) => (
-                                <tr key={index}>
-                                    <td className="border px-4 py-2">{rec.toothName}</td>
-                                    <td className="border px-4 py-2">{rec.dentalCondition}</td>
-                                    <td className="border px-4 py-2">{rec.complaint}</td>
-                                    <td className="border px-4 py-2">{rec.examination}</td>
-                                    <td className="border px-4 py-2">{rec.advice}</td>
-                                    <td className="border px-4 py-2">
-                                        <button onClick={() => handleDelete(index)} className="text-red-600 hover:underline">Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    {/* Navigation Buttons */}
-                    <div className="mt-6 flex justify-between">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="bg-gray-500 text-white px-6 py-2 rounded shadow"
-                        >
-                            Back
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            className="bg-teal-600 text-white px-6 py-2 rounded shadow"
-                        >
-                            Next
-                        </button>
-                    </div>
-                </div>
-            )}
+      {/* Form Fields */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div>
+          <label>Tooth Name*</label>
+          <input
+            name="toothName"
+            value={formData.toothName}
+            onChange={handleChange}
+            className="border rounded px-2 py-1 w-full"
+            required
+            readOnly
+          />
         </div>
-    );
+        <div>
+          <label>Dental Condition*</label>
+          <select
+            name="dentalCondition"
+            value={formData.dentalCondition}
+            onChange={handleChange}
+            className="border rounded px-2 py-1 w-full"
+            required
+          >
+            <option value="">Select</option>
+            <option value="Cavity">Cavity</option>
+            <option value="Gingivitis">Gingivitis</option>
+            <option value="Tooth Decay">Tooth Decay</option>
+            <option value="Broken Tooth">Broken Tooth</option>
+            <option value="Staining">Staining</option>
+            <option value="Impacted Tooth">Impacted Tooth</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Chief Complaint*</label>
+          <select
+            name="complaint"
+            value={formData.complaint}
+            onChange={handleChange}
+            className="border rounded px-2 py-1 w-full"
+            required
+          >
+            <option value="" disabled>Select a Complaint</option>
+            <option value="Headache">Headache</option>
+            <option value="Cough">Cough</option>
+            <option value="Fever">Fever</option>
+            <option value="Fatigue">Fatigue</option>
+            <option value="Nausea">Nausea</option>
+          </select>
+        </div>
+        <div>
+          <label>Examination*</label>
+          <select
+            name="examination"
+            value={formData.examination}
+            onChange={handleChange}
+            className="border rounded px-2 py-1 w-full"
+            required
+          >
+            <option value="" disabled>Select an Examination</option>
+            <option value="Blood Pressure">Blood Pressure</option>
+            <option value="ECG">ECG</option>
+            <option value="Blood Test">Blood Test</option>
+            <option value="X-Ray">X-Ray</option>
+            <option value="CT Scan">CT Scan</option>
+          </select>
+        </div>
+        <div>
+          <label>Advice*</label>
+          <input
+            name="advice"
+            value={formData.advice}
+            onChange={handleChange}
+            className="border rounded px-2 py-1 w-full"
+            required
+          />
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="mt-4 flex flex-col sm:flex-row justify-between gap-4">
+        {!saved ? (
+          <>
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-500 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleSave}
+              className="bg-teal-900 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+            >
+              Save
+            </button>
+          </>
+        ) : (
+          <div className="ml-auto">
+            <button
+              onClick={handleSave}
+              className="bg-teal-900 text-white px-6 py-2 rounded shadow"
+            >
+              Save
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Records Table */}
+      {records.length > 0 && (
+        <div className="mt-8 overflow-x-auto">
+          <h3 className="text-2xl mb-4">Saved Records</h3>
+          <table className="w-full border text-sm md:text-base min-w-[700px]">
+            <thead className="bg-teal-900 text-white">
+              <tr>
+                <th className="border px-4 py-2 text-center">Tooth Name</th>
+                <th className="border px-4 py-2 text-center">Dental Condition</th>
+                <th className="border px-4 py-2 text-center">Chief Complaint</th>
+                <th className="border px-4 py-2 text-center">Examination</th>
+                <th className="border px-4 py-2 text-center">Advice</th>
+                <th className="border px-4 py-2 text-center">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((rec, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="border px-4 py-2 text-center">{rec.toothName}</td>
+                  <td className="border px-4 py-2 text-center">{rec.dentalCondition}</td>
+                  <td className="border px-4 py-2 text-center">{rec.complaint}</td>
+                  <td className="border px-4 py-2 text-center">{rec.examination}</td>
+                  <td className="border px-4 py-2 text-center">{rec.advice}</td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-500 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleNext}
+              className="bg-teal-600 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default FirstPediatricDentistryForm;
+

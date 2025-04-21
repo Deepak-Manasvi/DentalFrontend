@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import ActionDropdown from "./ActionDropdown";
 
-const BranchTable = ({
+const ReusableTable = ({
   data = [],
   onView,
   onEdit,
@@ -16,7 +15,7 @@ const BranchTable = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
-  const hasActions = onView || onEdit || onDelete || onApprove;
+  const hasActions = Boolean(onView || onEdit || onDelete || onApprove);
 
   const dynamicKeys =
     data.length > 0
@@ -27,15 +26,14 @@ const BranchTable = ({
     customColumns ||
     dynamicKeys.map((key) => ({
       key,
-      label: key,
+      label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
     }));
 
   return (
     <div
       className={`bg-white shadow-md rounded-lg border border-gray-200 ${containerClassName}`}
     >
-      {/* Set overflow-visible here to allow dropdown overflow */}
-      <div className="overflow-x-auto max-h-[70vh] w-full overflow-visible relative">
+      <div className="overflow-x-auto max-h-[70vh] w-full relative">
         <table
           className={`w-full table-auto border-collapse text-sm md:text-base ${tableClassName}`}
         >
@@ -76,7 +74,6 @@ const BranchTable = ({
                   ))}
                   {hasActions && (
                     <td className="py-2 px-4 text-center relative">
-                      {/* Add relative here to position dropdown absolutely inside */}
                       <ActionDropdown
                         isOpen={dropdownOpen === index}
                         setIsOpen={(isOpen) =>
@@ -109,6 +106,4 @@ const BranchTable = ({
   );
 };
 
-export default BranchTable;
-
-
+export default ReusableTable;

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { Eye, Edit, CheckCircle, X } from "lucide-react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ViewReceipt = () => {
-  const navigate = useNavigate();
+  
   const [receipts, setReceipts] = useState([]);
   const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
@@ -38,14 +39,14 @@ const ViewReceipt = () => {
       );
 
       if (res.status === 200) {
-        alert("Receipt saved successfully!");
+        toast.success("Receipt saved successfully!");
         window.location.reload(); // reload the screen
       } else {
-        alert("Failed to save receipt.");
+        toast.error("Failed to save receipt.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error saving receipt.");
+      toast.error("Error saving receipt.");
     }
   };
 
@@ -74,7 +75,7 @@ const ViewReceipt = () => {
   };
 
   const handlePrint = (id) => {
-    alert(`Print receipt with ID: ${id}`);
+    toast.success(`Print receipt with ID: ${id}`);
   };
 
   const handleChange = (e) => {
@@ -88,7 +89,7 @@ const ViewReceipt = () => {
     );
     setReceipts(updatedReceipts);
     setEditingReceipt(null);
-    alert("Receipt Updated Successfully!");
+    toast.success("Receipt Updated Successfully!");
   };
 
   const handleCloseEdit = () => setEditingReceipt(null);

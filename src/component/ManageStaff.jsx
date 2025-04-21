@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { Pencil, Trash, X } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ManageStaff() {
   const [staffList, setStaffList] = useState([]);
@@ -34,12 +36,12 @@ export default function ManageStaff() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/staff/deletestaffById/${id}`);
-      alert("Staff deleted successfully!");
+      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/user/deleteUserById/${id}`);
+      toast.success("Staff deleted successfully!");
       getStafs();
     } catch (error) {
       console.error("Error deleting staff:", error);
-      alert("Failed to delete staff. Please try again.");
+      toast.error("Failed to delete staff. Please try again.");
     }
   };
 

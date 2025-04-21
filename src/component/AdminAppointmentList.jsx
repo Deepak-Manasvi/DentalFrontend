@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AppointmentDetails from "./AppointmentDetails";
 import { Eye, Edit, CheckCircle, Trash2, Search, X } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
@@ -33,7 +35,7 @@ const AdminAppointmentList = () => {
       );
       const appointmentData = data?.appointment;
       if (!appointmentData) {
-        alert("Appointment not found!");
+        toast.error("Appointment not found!");
         return;
       }
 
@@ -43,9 +45,9 @@ const AdminAppointmentList = () => {
         )
       );
 
-      alert("Patient checked in successfully!");
+      toast.success("Patient checked in successfully!");
     } catch (error) {
-      alert(`Check-in failed: ${error.message || "Try again"}`);
+      toast.error(`Check-in failed: ${error.message || "Try again"}`);
     } finally {
       setIsLoading(false);
       setDropdownOpen(null);
@@ -115,9 +117,9 @@ const AdminAppointmentList = () => {
 
         await axios.delete(`${baseUrl}/appointments/delete/${id}`);
         fetchAppointments();
-        alert("Deleted Appointment");
+        toast.error("Deleted Appointment");
       } catch (error) {
-        alert(`Delete failed: ${error.message || "Try again"}`);
+        toast.error(`Delete failed: ${error.message || "Try again"}`);
       } finally {
         setDropdownOpen(null);
       }

@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function EditStaff() {
   const { id } = useParams();
@@ -120,14 +122,14 @@ export default function EditStaff() {
         );
 
         if (res.status === 200) {
-          alert("Staff updated successfully!");
+          toast.success("Staff updated successfully!");
           navigate("/admin/manage-staff");
         } else {
-          alert("Failed to update staff. Please try again.");
+          toast.error("Failed to update staff. Please try again.");
         }
       } catch (error) {
         console.error("Error updating staff:", error);
-        alert("An error occurred while updating staff. Please try again.");
+        toast.error("An error occurred while updating staff. Please try again.");
       }
     }
   };
