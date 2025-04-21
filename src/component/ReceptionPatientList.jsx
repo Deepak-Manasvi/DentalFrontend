@@ -18,9 +18,11 @@ const ReceiptGenerator = () => {
     transactionId: "",
     receptionist: "",
     branchId: selectedBranch,
+    totalAmount: "",
+    paidAmount: "",
+    paymentStatus: "",
   });
 
-  // Fetch patients on mount
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -37,12 +39,12 @@ const ReceiptGenerator = () => {
     fetchPatients();
   }, []);
 
-  // When a patient is selected
   useEffect(() => {
     if (selectedPatientId) {
       const patient = patients.find((p) => p._id === selectedPatientId);
       if (patient) {
-        setFormData({
+        setFormData((prev) => ({
+          ...prev,
           appId: patient.appId,
           uhid: patient.uhid,
           patientName: patient.patientName,
@@ -54,7 +56,7 @@ const ReceiptGenerator = () => {
           transactionId: patient.transactionId || "",
           receptionist: patient.receptionist || "",
           branchId: selectedBranch,
-        });
+        }));
       }
     }
   }, [selectedPatientId, patients, selectedBranch]);
@@ -90,7 +92,7 @@ const ReceiptGenerator = () => {
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-semibold mb-4 text-teal-800">Create Receipt</h2>
 
-      {/* Searchable Dropdown */}
+      {/* Patient Selector */}
       <div className="mb-4">
         <label className="block text-gray-700 font-medium mb-1">Select Patient</label>
         <Select
@@ -110,10 +112,11 @@ const ReceiptGenerator = () => {
           { name: "mobileNumber", label: "Contact" },
           { name: "address", label: "Address" },
           { name: "doctorName", label: "Doctor" },
-          { name: "opdAmount", label: "Amount (₹)" },
-          { name: "paymentMode", label: "Payment Mode" },
+          { name: "opdAmount", label: "OPD Amount (₹)" },
           { name: "transactionId", label: "Transaction ID" },
           { name: "receptionist", label: "Receptionist" },
+          { name: "totalAmount", label: "Total Amount (₹)" },
+          { name: "paidAmount", label: "Paid Amount (₹)" },
         ].map((field) => (
           <div key={field.name}>
             <label className="block text-gray-700 mb-1">{field.label}</label>
@@ -126,6 +129,38 @@ const ReceiptGenerator = () => {
             />
           </div>
         ))}
+
+        {/* Payment Mode */}
+        <div>
+          <label className="block text-gray-700 mb-1">Payment Mode</label>
+          <select
+            name="paymentMode"
+            value={formData.paymentMode}
+            onChange={handleChange}
+            className="w-full border rounded p-2"
+          >
+            <option value="">Select mode</option>
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+            <option value="UPI">UPI</option>
+          </select>
+        </div>
+
+        {/* Payment Status */}
+        <div>
+          <label className="block text-gray-700 mb-1">Payment Status</label>
+          <select
+            name="paymentStatus"
+            value={formData.paymentStatus}
+            onChange={handleChange}
+            className="w-full border rounded p-2"
+          >
+            <option value="">Select status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Partially Paid">Partially Paid</option>
+          </select>
+        </div>
 
         <button
           type="submit"
