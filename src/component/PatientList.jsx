@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X, Eye, Edit, Trash2 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -44,7 +47,7 @@ const PatientList = () => {
   const handleCancel = (id) => {
     if (window.confirm("Are you sure you want to cancel this patient?")) {
       console.log("Cancelling patient with ID:", id);
-      alert("Patient cancelled");
+      toast.error("Patient cancelled");
     }
   };
 
@@ -73,7 +76,7 @@ const PatientList = () => {
         navigate(`/admin/PrescriptionForm/${patient.appId}`);
         break;
       case "delete":
-        alert(`Delete action for patient ${patientId}`);
+        toast.error(`Delete action for patient ${patientId}`);
         break;
       default:
         break;

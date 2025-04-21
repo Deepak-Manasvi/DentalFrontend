@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Receipt = () => {
   const location = useLocation();
@@ -90,14 +90,14 @@ const Receipt = () => {
       );
 
       if (res.status === 200) {
-        alert("Receipt saved successfully!");
+        toast.success("Receipt saved successfully!");
         window.location.reload(); // reload the screen
       } else {
-        alert("Failed to save receipt.");
+        toast.error("Failed to save receipt.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error saving receipt.");
+      toast.error("Error saving receipt.");
     }
   };
 

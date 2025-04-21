@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Bg from "../assets/bg1.png"; // Using same background as login
 import logo from "../assets/logo.png"; // Same logo as login
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ForgetPassword() {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export default function ForgetPassword() {
         `${import.meta.env.VITE_APP_BASE_URL}/user/forgot-password`,
         { email: emailOrPhone }
       );
-      alert("Reset link sent to your email!");
+      toast.success("Reset link sent to your email!");
       navigate("/verification-code");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send reset link");
