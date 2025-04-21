@@ -1,214 +1,141 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { toWords } from "number-to-words";
-import { Eye, Edit, CheckCircle, X } from "lucide-react"; 
+import Select from "react-select";
 
-const ReceptionPatientList = () => {
+const ReceiptGenerator = () => {
+  const selectedBranch = localStorage.getItem("selectedBranch");
   const [patients, setPatients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(null);
-  const [viewingReceipt, setViewingReceipt] = useState(null);
-  const navigate = useNavigate();
+  const [selectedPatientId, setSelectedPatientId] = useState("");
+  const [formData, setFormData] = useState({
+    appId: "",
+    uhid: "",
+    patientName: "",
+    mobileNumber: "",
+    address: "",
+    doctorName: "",
+    opdAmount: "",
+    paymentMode: "",
+    transactionId: "",
+    receptionist: "",
+    branchId: selectedBranch,
+  });
 
+  // Fetch patients on mount
   useEffect(() => {
-    fetchPatientDetails();
+    const fetchPatients = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+        );
+        const filtered = response.data.appointmentList.filter((p) => p.isPatient);
+        setPatients(filtered);
+      } catch (error) {
+        console.error("Error fetching patients", error);
+      }
+    };
+
+    fetchPatients();
   }, []);
 
-  const fetchPatientDetails = async () => {
+  // When a patient is selected
+  useEffect(() => {
+    if (selectedPatientId) {
+      const patient = patients.find((p) => p._id === selectedPatientId);
+      if (patient) {
+        setFormData({
+          appId: patient.appId,
+          uhid: patient.uhid,
+          patientName: patient.patientName,
+          mobileNumber: patient.mobileNumber,
+          address: patient.address,
+          doctorName: patient.doctorName?.[0] || "",
+          opdAmount: patient.opdAmount,
+          paymentMode: patient.paymentMode || "",
+          transactionId: patient.transactionId || "",
+          receptionist: patient.receptionist || "",
+          branchId: selectedBranch,
+        });
+      }
+    }
+  }, [selectedPatientId, patients, selectedBranch]);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+      await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/receipts/create`,
+        formData
       );
-
-      const checkInPatients = response.data.appointmentList.filter(
-        (patient) => patient.isPatient === true
-      );
-
-      setPatients(checkInPatients);
-    } catch (error) {
-      console.error("Error fetching patient details:", error);
+      alert("Receipt saved successfully!");
+    } catch (err) {
+      console.error("Failed to save receipt", err);
+      alert("Something went wrong.");
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN");
-  };
-
-  const toggleDropdown = (index) => {
-    setDropdownOpen(dropdownOpen === index ? null : index);
-  };
-
-  const handleView = (patient) => {
-    setViewingReceipt(patient);
-  };
-
-  const handleCloseView = () => {
-    setViewingReceipt(null);
-  };
-
-  const handleReceipt = (patient) => {
-    const data = {
-      date: formatDate(patient.appointmentDate),
-      appId: patient.appId,
-      patientName: patient.patientName,
-      uhid: patient.uhid,
-      doctorName: patient.doctorName?.[0] || "N/A",
-      receiptMode: patient.paymentMode,
-      transactionId: patient.transactionId,
-      amount: patient.opdAmount,
-      amountInWords: toWords(patient.opdAmount),
-      receptionist: patient.receptionist,
-      dateTime: `${formatDate(patient.appointmentDate)} ${patient.time}`,
-    };
-    navigate("/admin/receipt", { state: { patient: data } });
-  };
-
-  const filteredPatients = patients.filter((patient) =>
-    `${patient.patientName} ${patient.mobileNumber} ${patient.uhid}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const patientOptions = patients.map((p) => ({
+    value: p._id,
+    label: `${p.patientName} (${p.uhid})`,
+  }));
 
   return (
-    <div className="mx-auto px-4 py-6">
-      <div className="mb-4 mt-2 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-700">Patient List</h2>
-        <input
-          type="text"
-          placeholder="Search by name, contact or ID"
-          className="p-2 border rounded w-1/3"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4 text-teal-800">Create Receipt</h2>
+
+      {/* Searchable Dropdown */}
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-1">Select Patient</label>
+        <Select
+          options={patientOptions}
+          onChange={(selected) => setSelectedPatientId(selected?.value || "")}
+          placeholder="Search or select patient..."
+          isClearable
         />
       </div>
 
-      {viewingReceipt && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">View Receipt</h2>
-            <div className="space-y-2">
-              <p><strong>Date:</strong> {formatDate(viewingReceipt.appointmentDate)}</p>
-              <p><strong>Appointment ID:</strong> {viewingReceipt.appId}</p>
-              <p><strong>UHID:</strong> {viewingReceipt.uhid}</p>
-              <p><strong>Name:</strong> {viewingReceipt.patientName}</p>
-              <p><strong>Contact:</strong> {viewingReceipt.mobileNumber}</p>
-              <p><strong>Address:</strong> {viewingReceipt.address}</p>
-              <p><strong>Amount:</strong> ₹{viewingReceipt.opdAmount}</p>
-              <p><strong>Doctor:</strong> {viewingReceipt.doctorName?.[0] || "N/A"}</p>
-            </div>
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={handleCloseView}
-                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
+      {/* Receipt Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {[
+          { name: "appId", label: "Appointment ID" },
+          { name: "uhid", label: "UHID" },
+          { name: "patientName", label: "Patient Name" },
+          { name: "mobileNumber", label: "Contact" },
+          { name: "address", label: "Address" },
+          { name: "doctorName", label: "Doctor" },
+          { name: "opdAmount", label: "Amount (₹)" },
+          { name: "paymentMode", label: "Payment Mode" },
+          { name: "transactionId", label: "Transaction ID" },
+          { name: "receptionist", label: "Receptionist" },
+        ].map((field) => (
+          <div key={field.name}>
+            <label className="block text-gray-700 mb-1">{field.label}</label>
+            <input
+              type="text"
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            />
           </div>
-        </div>
-      )}
+        ))}
 
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <div className="relative">
-          <div className="max-h-[28rem] overflow-y-auto">
-            <table className="w-full table-auto border-collapse">
-              <thead className="bg-teal-900 text-white sticky top-0 z-10 text-sm md:text-base">
-                <tr>
-                  <th className="py-2 px-4">Date</th>
-                  <th className="py-2 px-4">App ID</th>
-                  <th className="py-2 px-4">UHID</th>
-                  <th className="py-2 px-4">Name</th>
-                  <th className="py-2 px-4">Contact</th>
-                  <th className="py-2 px-4">Address</th>
-                  <th className="py-2 px-4">Amount</th>
-                  <th className="py-2 px-4">Doctor</th>
-                  <th className="py-2 px-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPatients.length === 0 ? (
-                  <tr>
-                    <td colSpan="9" className="text-center py-4 text-gray-500">
-                      No matching patients found.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredPatients.map((patient, index) => (
-                    <tr
-                      key={index}
-                      className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-50"
-                    >
-                      <td className="py-2 px-4">{formatDate(patient.appointmentDate)}</td>
-                      <td className="py-2 px-4">{patient.appId}</td>
-                      <td className="py-2 px-4">{patient.uhid}</td>
-                      <td className="py-2 px-4">{patient.patientName}</td>
-                      <td className="py-2 px-4">{patient.mobileNumber}</td>
-                      <td className="py-2 px-4">{patient.address}</td>
-                      <td className="py-2 px-4">₹{patient.opdAmount}</td>
-                      <td className="py-2 px-4">{patient.doctorName?.[0] || "N/A"}</td>
-                      <td className="py-2 px-4">
-                        <div className="relative">
-                          <button
-                            className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
-                            onClick={() => toggleDropdown(index)}
-                          >
-                            Actions
-                          </button>
-
-                          {dropdownOpen === index && (
-                            <div className="absolute right-0 mt-1 w-40 bg-white z-50 shadow-lg rounded-md border">
-                              <ul className="text-left">
-                                <div className="flex justify-between items-center border-b p-2">
-                                  <span className="font-semibold">Actions</span>
-                                  <button
-                                    onClick={() => setDropdownOpen(null)}
-                                    className="p-1 hover:bg-gray-200 rounded"
-                                  >
-                                    <X size={16} />
-                                  </button>
-                                </div>
-                                <li>
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
-                                    onClick={() => handleView(patient)}
-                                  >
-                                    <Eye size={18} /> View
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
-                                    onClick={() => handleReceipt(patient)}
-                                  >
-                                    <Edit size={18} /> Receipt
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
-                                    onClick={() => alert("Cancel Clicked")}
-                                  >
-                                    <CheckCircle size={18} /> Cancel
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        <button
+          type="submit"
+          className="bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 rounded mt-4"
+        >
+          Save Receipt
+        </button>
+      </form>
     </div>
   );
 };
 
-export default ReceptionPatientList;
+export default ReceiptGenerator;
