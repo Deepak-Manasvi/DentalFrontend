@@ -29,10 +29,9 @@ const AddAppointment = () => {
     medicalHistory: [],
     allergies: [],
     weight: "",
- 
+
     systolic: "",
     diastolic: "",
-    bp: "",
     spo2: "",
     bloodGroup: "",
     appointmentDate: "",
@@ -346,19 +345,16 @@ const AddAppointment = () => {
     setAppointmentTime(currentTime);
 
     // Format BP as an object for the backend
-    const bloodPressure = {
-      systolic: Number(formData.systolic),
-      diastolic: Number(formData.diastolic),
-    };
+    const { systolic, diastolic, ...restFormData } = formData;
 
     const finalData = {
-      ...formData,
+      ...restFormData,
       appointmentTime: appointmentTime || currentTime,
       paymentMode,
-      bp: bloodPressure, // Now sending as object
-      // Remove these as they're now part of the bp object
-      systolic: undefined,
-      diastolic: undefined,
+      bp: {
+        systolic: Number(systolic),
+        diastolic: Number(diastolic),
+      },
     };
 
     try {
@@ -375,14 +371,14 @@ const AddAppointment = () => {
     }
   };
   useEffect(() => {
-    if (formData.bp && typeof formData.bp === 'object') {
-      setFormData(prev => ({
+    if (formData.bp && typeof formData.bp === "object") {
+      setFormData((prev) => ({
         ...prev,
         systolic: prev.bp.systolic,
-        diastolic: prev.bp.diastolic
+        diastolic: prev.bp.diastolic,
       }));
     }
-  }, [formData.bp]);  
+  }, [formData.bp]);
   return (
     <div className=" mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">

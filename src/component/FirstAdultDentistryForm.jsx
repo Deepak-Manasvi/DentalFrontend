@@ -183,7 +183,13 @@ const FirstAdultDentistryForm = ({
         <div>Name: {patient?.patientName}</div>
         <div>Contact: {patient?.mobileNumber}</div>
         <div>Age: {patient?.age}</div>
-        <div>BP: {patient?.bp}</div>
+        <div>
+          {patient?.bp && (
+            <div>
+              BP: {patient.bp.systolic}/{patient.bp.diastolic} mmHg
+            </div>
+          )}
+        </div>
         <div>Medical History: {patient?.medicalHistory}</div>
         <div>Allergies: {patient?.allergies}</div>
         <div>Weight: {patient?.weight}</div>

@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
 const toothNames = [
   "Upper Right Second Molar",
   "Upper Right First Molar",
@@ -43,6 +45,8 @@ const FirstPediatricDentistryForm = ({
   setFormData,
 }) => {
   const navigate = useNavigate();
+  const [chiefComplaints, setChiefComplaints] = useState([]);
+  const [examinations, setExaminations] = useState([]);
 
   const handleDelete = (index) => {
     const updated = [...records];
@@ -68,8 +72,10 @@ const FirstPediatricDentistryForm = ({
   };
 
   const handleSave = () => {
-    const { toothName, dentalCondition, complaint, examination, advice } = formData;
-    if (!toothName || !dentalCondition || !complaint || !examination || !advice) return;
+    const { toothName, dentalCondition, complaint, examination, advice } =
+      formData;
+    if (!toothName || !dentalCondition || !complaint || !examination || !advice)
+      return;
 
     setRecords([...records, formData]);
     setFormData({
@@ -82,21 +88,59 @@ const FirstPediatricDentistryForm = ({
     setSelectedTeeth({});
     setSaved(true);
   };
+  useEffect(() => {
+    // Fetch Chief Complaints
+    fetch("http://localhost:3500/api/services/getAllChief")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setChiefComplaints(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching chief complaints:", err));
 
+    // Fetch Examinations
+    fetch("http://localhost:3500/api/services/getAllExamination")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setExaminations(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching examinations:", err));
+  }, []);
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
 
       {/* Patient Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm md:text-base mb-6"> {/* ✅ Fixed overlap with more cols & gaps */}
-        <div><strong>UHID:</strong> {patient?.uhid}</div>
-        <div><strong>Name:</strong> {patient?.patientName}</div>
-        <div><strong>Contact:</strong> {patient?.mobileNumber}</div>
-        <div><strong>Age:</strong> {patient?.age}</div>
-        <div><strong>BP:</strong> {patient?.bp}</div>
-        <div><strong>Medical History:</strong> {patient?.medicalHistory}</div>
-        <div><strong>Allergies:</strong> {patient?.allergies}</div>
-        <div><strong>Weight:</strong> {patient?.weight}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm md:text-base mb-6">
+        {" "}
+        {/* ✅ Fixed overlap with more cols & gaps */}
+        <div>
+          <strong>UHID:</strong> {patient?.uhid}
+        </div>
+        <div>
+          <strong>Name:</strong> {patient?.patientName}
+        </div>
+        <div>
+          <strong>Contact:</strong> {patient?.mobileNumber}
+        </div>
+        <div>
+          <strong>Age:</strong> {patient?.age}
+        </div>
+        <div>
+          <strong>BP:</strong> {patient?.bp}
+        </div>
+        <div>
+          <strong>Medical History:</strong> {patient?.medicalHistory}
+        </div>
+        <div>
+          <strong>Allergies:</strong> {patient?.allergies}
+        </div>
+        <div>
+          <strong>Weight:</strong> {patient?.weight}
+        </div>
       </div>
 
       <h2 className="text-xl font-bold mb-4">Select Teeth</h2>
@@ -162,15 +206,14 @@ const FirstPediatricDentistryForm = ({
             name="complaint"
             value={formData.complaint}
             onChange={handleChange}
-            className="border rounded px-2 py-1 w-full"
-            required
+            className="border px-2 py-1 rounded w-full"
           >
-            <option value="" disabled>Select a Complaint</option>
-            <option value="Headache">Headache</option>
-            <option value="Cough">Cough</option>
-            <option value="Fever">Fever</option>
-            <option value="Fatigue">Fatigue</option>
-            <option value="Nausea">Nausea</option>
+            <option value="">Select</option>
+            {chiefComplaints.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -179,15 +222,14 @@ const FirstPediatricDentistryForm = ({
             name="examination"
             value={formData.examination}
             onChange={handleChange}
-            className="border rounded px-2 py-1 w-full"
-            required
+            className="border px-2 py-1 rounded w-full"
           >
-            <option value="" disabled>Select an Examination</option>
-            <option value="Blood Pressure">Blood Pressure</option>
-            <option value="ECG">ECG</option>
-            <option value="Blood Test">Blood Test</option>
-            <option value="X-Ray">X-Ray</option>
-            <option value="CT Scan">CT Scan</option>
+            <option value="">Select</option>
+            {examinations.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -239,8 +281,12 @@ const FirstPediatricDentistryForm = ({
             <thead className="bg-teal-900 text-white">
               <tr>
                 <th className="border px-4 py-2 text-center">Tooth Name</th>
-                <th className="border px-4 py-2 text-center">Dental Condition</th>
-                <th className="border px-4 py-2 text-center">Chief Complaint</th>
+                <th className="border px-4 py-2 text-center">
+                  Dental Condition
+                </th>
+                <th className="border px-4 py-2 text-center">
+                  Chief Complaint
+                </th>
                 <th className="border px-4 py-2 text-center">Examination</th>
                 <th className="border px-4 py-2 text-center">Advice</th>
                 <th className="border px-4 py-2 text-center">Delete</th>
@@ -248,11 +294,22 @@ const FirstPediatricDentistryForm = ({
             </thead>
             <tbody>
               {records.map((rec, index) => (
-                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="border px-4 py-2 text-center">{rec.toothName}</td>
-                  <td className="border px-4 py-2 text-center">{rec.dentalCondition}</td>
-                  <td className="border px-4 py-2 text-center">{rec.complaint}</td>
-                  <td className="border px-4 py-2 text-center">{rec.examination}</td>
+                <tr
+                  key={index}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                >
+                  <td className="border px-4 py-2 text-center">
+                    {rec.toothName}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {rec.dentalCondition}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {rec.complaint}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {rec.examination}
+                  </td>
                   <td className="border px-4 py-2 text-center">{rec.advice}</td>
                   <td className="border px-4 py-2 text-center">
                     <button
@@ -288,4 +345,3 @@ const FirstPediatricDentistryForm = ({
 };
 
 export default FirstPediatricDentistryForm;
-

@@ -12,6 +12,7 @@ const TreatmentProcedure = ({
   setRecords,
 }) => {
   const [procedureList, setProcedureList] = useState([]);
+  const [treatmentId, setTreatmentId] = useState(id); 
   const [procedureForm, setProcedureForm] = useState({
     procedure: "",
     treatment: "",
@@ -68,10 +69,11 @@ const TreatmentProcedure = ({
         setTreatmentOptions(treatmentsResponse.data.treatments);
 
         // Fetch specific treatment data for the patient
-        // const treatmentResponse = await axios.get(
-        //   `http://localhost:3500/api/treatment/getTreatment/${id}`
-        // );
-        // const treatmentData = treatmentResponse.data.treatment;
+        const treatmentResponse = await axios.get(
+          `http://localhost:3500/api/treatment/getTreatment/${id}`
+        );
+        const treatmentData = treatmentResponse.data.treatment;
+        console.log("Fetched treatment data:", treatmentData); // Log the data
 
         // Extract tooth numbers from the treatment data
         if (treatmentData && treatmentData.toothNumber) {
@@ -98,23 +100,47 @@ const TreatmentProcedure = ({
     fetchTreatmentData();
   }, [id]);
   useEffect(() => {
-    const fetchToothNames = async () => {
+    const fetchTreatmentData = async () => {
       try {
-        const res = await axios.get(
+        const response = await axios.get(
           `http://localhost:3500/api/treatment/getTreatment/${id}`
         );
-        if (res.data?.toothNames) {
-          setToothOptions(res.data.toothNames); // Assuming the API returns { toothNames: ["Molar", "Canine", ...] }
-        }
+        const treatment = response.data;
+
+        setTodayProcedure({
+          date: treatment.date || "",
+          toothName: treatment.toothName || "",
+          procedureDone: treatment.procedureDone || "",
+          materialsUsed: treatment.materialsUsed || "",
+          notes: treatment.notes || "",
+          nextDate: treatment.nextDate || "",
+        });
       } catch (error) {
-        console.error("Error fetching tooth names", error);
+        console.error("Error fetching treatment data", error);
       }
     };
 
-    fetchToothNames();
-  }, [id]);
+    if (treatmentId) {
+      fetchTreatmentData();
+    }
+  }, [treatmentId]);
+  // useEffect(() => {
+  //   const fetchToothNames = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `http://localhost:3500/api/treatment/getTreatment/${id}`
+  //       );
+  //       if (res.data?.toothNames) {
+  //         setToothOptions(res.data.toothNames);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching tooth names", error);
+  //     }
+  //   };
 
-  // Fetch medicine options
+  //   fetchToothNames();
+  // }, [id]);
+
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
@@ -130,27 +156,6 @@ const TreatmentProcedure = ({
     fetchMedicines();
   }, []);
 
-  // Filter medicines based on search query
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery) {
-        const filtered = medicineOptions.filter((med) =>
-          med.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setMedicineOptions(filtered);
-      } else {
-        // Reset to all medicines if search query is empty
-        axios
-          .get("http://localhost:3500/api/services/getAllMedicine")
-          .then((res) => setMedicineOptions(res.data.medicines || []))
-          .catch((err) => console.error("Error fetching medicines:", err));
-      }
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
-
-  // Handler for when a treatment/procedure is selected
   const handleProcedureChange = (e) => {
     const selectedProcedureName = e.target.value;
 
