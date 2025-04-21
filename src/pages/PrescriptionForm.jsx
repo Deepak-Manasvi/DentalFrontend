@@ -218,7 +218,7 @@ export default function PrescriptionForm() {
     doc.setFont("helvetica", "normal");
     prescriptionInfo.medicalHistory.forEach((item) => {
       doc.text(`- ${item}`, 12, y);
-      y += lineSpacing; // ✅ Advance y here after each diagnosis
+      y += lineSpacing; 
     });
 
     y += 4;
@@ -359,10 +359,8 @@ export default function PrescriptionForm() {
 
               {loading && (
                 <div className="text-center py-2 text-sm text-gray-500 bg-gray-100 rounded">
-                  <p>Searching medicines from API...</p>
-                  <p className="text-xs text-gray-400">
-                    http://localhost:3500/api/services/getAllMedicine
-                  </p>
+                  <p>Searching medicines...</p>
+                  
                 </div>
               )}
 
@@ -422,13 +420,20 @@ export default function PrescriptionForm() {
                   {selectedMedicine.name}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <input
-                    type="text"
+                  <select
                     value={dosage}
                     onChange={(e) => setDosage(e.target.value)}
-                    placeholder="Dosage (e.g. 1 tablet)"
-                    className="p-2 border border-gray-300 rounded text-sm"
-                  />
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="">Select Dosage</option>
+                    <option value="1 tablet">1 tablet</option>
+                    <option value="1 tsp">1 tsp</option>
+                    <option value="1-0-1">1-0-1</option>
+                    <option value="0-1-0">0-1-0</option>
+                    <option value="1-1-1">1-1-1</option>
+                    <option value="As directed">As directed</option>
+                  </select>
+
                   <input
                     type="text"
                     value={timing}

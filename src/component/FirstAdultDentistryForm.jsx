@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const toothNames = [
   "Upper Right Third Molar",
   "Upper Right Second Molar",
@@ -54,6 +54,30 @@ const FirstAdultDentistryForm = ({
   handleNext,
 }) => {
   const navigate = useNavigate();
+  const [chiefComplaints, setChiefComplaints] = useState([]);
+  const [examinations, setExaminations] = useState([]);
+
+  useEffect(() => {
+    // Fetch Chief Complaints
+    fetch("http://localhost:3500/api/services/getAllChief")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setChiefComplaints(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching chief complaints:", err));
+
+    // Fetch Examinations
+    fetch("http://localhost:3500/api/services/getAllExamination")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setExaminations(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching examinations:", err));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -92,6 +116,61 @@ const FirstAdultDentistryForm = ({
     const updated = [...records];
     updated.splice(index, 1);
     setRecords(updated);
+  };
+  useEffect(() => {
+    // Fetch Chief Complaints
+    axios
+      .get("http://localhost:3500/api/services/getAllChief")
+      .then((res) => {
+        console.log("Chief Complaint API Response:", res.data);
+        if (Array.isArray(res.data.chiefs)) {
+          setChiefComplaints(res.data.chiefs);
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching chief complaints:", err.message)
+      );
+
+    // Fetch Examinations
+    axios
+      .get("http://localhost:3500/api/services/getAllExamination")
+      .then((res) => {
+        console.log("Examination API Response:", res.data);
+        if (Array.isArray(res.data.examinations)) {
+          setExaminations(res.data.examinations);
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching examinations:", err.message)
+      );
+  }, []);
+
+  const handleNextClick = async () => {
+    if (records.length === 0) {
+      alert("Please save at least one treatment record before proceeding.");
+      return;
+    }
+
+    // Extract only toothName from each record
+    const simplifiedRecords = records.map((record) => ({
+      toothName: record.toothName,
+    }));
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3500/api/treatment/createTreatment",
+        {
+          uhid: patient?.uhid,
+          treatments: simplifiedRecords,
+        }
+      );
+
+      console.log("Treatment saved:", response.data);
+      handleNext();
+    } catch (error) {
+      console.error("Error submitting treatment records:", error.message);
+      alert("Error saving treatment data. Please try again.");
+    }
   };
 
   return (
@@ -170,10 +249,11 @@ const FirstAdultDentistryForm = ({
             className="border px-2 py-1 rounded w-full"
           >
             <option value="">Select</option>
-            <option value="Headache">Headache</option>
-            <option value="Cough">Cough</option>
-            <option value="Fever">Fever</option>
-            <option value="Fatigue">Fatigue</option>
+            {chiefComplaints.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -185,10 +265,11 @@ const FirstAdultDentistryForm = ({
             className="border px-2 py-1 rounded w-full"
           >
             <option value="">Select</option>
-            <option value="Blood Pressure">Blood Pressure</option>
-            <option value="ECG">ECG</option>
-            <option value="Blood Test">Blood Test</option>
-            <option value="X-Ray">X-Ray</option>
+            {examinations.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -219,45 +300,56 @@ const FirstAdultDentistryForm = ({
       </div>
 
       {/* Saved Table */}
-     
-   {saved && (
-  <div>
-    <h3 className="text-lg font-bold mb-2">Saved Records</h3>
-    <table className="w-full text-sm bg-white">
-      <thead className="bg-[#2B7A6F] text-white">
-        <tr>
-          <th className="px-3 py-2 border border-white">Tooth Name</th>
-          <th className="px-3 py-2 border border-white">Dental Condition</th>
-          <th className="px-3 py-2 border border-white">Complaint</th>
-          <th className="px-3 py-2 border border-white">Examination</th>
-          <th className="px-3 py-2 border border-white">Advice</th>
-          <th className="px-3 py-2 border border-white">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {records.map((rec, index) => (
-          <tr key={index} className="border border-[#2B7A6F]">
-            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.toothName}</td>
-            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.dentalCondition}</td>
-            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.complaint}</td>
-            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.examination}</td>
-            <td className="px-3 py-2 border border-[#2B7A6F]">{rec.advice}</td>
-            <td className="px-3 py-2 border border-[#2B7A6F]">
-              <button
-                onClick={() => handleDelete(index)}
-                className="text-red-600 hover:underline"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      {saved && (
+        <div>
+          <h3 className="text-lg font-bold mb-2">Saved Records</h3>
+          <table className="w-full text-sm bg-white">
+            <thead className="bg-[#2B7A6F] text-white">
+              <tr>
+                <th className="px-3 py-2 border border-white">Tooth Name</th>
+                <th className="px-3 py-2 border border-white">
+                  Dental Condition
+                </th>
+                <th className="px-3 py-2 border border-white">Complaint</th>
+                <th className="px-3 py-2 border border-white">Examination</th>
+                <th className="px-3 py-2 border border-white">Advice</th>
+                <th className="px-3 py-2 border border-white">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((rec, index) => (
+                <tr key={index} className="border border-[#2B7A6F]">
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.toothName}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.dentalCondition}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.complaint}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.examination}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.advice}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           <div className="mt-4 text-right">
             <button
-              onClick={handleNext}
+              onClick={handleNextClick}
               className="bg-teal-600 text-white px-6 py-2 rounded"
             >
               Next

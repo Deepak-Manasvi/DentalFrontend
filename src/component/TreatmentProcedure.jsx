@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const TreatmentProcedure = ({
   id,
@@ -11,14 +12,17 @@ const TreatmentProcedure = ({
   setRecords,
 }) => {
   const [procedureList, setProcedureList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [procedureForm, setProcedureForm] = useState({
     procedure: "",
     treatment: "",
     sitting: "",
-    cost: "Auto Fetch",
+    cost: "",
   });
   const [procedureErrors, setProcedureErrors] = useState({});
-
+  const [treatmentOptions, setTreatmentOptions] = useState([]);
+  const [toothOptions, setToothOptions] = useState([]);
   const [todayProcedure, setTodayProcedure] = useState({
     date: "",
     toothName: "",
@@ -34,7 +38,7 @@ const TreatmentProcedure = ({
     name: "",
     frequency: "",
     beforeFood: "yes",
-    afterFood: "No",
+    afterFood: "no",
     duration: "",
     instructions: "",
   });
@@ -51,6 +55,74 @@ const TreatmentProcedure = ({
     return Object.keys(errors).length === 0;
   };
 
+  useEffect(() => {
+    const fetchTreatmentData = async () => {
+      if (!id) return;
+
+      try {
+        // Fetch all treatments for the dropdown
+        const treatmentsResponse = await axios.get(
+          "http://localhost:3500/api/services/getAllTreatment"
+        );
+        setTreatmentOptions(treatmentsResponse.data.treatments);
+
+        // Fetch specific treatment data for the patient
+        // const treatmentResponse = await axios.get(
+        //   `http://localhost:3500/api/treatment/getTreatment/${id}`
+        // );
+        // const treatmentData = treatmentResponse.data.treatment;
+
+        // Extract tooth numbers from the treatment data
+        if (treatmentData && treatmentData.toothNumber) {
+          setTodayProcedure((prev) => ({
+            ...prev,
+            toothName: `Tooth ${treatmentData.toothNumber}`,
+          }));
+
+          // Also set tooth options for selection
+          const teeth = [
+            ...new Set(
+              treatmentsResponse.data.treatments
+                .map((t) => t.toothNumber)
+                .filter((t) => t)
+            ),
+          ].sort();
+          setToothOptions(teeth);
+        }
+      } catch (error) {
+        console.error("Error fetching treatment data:", error);
+      }
+    };
+
+    fetchTreatmentData();
+  }, [id]);
+
+  // Handler for when a treatment/procedure is selected
+  const handleProcedureChange = (e) => {
+    const selectedProcedureName = e.target.value;
+
+    // Find the selected treatment from options
+    const selectedTreatment = treatmentOptions.find(
+      (treatment) => treatment.treatmentName === selectedProcedureName
+    );
+
+    if (selectedTreatment) {
+      setProcedureForm({
+        ...procedureForm,
+        procedure: selectedTreatment.treatmentName,
+        treatment: selectedTreatment.procedureName,
+        cost: selectedTreatment.price || "",
+      });
+    } else {
+      setProcedureForm({
+        ...procedureForm,
+        procedure: selectedProcedureName,
+        treatment: "",
+        cost: "",
+      });
+    }
+  };
+
   const handleProcedureSave = () => {
     if (!validateProcedureForm()) return;
     setProcedureList((prev) => [...prev, procedureForm]);
@@ -58,7 +130,7 @@ const TreatmentProcedure = ({
       procedure: "",
       treatment: "",
       sitting: "",
-      cost: "Auto Fetch",
+      cost: "",
     });
     setProcedureErrors({});
   };
@@ -80,12 +152,12 @@ const TreatmentProcedure = ({
       .map(([id]) => `Tooth ${id}`);
 
     const procedures = procedureList
-      .map((p) => `${p.procedure} - ${p.treatment}`)
+      .map((p) => `${p.procedure} - ${p.treatment} (Cost: ${p.cost})`)
       .join(", ");
 
     const record = {
       date: new Date().toLocaleDateString(),
-      toothName: selectedToothNames.join(", "),
+      toothName: selectedToothNames.join(", ") || todayProcedure.toothName,
       procedureDone: procedures,
       materialsUsed: todayProcedure.materialsUsed,
       notes: todayProcedure.notes,
@@ -110,8 +182,6 @@ const TreatmentProcedure = ({
     const errors = {};
     if (!medicineForm.name) errors.name = "Name is required";
     if (!medicineForm.frequency) errors.frequency = "Frequency is required";
-    if (!medicineForm.beforeFood) errors.beforeFood = "Required";
-    if (!medicineForm.afterFood) errors.afterFood = "Required";
     if (!medicineForm.duration) errors.duration = "Duration is required";
     if (!medicineForm.instructions)
       errors.instructions = "Instructions are required";
@@ -126,7 +196,7 @@ const TreatmentProcedure = ({
       name: "",
       frequency: "",
       beforeFood: "yes",
-      afterFood: "No",
+      afterFood: "no",
       duration: "",
       instructions: "",
     });
@@ -141,6 +211,16 @@ const TreatmentProcedure = ({
     setMedicineList((prev) => prev.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3500/api/services/getAllMedicine")
+      .then((res) => {
+        const fetchedMedicines = res.data.medicines || [];
+        setMedicines(fetchedMedicines);
+      })
+      .catch((err) => console.error("Error fetching medicines:", err));
+  }, []);
+
   return (
     <div className="p-6 ml-10 bg-white">
       <h2 className="text-3xl font-bold mb-6 text-center">
@@ -153,16 +233,17 @@ const TreatmentProcedure = ({
           <label className="block mb-1">Procedure</label>
           <select
             value={procedureForm.procedure}
-            onChange={(e) =>
-              setProcedureForm({ ...procedureForm, procedure: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
+            onChange={handleProcedureChange}
+            className="w-full p-2 border rounded"
           >
-            <option value="">Select Procedure</option>
-            <option>Cleaning</option>
-            <option>Extraction</option>
-            <option>Filling</option>
+            <option value="">Select Treatment</option>
+            {treatmentOptions.map((treatment) => (
+              <option key={treatment._id} value={treatment.treatmentName}>
+                {treatment.treatmentName}
+              </option>
+            ))}
           </select>
+
           {procedureErrors.procedure && (
             <p className="text-red-500 text-sm">{procedureErrors.procedure}</p>
           )}
@@ -170,17 +251,11 @@ const TreatmentProcedure = ({
 
         <div>
           <label className="block mb-1">Treatment</label>
-          <select
+          <input
             value={procedureForm.treatment}
-            onChange={(e) =>
-              setProcedureForm({ ...procedureForm, treatment: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          >
-            <option value="">Select Treatment</option>
-            <option>Root Canal</option>
-            <option>Whitening</option>
-          </select>
+            readOnly
+            className="border px-2 py-1 rounded w-full bg-gray-100"
+          />
           {procedureErrors.treatment && (
             <p className="text-red-500 text-sm">{procedureErrors.treatment}</p>
           )}
@@ -214,16 +289,20 @@ const TreatmentProcedure = ({
         onClick={handleProcedureSave}
         className="text-white px-6 py-1 mb-4 rounded"
         style={{
-          backgroundColor: '#2B7A6F',
+          backgroundColor: "#2B7A6F",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = "#24675F")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "#2B7A6F")
+        }
       >
         Save Procedure
       </button>
 
       {/* Procedure Table */}
-      
+
       {procedureList.length > 0 && (
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2 text-teal-700">
@@ -240,6 +319,7 @@ const TreatmentProcedure = ({
                     Treatment
                   </th>
                   <th className="px-4 py-2 border border-teal-200">Sitting</th>
+                  <th className="px-4 py-2 border border-teal-200">Cost</th>
                   <th className="px-4 py-2 border border-teal-200">Action</th>
                 </tr>
               </thead>
@@ -255,8 +335,11 @@ const TreatmentProcedure = ({
                     <td className="px-4 py-2 border border-teal-200 text-center">
                       {item.sitting}
                     </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.cost}
+                    </td>
                     <td
-                      className="px-4 py-2 border border-teal-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
+                      className="px-4 py-2 border border-teal-200 text-center text-red-600 font-medium cursor-pointer"
                       onClick={() => handleDeleteProcedure(index)}
                     >
                       Delete
@@ -268,133 +351,30 @@ const TreatmentProcedure = ({
           </div>
         </div>
       )}
-
-      <hr className="my-6" />
-
-      {/* Today Procedure */}
-      <h3 className="text-2xl font-semibold mb-2 text-gray-600">
-        Today Procedure
-      </h3>
-
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        {Object.entries(todayProcedure).map(([key, value]) => (
-          <div key={key}>
-            <label className="block mb-1 capitalize">
-              {key.replace(/([A-Z])/g, " $1")}
-            </label>
-            {key.toLowerCase().includes("date") ? (
-              <input
-                type="date"
-                value={value}
-                onChange={(e) =>
-                  setTodayProcedure({
-                    ...todayProcedure,
-                    [key]: e.target.value,
-                  })
-                }
-                className="border px-2 py-1 rounded w-full"
-              />
-            ) : (
-              <input
-                value={value}
-                onChange={(e) =>
-                  setTodayProcedure({
-                    ...todayProcedure,
-                    [key]: e.target.value,
-                  })
-                }
-                className="border px-2 py-1 rounded w-full"
-              />
-            )}
-            {todayErrors[key] && (
-              <p className="text-red-500 text-sm">{todayErrors[key]}</p>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={handleFinalSave}
-        className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
-      >
-        Save Today's Procedure
-      </button>
-
-      {/* Final Treatment Records Table */}
-     
-      {finalProcedures.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2 text-teal-700">
-            Saved Final Procedures
-          </h3>
-          <div className="overflow-x-auto rounded-lg shadow">
-            <table className="w-full text-sm text-left border border-teal-200">
-              <thead className="bg-teal-600 text-white">
-                <tr>
-                  <th className="px-4 py-2 border border-teal-200">Date</th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Tooth Name
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Procedure Done
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Materials Used
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">Notes</th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Next Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white text-gray-700">
-                {finalProcedures.map((item, index) => (
-                  <tr key={index} className="hover:bg-teal-50 transition">
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.date}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.toothName}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.procedureDone}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.materialsUsed}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.notes}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {item.nextDate}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
       <hr className="my-6" />
 
       <h3 className="text-2xl font-semibold mb-2 text-gray-600">
         Medicine Prescription
       </h3>
       <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block mb-1">Name</label>
-          <input
+        <div className="relative">
+          <label className="block mb-1">Medicine Name</label>
+          <select
             value={medicineForm.name}
             onChange={(e) =>
               setMedicineForm({ ...medicineForm, name: e.target.value })
             }
             className="border px-2 py-1 rounded w-full"
-          />
-          {medicineErrors.name && (
-            <p className="text-red-500 text-sm">{medicineErrors.name}</p>
-          )}
+          >
+            <option value="">Select Medicine</option>
+            {medicines.map((med) => (
+              <option key={med._id} value={med.name}>
+                {med.name}
+              </option>
+            ))}
+          </select>
         </div>
+
         <div>
           <label className="block mb-1">Frequency</label>
           <input
@@ -404,9 +384,6 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
-          {medicineErrors.frequency && (
-            <p className="text-red-500 text-sm">{medicineErrors.frequency}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1">Before Food</label>
@@ -420,9 +397,6 @@ const TreatmentProcedure = ({
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
-          {medicineErrors.beforeFood && (
-            <p className="text-red-500 text-sm">{medicineErrors.beforeFood}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1">After Food</label>
@@ -436,9 +410,6 @@ const TreatmentProcedure = ({
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
-          {medicineErrors.afterFood && (
-            <p className="text-red-500 text-sm">{medicineErrors.afterFood}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1">Duration</label>
@@ -449,9 +420,6 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
-          {medicineErrors.duration && (
-            <p className="text-red-500 text-sm">{medicineErrors.duration}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1">Instructions</label>
@@ -462,11 +430,6 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
-          {medicineErrors.instructions && (
-            <p className="text-red-500 text-sm">
-              {medicineErrors.instructions}
-            </p>
-          )}
         </div>
       </div>
 
@@ -474,16 +437,19 @@ const TreatmentProcedure = ({
         onClick={handleMedicineAdd}
         className="text-white px-6 py-1 mb-4 rounded"
         style={{
-          backgroundColor: '#2B7A6F',
+          backgroundColor: "#2B7A6F",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#24675F')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2B7A6F')}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = "#24675F")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = "#2B7A6F")
+        }
       >
         Add Medicine
       </button>
-
       {/* Medicine Table */}
-     
+
       {medicineList.length > 0 && (
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2 text-teal-700">
@@ -544,22 +510,112 @@ const TreatmentProcedure = ({
           </div>
         </div>
       )}
+      <hr className="my-6" />
+      <h3 className="text-2xl font-semibold mb-2 text-gray-600">
+        Today Procedure
+      </h3>
 
-      {/* Medicine Section */}
-      {/* same structure but with medicineErrors */}
-
-      {/* Save/Back */}
-      <div className="flex justify-between mt-16 px-10">
-        <button
-          onClick={() => setShowTreatment(true)}
-          className="bg-gray-500 text-white px-6 py-1  rounded"
-        >
-          Back
-        </button>
-        <button className="bg-teal-500 text-white px-6 py-2 rounded">
-          Save All
-        </button>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        {Object.entries(todayProcedure).map(([key, value]) => (
+          <div key={key}>
+            <label className="block mb-1 capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </label>
+            {key.toLowerCase().includes("date") ? (
+              <input
+                type="date"
+                value={
+                  key.toLowerCase().includes("next")
+                    ? value || "" // Leave blank for next dates
+                    : value || new Date().toISOString().split("T")[0] // Default today
+                }
+                min={new Date().toISOString().split("T")[0]} // Prevent past dates
+                onChange={(e) =>
+                  setTodayProcedure({
+                    ...todayProcedure,
+                    [key]: e.target.value,
+                  })
+                }
+                className="border px-2 py-1 rounded w-full"
+              />
+            ) : (
+              <input
+                value={value}
+                onChange={(e) =>
+                  setTodayProcedure({
+                    ...todayProcedure,
+                    [key]: e.target.value,
+                  })
+                }
+                className="border px-2 py-1 rounded w-full"
+              />
+            )}
+          </div>
+        ))}
       </div>
+
+      <button
+        onClick={handleFinalSave}
+        className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
+      >
+        Save Today's Procedure
+      </button>
+
+      {/* Final Treatment Records Table */}
+
+      {finalProcedures.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold mb-2 text-teal-700">
+            Saved Final Procedures
+          </h3>
+          <div className="overflow-x-auto rounded-lg shadow">
+            <table className="w-full text-sm text-left border border-teal-200">
+              <thead className="bg-teal-600 text-white">
+                <tr>
+                  <th className="px-4 py-2 border border-teal-200">Date</th>
+                  <th className="px-4 py-2 border border-teal-200">
+                    Tooth Name
+                  </th>
+                  <th className="px-4 py-2 border border-teal-200">
+                    Procedure Done
+                  </th>
+                  <th className="px-4 py-2 border border-teal-200">
+                    Materials Used
+                  </th>
+                  <th className="px-4 py-2 border border-teal-200">Notes</th>
+                  <th className="px-4 py-2 border border-teal-200">
+                    Next Date
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white text-gray-700">
+                {finalProcedures.map((item, index) => (
+                  <tr key={index} className="hover:bg-teal-50 transition">
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.date}
+                    </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.toothName}
+                    </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.procedureDone}
+                    </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.materialsUsed}
+                    </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.notes}
+                    </td>
+                    <td className="px-4 py-2 border border-teal-200 text-center">
+                      {item.nextDate}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

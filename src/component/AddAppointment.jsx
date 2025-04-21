@@ -29,6 +29,7 @@ const AddAppointment = () => {
     bp: "",
     systolic: "",
     diastolic: "",
+    bp: "",
     spo2: "",
     bloodGroup: "",
     appointmentDate: "",
@@ -36,7 +37,7 @@ const AddAppointment = () => {
     transactionId: "",
     status: "",
     paymentMode: "Cash",
-    opdAmount: "", 
+    opdAmount: "",
     branchId: selectedBranch,
   });
 
@@ -142,7 +143,6 @@ const AddAppointment = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Generate valid appointment date options (today + next 3 days)
   const getValidDateRange = () => {
     const today = new Date();
     const minDate = today.toISOString().split("T")[0];
@@ -164,23 +164,18 @@ const AddAppointment = () => {
     setIsAllergyDropdownOpen(!isAllergyDropdownOpen);
 
   const handleMedicalHistorySelect = (condition) => {
-    // Check if the condition is already selected
     if (selectedMedicalHistory.includes(condition)) {
-      // If selected, remove it
       const updatedMedicalHistory = selectedMedicalHistory.filter(
         (item) => item !== condition
       );
       setSelectedMedicalHistory(updatedMedicalHistory);
-      // Update formData
       setFormData({
         ...formData,
         medicalHistory: updatedMedicalHistory,
       });
     } else {
-      // If not selected, add it
       const updatedMedicalHistory = [...selectedMedicalHistory, condition];
       setSelectedMedicalHistory(updatedMedicalHistory);
-      // Update formData
       setFormData({
         ...formData,
         medicalHistory: updatedMedicalHistory,
@@ -189,23 +184,18 @@ const AddAppointment = () => {
   };
 
   const handleAllergySelect = (allergy) => {
-    // Check if the allergy is already selected
     if (selectedAllergies.includes(allergy)) {
-      // If selected, remove it
       const updatedAllergies = selectedAllergies.filter(
         (item) => item !== allergy
       );
       setSelectedAllergies(updatedAllergies);
-      // Update formData
       setFormData({
         ...formData,
         allergies: updatedAllergies,
       });
     } else {
-      // If not selected, add it
       const updatedAllergies = [...selectedAllergies, allergy];
       setSelectedAllergies(updatedAllergies);
-      // Update formData
       setFormData({
         ...formData,
         allergies: updatedAllergies,
@@ -227,6 +217,19 @@ const AddAppointment = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Update BP when systolic or diastolic changes
+    if (name === "systolic" || name === "diastolic") {
+      const bpValue =
+        name === "systolic"
+          ? `${value}/${formData.diastolic}`
+          : `${formData.systolic}/${value}`;
+      setFormData((prev) => ({
+        ...prev,
+        bp: bpValue,
+      }));
+    }
+
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -300,13 +303,11 @@ const AddAppointment = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Reset form after successful submission
   const resetForm = () => {
     setSelectedMedicalHistory([]);
     setSelectedAllergies([]);
     setPaymentMode("Cash");
 
-    // Fetch new appointment ID
     fetchNextAppointmentId();
 
     setFormData({
@@ -319,9 +320,10 @@ const AddAppointment = () => {
       medicalHistory: [],
       allergies: [],
       weight: "",
-      bp : "",
+      bp: "",
       systolic: "",
       diastolic: "",
+      bp: "",
       spo2: "",
       bloodGroup: "",
       appointmentDate: "",
@@ -330,6 +332,7 @@ const AddAppointment = () => {
       status: "",
       paymentMode: "Cash",
       opdAmount: "",
+      branchId: selectedBranch,
     });
   };
 
@@ -338,13 +341,16 @@ const AddAppointment = () => {
 
     const currentTime = getCurrentTime();
     setAppointmentTime(currentTime);
-    const bloodPressure = `${formData.systolic}/${formData.diastolic}`
+
+    // Combine systolic and diastolic into BP format
+    const bloodPressure = `${formData.systolic}/${formData.diastolic}`;
 
     const finalData = {
       ...formData,
       appointmentTime: appointmentTime || currentTime,
       paymentMode,
-      bp:bloodPressure,
+      bp: bloodPressure,
+      bp: bloodPressure,
     };
 
     try {
@@ -354,8 +360,6 @@ const AddAppointment = () => {
       );
       console.log("Appointment booked successfully", response.data);
       alert("Appointment booked successfully!");
-
-      // Reset form instead of navigating
       resetForm();
     } catch (error) {
       console.error("Error booking appointment:", error);
@@ -536,10 +540,11 @@ const AddAppointment = () => {
                 <div
                   key={condition}
                   onClick={() => handleMedicalHistorySelect(condition)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedMedicalHistory.includes(condition)
-                    ? "bg-teal-50 font-semibold"
-                    : ""
-                    }`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedMedicalHistory.includes(condition)
+                      ? "bg-teal-50 font-semibold"
+                      : ""
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -584,10 +589,11 @@ const AddAppointment = () => {
                 <div
                   key={allergy}
                   onClick={() => handleAllergySelect(allergy)}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedAllergies.includes(allergy)
-                    ? "bg-red-50 font-semibold"
-                    : ""
-                    }`}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                    selectedAllergies.includes(allergy)
+                      ? "bg-red-50 font-semibold"
+                      : ""
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -696,7 +702,6 @@ const AddAppointment = () => {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Doctor Name<span className="text-red-500">*</span>
@@ -739,7 +744,6 @@ const AddAppointment = () => {
           )}
         </div>
 
-
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Appointment Time<span className="text-red-500">*</span>
@@ -759,9 +763,6 @@ const AddAppointment = () => {
           </select>
         </div>
 
-
-
-        {/* OPD Amount Display (read-only) */}
         <div>
           <label className="block text-sm font-medium text-gray-600">
             OPD Amount
@@ -774,7 +775,6 @@ const AddAppointment = () => {
           />
         </div>
       </div>
-
 
       <h2 className="text-2xl font-bold text-gray-700 mt-10 mb-6 border-b pb-2">
         Payment Details
