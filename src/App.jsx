@@ -37,6 +37,7 @@ import CashlessTreatment from "./pages/CashlessTreatment";
 import DiscountRefund from "./pages/DiscountRefund";
 import RevenueByService from "./pages/RevenueByService";
 import RevenueByPaymentMode from "./pages/RevenueByPaymentMode";
+import PatientHistory from "./component/PatienHistory";
 
 let userRole;
 // Function to get the user role
@@ -77,7 +78,7 @@ function App() {
           <Route path="edit-appointment/:appId" element={<EditAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
-          <Route path="patient-History" element={<PatientList />} />
+          <Route path="patient-History" element={<PatientHistory />} />
 
           <Route
             path="procedure-selection/:id"
