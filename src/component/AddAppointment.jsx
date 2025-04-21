@@ -26,6 +26,7 @@ const AddAppointment = () => {
     medicalHistory: [],
     allergies: [],
     weight: "",
+    bp: "",
     systolic: "",
     diastolic: "",
     spo2: "",
@@ -246,6 +247,7 @@ const AddAppointment = () => {
       "age",
       "address",
       "weight",
+      "bp",
       "systolic",
       "diastolic",
       "spo2",
@@ -317,6 +319,7 @@ const AddAppointment = () => {
       medicalHistory: [],
       allergies: [],
       weight: "",
+      bp : "",
       systolic: "",
       diastolic: "",
       spo2: "",
@@ -335,11 +338,13 @@ const AddAppointment = () => {
 
     const currentTime = getCurrentTime();
     setAppointmentTime(currentTime);
+    const bloodPressure = `${formData.systolic}/${formData.diastolic}`
 
     const finalData = {
       ...formData,
       appointmentTime: appointmentTime || currentTime,
       paymentMode,
+      bp:bloodPressure,
     };
 
     try {
