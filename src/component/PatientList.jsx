@@ -21,6 +21,7 @@ const PatientList = () => {
       patient.patientName?.toLowerCase().includes(search.trim().toLowerCase())
     );
   }, [search, patients]);
+  const branchId = localStorage.getItem("selectedBranch");
 
   const fetchPatientDetails = async () => {
     try {
@@ -30,7 +31,7 @@ const PatientList = () => {
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
       );
       const checkInPatients = response.data.appointmentList.filter(
-        (patient) => patient.isPatient === true
+        (patient) => patient.isPatient === true && patient.branchId === branchId
       );
       setPatients(checkInPatients);
     } catch (err) {
@@ -157,9 +158,13 @@ const PatientList = () => {
                   key={patient._id || index}
                   className="border-b hover:bg-gray-100 text-gray-700"
                 >
-                  <td className="py-2 px-2 sm:px-4">{patient.appId || "N/A"}</td>
+                  <td className="py-2 px-2 sm:px-4">
+                    {patient.appId || "N/A"}
+                  </td>
                   <td className="py-2 px-2 sm:px-4">{patient.uhid || "N/A"}</td>
-                  <td className="py-2 px-2 sm:px-4">{patient.patientName || "N/A"}</td>
+                  <td className="py-2 px-2 sm:px-4">
+                    {patient.patientName || "N/A"}
+                  </td>
                   <td className="py-2 px-2 sm:px-4">{patient.age || "N/A"}</td>
                   <td className="py-2 px-2 sm:px-4">
                     {(patient.weight || "N/A") + (patient.weight ? " kg" : "")}
@@ -171,7 +176,9 @@ const PatientList = () => {
                     {patient.allergies?.join(", ") || "N/A"}
                   </td>
                   <td className="py-2 px-2 sm:px-4">{patient.spo2 || "N/A"}</td>
-                  <td className="py-2 px-2 sm:px-4">{patient.bloodGroup || "N/A"}</td>
+                  <td className="py-2 px-2 sm:px-4">
+                    {patient.bloodGroup || "N/A"}
+                  </td>
                   <td className="py-2 px-2 sm:px-4 whitespace-nowrap">
                     <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
                       <button
@@ -249,4 +256,3 @@ const PatientList = () => {
 };
 
 export default PatientList;
-

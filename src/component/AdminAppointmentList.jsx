@@ -68,6 +68,8 @@ const AdminAppointmentList = () => {
     fetchAppointments();
   }, []);
 
+  const branchId = localStorage.getItem("selectedBranch");
+
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
@@ -79,10 +81,13 @@ const AdminAppointmentList = () => {
       const response = await axios.get(
         `${baseUrl}/appointments/appointmentList`
       );
+      const checkBranch = response.data.appointmentList.filter(
+        (patient) => patient.branchId === branchId
+      );
       const checkInPatients = response.data.appointmentList.filter(
         (patient) => patient.isPatient === false
       );
-      setAppointments(checkInPatients || []);
+      setAppointments(checkBranch || []);
     } catch (error) {
       setError(`Failed to fetch appointments: ${error.message}`);
       setAppointments([]);

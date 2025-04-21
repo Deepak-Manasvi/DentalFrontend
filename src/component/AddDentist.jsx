@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const AddDentist = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const AddDentist = () => {
     password: "",
     opdAmount: "",
     timeSlots: [],
-    branchId: localStorage.getItem("branch") || 1,
+    branchId: localStorage.getItem("selectedBranch") || "01",
     role: "receptionist",
   });
 
@@ -48,7 +48,8 @@ const AddDentist = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = "First Name is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First Name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last Name is required";
 
     if (!formData.password.trim()) {
@@ -115,7 +116,7 @@ const AddDentist = () => {
       password: "",
       opdAmount: "",
       timeSlots: [],
-      branchId: localStorage.getItem("branch") || 1,
+      branchId: localStorage.getItem("selectedBranch") || 1,
       role: "receptionist",
     });
     setErrors({});
@@ -140,7 +141,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter first name"
           />
-          {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+          {errors.firstName && (
+            <p className="text-red-500 text-sm">{errors.firstName}</p>
+          )}
         </div>
 
         {/* Last Name */}
@@ -155,7 +158,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter last name"
           />
-          {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+          {errors.lastName && (
+            <p className="text-red-500 text-sm">{errors.lastName}</p>
+          )}
         </div>
 
         {/* Address */}
@@ -170,7 +175,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter address"
           />
-          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+          {errors.address && (
+            <p className="text-red-500 text-sm">{errors.address}</p>
+          )}
         </div>
 
         {/* Contact */}
@@ -185,7 +192,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter contact number"
           />
-          {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+          {errors.phone && (
+            <p className="text-red-500 text-sm">{errors.phone}</p>
+          )}
         </div>
 
         {/* Email */}
@@ -201,7 +210,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter email"
           />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email}</p>
+          )}
         </div>
 
         {/* Password */}
@@ -217,7 +228,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter password"
           />
-          {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password}</p>
+          )}
         </div>
 
         {/* OPD Amount */}
@@ -233,7 +246,9 @@ const AddDentist = () => {
             className="w-full p-3 border rounded-xl"
             placeholder="Enter OPD Amount"
           />
-          {errors.opdAmount && <p className="text-red-500 text-sm">{errors.opdAmount}</p>}
+          {errors.opdAmount && (
+            <p className="text-red-500 text-sm">{errors.opdAmount}</p>
+          )}
         </div>
 
         {/* Time Slots */}
@@ -274,7 +289,9 @@ const AddDentist = () => {
               </span>
             ))}
           </div>
-          {errors.timeSlots && <p className="text-red-500 text-sm">{errors.timeSlots}</p>}
+          {errors.timeSlots && (
+            <p className="text-red-500 text-sm">{errors.timeSlots}</p>
+          )}
         </div>
 
         {/* Submit */}
