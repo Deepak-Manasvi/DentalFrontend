@@ -29,7 +29,7 @@ const AddAppointment = () => {
     medicalHistory: [],
     allergies: [],
     weight: "",
-    bp: "",
+ 
     systolic: "",
     diastolic: "",
     bp: "",
@@ -345,15 +345,20 @@ const AddAppointment = () => {
     const currentTime = getCurrentTime();
     setAppointmentTime(currentTime);
 
-    // Combine systolic and diastolic into BP format
-    const bloodPressure = `${formData.systolic}/${formData.diastolic}`;
+    // Format BP as an object for the backend
+    const bloodPressure = {
+      systolic: Number(formData.systolic),
+      diastolic: Number(formData.diastolic),
+    };
 
     const finalData = {
       ...formData,
       appointmentTime: appointmentTime || currentTime,
       paymentMode,
-      bp: bloodPressure,
-      bp: bloodPressure,
+      bp: bloodPressure, // Now sending as object
+      // Remove these as they're now part of the bp object
+      systolic: undefined,
+      diastolic: undefined,
     };
 
     try {
@@ -369,7 +374,15 @@ const AddAppointment = () => {
       toast.error("Failed to book appointment");
     }
   };
-
+  useEffect(() => {
+    if (formData.bp && typeof formData.bp === 'object') {
+      setFormData(prev => ({
+        ...prev,
+        systolic: prev.bp.systolic,
+        diastolic: prev.bp.diastolic
+      }));
+    }
+  }, [formData.bp]);  
   return (
     <div className=" mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">

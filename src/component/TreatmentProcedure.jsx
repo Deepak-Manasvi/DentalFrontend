@@ -12,8 +12,6 @@ const TreatmentProcedure = ({
   setRecords,
 }) => {
   const [procedureList, setProcedureList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [procedureForm, setProcedureForm] = useState({
     procedure: "",
     treatment: "",
@@ -43,6 +41,9 @@ const TreatmentProcedure = ({
     instructions: "",
   });
   const [medicineErrors, setMedicineErrors] = useState({});
+  const [medicineOptions, setMedicineOptions] = useState([]);
+  const [showMedicineDropdown, setShowMedicineDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedTeeth, setSelectedTeeth] = useState({});
 
@@ -96,6 +97,58 @@ const TreatmentProcedure = ({
 
     fetchTreatmentData();
   }, [id]);
+  useEffect(() => {
+    const fetchToothNames = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3500/api/treatment/getTreatment/${id}`
+        );
+        if (res.data?.toothNames) {
+          setToothOptions(res.data.toothNames); // Assuming the API returns { toothNames: ["Molar", "Canine", ...] }
+        }
+      } catch (error) {
+        console.error("Error fetching tooth names", error);
+      }
+    };
+
+    fetchToothNames();
+  }, [id]);
+
+  // Fetch medicine options
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3500/api/services/getAllMedicine"
+        );
+        setMedicineOptions(response.data.medicines || []);
+      } catch (error) {
+        console.error("Error fetching medicines:", error);
+      }
+    };
+
+    fetchMedicines();
+  }, []);
+
+  // Filter medicines based on search query
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery) {
+        const filtered = medicineOptions.filter((med) =>
+          med.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setMedicineOptions(filtered);
+      } else {
+        // Reset to all medicines if search query is empty
+        axios
+          .get("http://localhost:3500/api/services/getAllMedicine")
+          .then((res) => setMedicineOptions(res.data.medicines || []))
+          .catch((err) => console.error("Error fetching medicines:", err));
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   // Handler for when a treatment/procedure is selected
   const handleProcedureChange = (e) => {
@@ -210,16 +263,6 @@ const TreatmentProcedure = ({
   const handleDeleteMedicine = (index) => {
     setMedicineList((prev) => prev.filter((_, i) => i !== index));
   };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3500/api/services/getAllMedicine")
-      .then((res) => {
-        const fetchedMedicines = res.data.medicines || [];
-        setMedicines(fetchedMedicines);
-      })
-      .catch((err) => console.error("Error fetching medicines:", err));
-  }, []);
 
   return (
     <div className="p-6 ml-10 bg-white">
@@ -358,23 +401,43 @@ const TreatmentProcedure = ({
       </h3>
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="relative">
-          <label className="block mb-1">Medicine Name</label>
-          <select
-            value={medicineForm.name}
-            onChange={(e) =>
-              setMedicineForm({ ...medicineForm, name: e.target.value })
-            }
-            className="border px-2 py-1 rounded w-full"
-          >
-            <option value="">Select Medicine</option>
-            {medicines.map((med) => (
-              <option key={med._id} value={med.name}>
-                {med.name}
-              </option>
-            ))}
-          </select>
+          <label className="block mb-1">Name</label>
+          <div className="relative">
+            <select
+              value={medicineForm.name}
+              onChange={(e) =>
+                setMedicineForm({ ...medicineForm, name: e.target.value })
+              }
+              className="appearance-none border px-2 py-1 rounded w-full pr-8"
+            >
+              <option value="">Select Medicine</option>
+              {medicineOptions.map((medicine) => (
+                <option key={medicine._id} value={medicine.name}>
+                  {medicine.name}
+                </option>
+              ))}
+            </select>
+            {/* Dropdown arrow */}
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-600">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+          {medicineErrors.name && (
+            <p className="text-red-500 text-sm">{medicineErrors.name}</p>
+          )}
         </div>
-
         <div>
           <label className="block mb-1">Frequency</label>
           <input
@@ -384,6 +447,9 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
+          {medicineErrors.frequency && (
+            <p className="text-red-500 text-sm">{medicineErrors.frequency}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1">Before Food</label>
@@ -397,6 +463,9 @@ const TreatmentProcedure = ({
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
+          {medicineErrors.beforeFood && (
+            <p className="text-red-500 text-sm">{medicineErrors.beforeFood}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1">After Food</label>
@@ -410,6 +479,9 @@ const TreatmentProcedure = ({
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
+          {medicineErrors.afterFood && (
+            <p className="text-red-500 text-sm">{medicineErrors.afterFood}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1">Duration</label>
@@ -420,6 +492,9 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
+          {medicineErrors.duration && (
+            <p className="text-red-500 text-sm">{medicineErrors.duration}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1">Instructions</label>
@@ -430,6 +505,11 @@ const TreatmentProcedure = ({
             }
             className="border px-2 py-1 rounded w-full"
           />
+          {medicineErrors.instructions && (
+            <p className="text-red-500 text-sm">
+              {medicineErrors.instructions}
+            </p>
+          )}
         </div>
       </div>
 
@@ -448,68 +528,50 @@ const TreatmentProcedure = ({
       >
         Add Medicine
       </button>
-      {/* Medicine Table */}
 
+      {/* Medicine List in Simple Format */}
       {medicineList.length > 0 && (
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2 text-teal-700">
             Prescribed Medicines
           </h3>
-          <div className="overflow-x-auto rounded-lg shadow">
-            <table className="w-full text-sm text-left border border-teal-200">
-              <thead className="bg-teal-600 text-white">
-                <tr>
-                  <th className="px-4 py-2 border border-teal-200">Name</th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Frequency
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Before Food
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    After Food
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">Duration</th>
-                  <th className="px-4 py-2 border border-teal-200">
-                    Instructions
-                  </th>
-                  <th className="px-4 py-2 border border-teal-200">Action</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white text-gray-700">
-                {medicineList.map((med, index) => (
-                  <tr key={index} className="hover:bg-teal-50 transition">
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.name}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.frequency}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.beforeFood}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.afterFood}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.duration}
-                    </td>
-                    <td className="px-4 py-2 border border-teal-200 text-center">
-                      {med.instructions}
-                    </td>
-                    <td
-                      className="px-4 py-2 border border-teal-200 text-center text-red-600 font-medium cursor-pointer hover:underline"
-                      onClick={() => handleDeleteMedicine(index)}
-                    >
-                      Delete
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-2">
+            {medicineList.map((med, index) => (
+              <div
+                key={index}
+                className="p-3 bg-gray-50 rounded border flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{med.name}</p>
+                  <p className="text-sm text-gray-600">
+                    {med.frequency}, {med.duration} days
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {med.beforeFood === "yes" && "Before food"}
+                    {med.beforeFood === "yes" &&
+                      med.afterFood === "yes" &&
+                      ", "}
+                    {med.afterFood === "yes" && "After food"}
+                  </p>
+                  {med.instructions && (
+                    <p className="text-sm text-gray-600">
+                      Instructions: {med.instructions}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDeleteMedicine(index)}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       )}
+
+      {/* [Rest of your component remains exactly the same] */}
       <hr className="my-6" />
       <h3 className="text-2xl font-semibold mb-2 text-gray-600">
         Today Procedure
@@ -521,15 +583,23 @@ const TreatmentProcedure = ({
             <label className="block mb-1 capitalize">
               {key.replace(/([A-Z])/g, " $1")}
             </label>
-            {key.toLowerCase().includes("date") ? (
+
+            {key === "toothName" ? (
+              <input
+                type="text"
+                value={value}
+                disabled
+                className="border px-2 py-1 rounded w-full bg-gray-100 text-gray-700"
+              />
+            ) : key.toLowerCase().includes("date") ? (
               <input
                 type="date"
                 value={
                   key.toLowerCase().includes("next")
-                    ? value || "" // Leave blank for next dates
-                    : value || new Date().toISOString().split("T")[0] // Default today
+                    ? value || ""
+                    : value || new Date().toISOString().split("T")[0]
                 }
-                min={new Date().toISOString().split("T")[0]} // Prevent past dates
+                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) =>
                   setTodayProcedure({
                     ...todayProcedure,
