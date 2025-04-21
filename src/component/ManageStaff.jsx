@@ -34,7 +34,7 @@ export default function ManageStaff() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/staff/deletestaffById/${id}`);
+      await axios.delete(`${import.meta.env.VITE_APP_BASE_URL}/user/deleteUserById/${id}`);
       alert("Staff deleted successfully!");
       getStafs();
     } catch (error) {
