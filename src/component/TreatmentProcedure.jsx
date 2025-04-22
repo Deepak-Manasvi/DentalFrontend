@@ -228,32 +228,28 @@ const TreatmentProcedure = ({
     setMedicineList((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleFinalSaveFDATA = async () => {
-    try {
-      const data = {
-        patientId: "12345",                  // Replace with dynamic values
-        date: new Date().toISOString(),     // or a selected date
-        toothName: "Molar",
-        procedureDone: "Filling",
-        materialsUsed: "Resin",
-        notes: "Patient responded well",
-        nextDate: "2025-05-10",
-        procedures: ["X-Ray", "Cleaning"],  // Array of procedures
-        medicines: ["Ibuprofen"]            // Array of medicines
-      };
-  
-      const response = await axios.post(`${BASE_URL}/api/saveAllData/saveAdultTreatmentProcedure`, data);
-  
-      if (response.data.success) {
-        toast.success("Treatment procedure saved successfully!");
-        console.log("Saved:", response.data.data);
-      } else {
-        toast.error("Failed to save treatment procedure.");
-      }
-    } catch (error) {
-      console.error("Error saving data:", error);
-      toast.error("Something went wrong while saving.");
-    }
+  const handleFinalSaveFDATA = () => {
+    // Data to be saved, you can replace these with your form field values
+    const treatmentData = {
+      patientId: "12345", // replace with actual value from form
+      date: new Date().toISOString(),
+      toothName: "Tooth 12", // replace with actual value from form
+      procedureDone: "Filling",
+      materialsUsed: ["Cement", "Composite"], // replace with actual values
+      notes: "Patient reported no pain",
+      nextDate: "2025-05-01",
+      procedures: ["Filling procedure", "Tooth cleaning"],
+      medicines: ["Painkiller", "Antibiotic"], // replace with actual values
+    };
+
+    // Save data in localStorage
+    localStorage.setItem(
+      "treatmentProcedureData",
+      JSON.stringify(treatmentData)
+    );
+
+    alert("Data saved in localStorage");
+    navigate("/paitent-treatment");
   };
 
   return (

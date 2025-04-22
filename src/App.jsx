@@ -78,6 +78,7 @@ function App() {
             )
           }
         />
+        <Route path="paitent-treatment" element={<TreatmentTab />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
         <Route path="/verification-code" element={<VerificationCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -127,7 +128,6 @@ function App() {
           <Route path="revenue/service" element={<RevenueByService />} />
           <Route path="revenue/payment" element={<RevenueByPaymentMode />} />
           <Route path="user-profile" element={<UserProfile />} />
-          <Route path="paitent-treatment" element={<TreatmentTab />} />
         </Route>
 
         <Route
@@ -141,6 +141,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Receipt />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+
           {/* <Route path="invoiceform" element={<InvoiceForm />} /> */}
         </Route>
       </Routes>
