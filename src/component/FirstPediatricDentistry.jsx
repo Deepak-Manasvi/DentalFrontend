@@ -352,9 +352,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import axios from "axios";
-import { useEffect } from "react";
+
+
 const toothNames = [
   "Upper Right Second Molar",
   "Upper Right First Molar",
@@ -435,7 +434,10 @@ const FirstPediatricDentistryForm = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+ const handleNextClick = (e) => {
+  const {name ,value} = e.target;
+  setFormData((prev) => ({...prev, [name]: value}));
+ }
   const handleCheckboxChange = (toothId) => {
     setSelectedTeeth((prev) => {
       const updated = { ...prev, [toothId]: !prev[toothId] };
