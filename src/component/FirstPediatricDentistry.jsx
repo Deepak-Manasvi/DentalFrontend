@@ -80,13 +80,7 @@ const FirstPediatricDentistryForm = ({
       return;
 
     setRecords([...records, formData]);
-    setFormData({
-      toothName: "",
-      dentalCondition: "",
-      complaint: "",
-      examination: "",
-      advice: "",
-    });
+
     setSelectedTeeth({});
     setSaved(true);
   };
@@ -122,15 +116,13 @@ const FirstPediatricDentistryForm = ({
       alert("Please save at least one treatment record before proceeding.");
       return;
     }
-
-    // Extract only toothName from each record
     const simplifiedRecords = records.map((record) => ({
       toothName: record.toothName,
     }));
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/treatment/createPediatricTreatment`,
+        `${BASE_URL}/pediatric/createPediatricTreatment`,
         {
           uhid: patient?._id,
           treatments: simplifiedRecords,
@@ -138,9 +130,7 @@ const FirstPediatricDentistryForm = ({
       );
 
       console.log("Treatment saved:", response.data);
-      const { toothName } = formData;
-
-      handleNext(toothName);
+      handleNext(formData.toothName);
       setFormData({
         toothName: "",
         dentalCondition: "",
@@ -149,11 +139,14 @@ const FirstPediatricDentistryForm = ({
         advice: "",
       });
     } catch (error) {
-      console.error("Error submitting treatment records:", error.message);
-      alert("Error saving treatment data. Please try again.");
+      console.error("Error submitting treatment records:", error);
+      alert(
+        `Error saving treatment data: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   };
-
   return (
     <div className="p-4 md:p-6">
       <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>

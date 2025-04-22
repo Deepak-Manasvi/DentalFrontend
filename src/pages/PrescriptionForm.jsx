@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
-import { Listbox } from "@headlessui/react";
 import jsPDF from "jspdf";
 
 export default function PrescriptionForm() {
@@ -10,32 +8,7 @@ export default function PrescriptionForm() {
   const { id } = useParams();
 
   const [patientData, setPatientData] = useState(null);
-  const dosageOptions = [
-    "1 tablet",
-    "1 tsp",
-    "1-0-1",
-    "0-1-0",
-    "1-1-1",
-    "As directed",
-    "0-0-0-0",
-    "0-0-0-1",
-    "0-0-1-0",
-    "0-0-1-1",
-    "0-1-0-0",
-    "0-1-0-1",
-    "0-1-1-0",
-    "0-1-1-1",
-    "1-0-0-0",
-    "1-0-0-1",
-    "1-0-1-0",
-    "1-0-1-1",
-    "1-1-0-0",
-    "1-1-0-1",
-    "1-1-1-0",
-    "1-1-1-1",
-  ];
 
-  const [selected, setSelected] = useState("");
   const savePrescriptionItems = (items) => {
     localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
   };
@@ -296,7 +269,6 @@ export default function PrescriptionForm() {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return date.toLocaleDateString("en-US", options);
   };
-
   return (
     <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
       <div className="pb-4 mb-6 border-b-2 border-teal-700">
@@ -308,7 +280,6 @@ export default function PrescriptionForm() {
               {patientData?.doctorName}
             </p>
           </div>
-
           <p className="text-sm text-black px-16">
             <span className="font-bold">Date: </span>
             {new Date().toLocaleDateString()}
@@ -464,43 +435,20 @@ export default function PrescriptionForm() {
                   {selectedMedicine.name}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Listbox value={selected} onChange={setSelected}>
-                    <div className="relative mt-1">
-                      <Listbox.Button className="w-full rounded border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-sm flex items-center justify-between">
-                        {selected || "Select Dosage"}
-                        <svg
-                          className="h-4 w-4 ml-2"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute mt-1 max-h-48 w-full overflow-y-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                        {dosageOptions.map((option, idx) => (
-                          <Listbox.Option
-                            key={idx}
-                            value={option}
-                            className={({ active }) =>
-                              `cursor-pointer select-none px-4 py-2 ${
-                                active ? "bg-blue-100" : ""
-                              }`
-                            }
-                          >
-                            {option}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </div>
-                  </Listbox>
+                  <select
+                    value={dosage}
+                    onChange={(e) => setDosage(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="">Select Dosage</option>
+                    <option value="1 tablet">1 tablet</option>
+                    <option value="1 tsp">1 tsp</option>
+                    <option value="1-0-1">1-0-1</option>
+                    <option value="0-1-0">0-1-0</option>
+                    <option value="1-1-1">1-1-1</option>
+                    <option value="As directed">As directed</option>
+                  </select>
+
                   <input
                     type="text"
                     value={timing}

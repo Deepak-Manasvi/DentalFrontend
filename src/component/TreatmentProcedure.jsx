@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const TreatmentProcedure = ({
   id,
@@ -14,6 +15,7 @@ const TreatmentProcedure = ({
 }) => {
   const [procedureList, setProcedureList] = useState([]);
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+  const [loading, setLoading] = useState(false);
   const [procedureForm, setProcedureForm] = useState({
     procedure: "",
     treatment: "",
@@ -32,7 +34,7 @@ const TreatmentProcedure = ({
     nextDate: "",
   });
   const [todayErrors, setTodayErrors] = useState({});
-
+  const navigate = useNavigate();
   const [medicineList, setMedicineList] = useState([]);
   const [medicineForm, setMedicineForm] = useState({
     name: "",
@@ -83,13 +85,10 @@ const TreatmentProcedure = ({
     fetchTreatmentData();
   }, [id]);
 
-
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/services//getAllMedicine`
-        );
+        const response = await axios.get(`${BASE_URL}/services/getAllMedicine`);
         setMedicineOptions(response.data.medicines || []);
       } catch (error) {
         console.error("Error fetching medicines:", error);
@@ -227,6 +226,34 @@ const TreatmentProcedure = ({
 
   const handleDeleteMedicine = (index) => {
     setMedicineList((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleFinalSaveFDATA = async () => {
+    try {
+      const data = {
+        patientId: "12345",                  // Replace with dynamic values
+        date: new Date().toISOString(),     // or a selected date
+        toothName: "Molar",
+        procedureDone: "Filling",
+        materialsUsed: "Resin",
+        notes: "Patient responded well",
+        nextDate: "2025-05-10",
+        procedures: ["X-Ray", "Cleaning"],  // Array of procedures
+        medicines: ["Ibuprofen"]            // Array of medicines
+      };
+  
+      const response = await axios.post(`${BASE_URL}/api/saveAllData/saveAdultTreatmentProcedure`, data);
+  
+      if (response.data.success) {
+        toast.success("Treatment procedure saved successfully!");
+        console.log("Saved:", response.data.data);
+      } else {
+        toast.error("Failed to save treatment procedure.");
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast.error("Something went wrong while saving.");
+    }
   };
 
   return (
@@ -588,13 +615,20 @@ const TreatmentProcedure = ({
         ))}
       </div>
 
-      <button
-        onClick={handleFinalSave}
-        className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
-      >
-        Save Today's Procedure
-      </button>
-
+      <div className="flex gap-4">
+        <button
+          onClick={handleFinalSave}
+          className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
+        >
+          Save Today's Procedure
+        </button>
+        <button
+          onClick={handleFinalSaveFDATA}
+          className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
+        >
+          Save ALL
+        </button>
+      </div>
       {/* Final Treatment Records Table */}
 
       {finalProcedures.length > 0 && (

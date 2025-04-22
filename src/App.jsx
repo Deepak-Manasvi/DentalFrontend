@@ -43,6 +43,7 @@ import VerificationCode from "./pages/VerificationCode";
 import ResetPassword from "./pages/ResetPassword";
 import UserProfile from "./component/UserProfile";
 import InvoiceForm from "./component/InvoiceForm";
+import TreatmentTab from "./component/patientHistory/TreatmentTab";
 
 let userRole;
 // Function to get the user role
@@ -77,8 +78,8 @@ function App() {
             )
           }
         />
-        <Route path="/forgetpassword" element={<ForgetPassword />}/>
-        <Route path="/verification-code" element={<VerificationCode />}/>
+        <Route path="/forgetpassword" element={<ForgetPassword />} />
+        <Route path="/verification-code" element={<VerificationCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -118,22 +119,22 @@ function App() {
           <Route path="setting" element={<Setting />} />
           <Route path="dashboard-card" element={<DashboardCard />} />
           <Route path="receipt" element={<Receipt />} />
-          <Route path="revenue-report" element={<RevenueReport/>}/>
+          <Route path="revenue-report" element={<RevenueReport />} />
           <Route path="revenue/total" element={<TotalRevenue />} />
-          <Route path="renenue/cashless" element={<CashlessTreatment/>}/>
-          <Route path="revenue/discount" element={<DiscountRefund/>}/>
-          <Route path="revenue/invoice" element={<TotalRevenue/>}/>
-          <Route path="revenue/service" element={<RevenueByService/>}/>
-          <Route path="revenue/payment" element={<RevenueByPaymentMode/>}/>
-          <Route path="user-profile" element={<UserProfile/>}/>
+          <Route path="renenue/cashless" element={<CashlessTreatment />} />
+          <Route path="revenue/discount" element={<DiscountRefund />} />
+          <Route path="revenue/invoice" element={<TotalRevenue />} />
+          <Route path="revenue/service" element={<RevenueByService />} />
+          <Route path="revenue/payment" element={<RevenueByPaymentMode />} />
+          <Route path="user-profile" element={<UserProfile />} />
+          <Route path="paitent-treatment" element={<TreatmentTab />} />
         </Route>
 
-        
         <Route
           path="/receptionist"
           element={<ReceptionRoute element={<AdminLayout />} />}
         >
-          <Route path="dashboard" element={<ReceptionDashboard/>} />
+          <Route path="dashboard" element={<ReceptionDashboard />} />
           <Route path="add-appointment" element={<AddAppointment />} />
           <Route path="appointment-list" element={<AdminAppointmentList />} />
           <Route path="patient-list" element={<PatientList />} />
@@ -147,4 +148,3 @@ function App() {
   );
 }
 export default App;
-
