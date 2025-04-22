@@ -3,7 +3,6 @@ import axios from "axios";
 import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import html2pdf from "html2pdf.js";
 import "react-toastify/dist/ReactToastify.css";
 
 const InvoiceGenerator = () => {
@@ -12,11 +11,13 @@ const InvoiceGenerator = () => {
   const invoiceRef = useRef();
 
   const [patients, setPatients] = useState([]);
+  const [servicesList, setServicesList] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [formData, setFormData] = useState({
     invoiceId: uuidv4().slice(0, 8).toUpperCase(),
     createdAt: new Date().toLocaleString(),
     uhid: "",
+    appId: "",
     patientName: "",
     mobileNumber: "",
     address: "",
@@ -24,24 +25,43 @@ const InvoiceGenerator = () => {
     treatmentType: "",
     branchId: selectedBranch,
     receptionist: receptionistName,
-    services: [
-      { description: "Root Canel", quantity: 1, rate: 5000, amount: 5000 },
-    ],
+    services: [],
     discount: 0,
+    subtotal:"",
+    netPayable:""
   });
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`);
-        console.log(res.data, "res.data");
         const filteredReceipts = res.data.filter(receipt => receipt.generateInvoice === true);
+        console.log(filteredReceipts)
         setPatients(filteredReceipts);
       } catch (err) {
         console.error("Failed to fetch receipts:", err);
       }
     };
+
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`);
+        const treatments = res.data.treatments;
+
+        const formatted = treatments.map(t => ({
+          _id: t._id,
+          name: `${t.treatmentName} (${t.procedureName})`,
+          amount: parseFloat(t.price),
+        }));
+
+        setServicesList(formatted);
+      } catch (err) {
+        console.error("Failed to fetch services:", err);
+      }
+    };
+
     fetchPatients();
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -50,7 +70,8 @@ const InvoiceGenerator = () => {
       if (patient) {
         setFormData(prev => ({
           ...prev,
-          uhid: patient.uhid,
+          uhid: patient.appointmentId.uhid,
+          appId: patient.appointmentId.appId,
           patientName: patient.patientName,
           mobileNumber: patient.mobileNumber,
           address: patient.address,
@@ -61,55 +82,108 @@ const InvoiceGenerator = () => {
     }
   }, [selectedPatientId, patients]);
 
-  const handleSave = async () => {
-    try {
-      const element = invoiceRef.current;
-      const opt = {
-        margin: 0.5,
-        filename: `${formData.invoiceId}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      };
+  const handleServiceChange = (index, field, value) => {
+    const updatedServices = [...formData.services];
 
-      const blob = await html2pdf().from(element).set(opt).outputPdf('blob');
-      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-
-      const uploadData = new FormData();
-      uploadData.append("invoiceId", formData.invoiceId);
-      uploadData.append("uhid", formData.uhid);
-      uploadData.append("patientName", formData.patientName);
-      uploadData.append("doctorName", formData.doctorName);
-      uploadData.append("treatmentType", formData.treatmentType);
-      uploadData.append("createdAt", formData.createdAt);
-      uploadData.append("receptionist", formData.receptionist);
-      uploadData.append("branchId", formData.branchId);
-
-      await axios.post(`${import.meta.env.VITE_APP_BASE_URL}/invoices/create`, uploadData);
-      toast.success("Invoice saved successfully!");
-    } catch (err) {
-      console.error("Error saving invoice:", err);
-      toast.error("Failed to save invoice.");
+    if (field === "serviceId") {
+      const selectedService = servicesList.find(s => s._id === value);
+      if (selectedService) {
+        updatedServices[index] = {
+          serviceId: selectedService._id,
+          description: selectedService.name,
+          rate: selectedService.amount,
+          quantity: 1,
+          amount: selectedService.amount,
+        };
+      }
+    } else if (field === "quantity") {
+      const quantity = parseInt(value) || 0;
+      updatedServices[index].quantity = quantity;
+      updatedServices[index].amount = quantity * updatedServices[index].rate;
     }
+
+    setFormData(prev => ({
+      ...prev,
+      services: updatedServices,
+    }));
+  };
+
+  const handleAddService = () => {
+    setFormData(prev => ({
+      ...prev,
+      services: [...prev.services, { description: "", quantity: 1, rate: 0, amount: 0 }],
+    }));
+  };
+
+  const handleRemoveService = (index) => {
+    const updated = [...formData.services];
+    updated.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      services: updated,
+    }));
+  };
+
+  const handleDiscountChange = (e) => {
+    const discount = parseInt(e.target.value) || 0;
+    setFormData(prev => ({ ...prev, discount }));
+  };
+
+  const handleSave = async () => {
+  console.log(formData)
+  await axios.post(
+    `${import.meta.env.VITE_APP_BASE_URL}/invoices/create`,
+    formData
+  );
   };
 
   const handlePrint = () => {
+    const printContents = invoiceRef.current.innerHTML;
     const printWindow = window.open("", "_blank", "width=800,height=600");
-    printWindow.document.write("<html><head><title>Invoice</title>");
-    printWindow.document.write("</head><body>");
-    printWindow.document.write(invoiceRef.current.innerHTML);
-    printWindow.document.write("</body></html>");
+  
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Invoice</title>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+          <style>
+            body { padding: 2rem; color: #000; background: #fff; font-family: sans-serif; }
+            table, th, td { border: 1px solid #000; border-collapse: collapse; }
+            th, td { padding: 8px; text-align: left; }
+          </style>
+        </head>
+        <body>
+          ${printContents}
+          <script>
+            window.onload = function() {
+              setTimeout(() => {
+                window.print();
+                window.close();
+              }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+  
     printWindow.document.close();
-    printWindow.print();
   };
+  
+  
 
   const patientOptions = patients.map(p => ({
     value: p._id,
-    label: `${p.patientName} (${p.uhid})`,
+    label: `${p.patientName} (${p.appointmentId.uhid})`,
   }));
 
   const subtotal = formData.services.reduce((acc, item) => acc + item.amount, 0);
   const netPayable = subtotal - formData.discount;
+  if(subtotal){
+    formData.subtotal=subtotal
+  }
+  if(netPayable){
+    formData.netPayable=netPayable
+  }
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -126,22 +200,6 @@ const InvoiceGenerator = () => {
         />
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={handleSave}
-          className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
-        >
-          Save Invoice
-        </button>
-        <button
-          onClick={handlePrint}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Print Invoice
-        </button>
-      </div>
-
-      {/* Invoice preview */}
       <div ref={invoiceRef} className="p-6 border rounded text-black bg-white">
         <div className="text-center text-2xl font-bold">Header</div>
         <div className="flex justify-between my-4">
@@ -167,30 +225,97 @@ const InvoiceGenerator = () => {
               <th className="p-2 border">Qty</th>
               <th className="p-2 border">Rate</th>
               <th className="p-2 border">Amount</th>
+              <th className="p-2 border">Action</th>
             </tr>
           </thead>
           <tbody>
             {formData.services.map((item, index) => (
               <tr key={index}>
                 <td className="p-2 border">{index + 1}</td>
-                <td className="p-2 border">{item.description}</td>
-                <td className="p-2 border">{item.quantity}</td>
+                <td className="p-2 border">
+                  <select
+                    className="w-full px-2 py-1"
+                    value={item.serviceId || ""}
+                    onChange={e => handleServiceChange(index, "serviceId", e.target.value)}
+                  >
+                    <option value="">Select Service</option>
+                    {servicesList.map(service => (
+                      <option key={service._id} value={service._id}>
+                        {service.name}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="p-2 border">
+                  <input
+                    type="number"
+                    min="1"
+                    className="w-full  px-2 py-1"
+                    value={item.quantity}
+                    onChange={e => handleServiceChange(index, "quantity", e.target.value)}
+                  />
+                </td>
                 <td className="p-2 border">₹{item.rate}</td>
                 <td className="p-2 border">₹{item.amount}</td>
+                <td className="p-2 border text-center">
+                  <button
+                    className="text-red-500 font-bold"
+                    onClick={() => handleRemoveService(index)}
+                  >
+                    ×
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div className="text-right">
-          <p><b>Sub Total:</b> ₹{subtotal}</p>
-          <p><b>Discount:</b> ₹{formData.discount}</p>
-          <p><b>Net Payable:</b> ₹{netPayable}</p>
-        </div>
+        <button
+          onClick={handleAddService}
+          className="bg-blue-600 text-white px-3 py-1 rounded mt-2"
+        >
+          + Add Service
+        </button>
+
+        <div className="text-right mt-2 space-y-1">
+  <div className="flex justify-end items-center gap-2">
+    <span className="font-semibold">Sub Total:</span>
+    <span>₹{subtotal}</span>
+  </div>
+  <div className="flex justify-end items-center gap-2">
+    <span className="font-semibold">Discount:</span>
+    <input
+      type="number"
+      className="border-b border-gray-400 w-24 text-right focus:outline-none"
+      value={formData.discount}
+      onChange={handleDiscountChange}
+    />
+  </div>
+  <div className="flex justify-end items-center gap-2">
+    <span className="font-semibold">Net Payable:</span>
+    <span>₹{netPayable}</span>
+  </div>
+</div>
+
 
         <p className="text-center mt-10 font-semibold">
           “Thank you for choosing our services.”
         </p>
+      </div>
+
+      <div className="flex gap-4 mt-6 justify-end">
+        <button
+          onClick={handleSave}
+          className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+        >
+          Save Invoice
+        </button>
+        <button
+          onClick={handlePrint}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Print Invoice
+        </button>
       </div>
     </div>
   );
