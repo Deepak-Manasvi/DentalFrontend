@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 const toothNames = [
   "Upper Right Second Molar",
   "Upper Right First Molar",
@@ -44,6 +44,7 @@ const FirstPediatricDentistryForm = ({
   setFormData,
 }) => {
   const navigate = useNavigate();
+
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
@@ -57,7 +58,10 @@ const FirstPediatricDentistryForm = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  const handleNextClick = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
   const handleCheckboxChange = (toothId) => {
     setSelectedTeeth((prev) => {
       const updated = { ...prev, [toothId]: !prev[toothId] };
@@ -106,6 +110,29 @@ const FirstPediatricDentistryForm = ({
         }
       })
       .catch((err) => console.error("Error fetching examinations:", err));
+  }, []);
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}/services/getAllChief`)
+      .then((res) => {
+        if (Array.isArray(res.data.chiefs)) {
+          setChiefComplaints(res.data.chiefs);
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching chief complaints:", err.message)
+      );
+
+    axios
+      .get(`${BASE_URL}services/getAllExamination`)
+      .then((res) => {
+        if (Array.isArray(res.data.examinations)) {
+          setExaminations(res.data.examinations);
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching examinations:", err.message)
+      );
   }, []);
   return (
     <div className="p-4 md:p-6">
@@ -230,7 +257,6 @@ const FirstPediatricDentistryForm = ({
         </div>
       </div>
 
-      {/* Form Fields */}
       <div className="mt-6 grid grid-cols-5 gap-4">
         <div>
           <label>Tooth Name*</label>
@@ -239,7 +265,6 @@ const FirstPediatricDentistryForm = ({
             value={formData.toothName}
             onChange={handleChange}
             className="border rounded px-2 py-1 w-full"
-            required
             readOnly
           />
         </div>
@@ -250,7 +275,6 @@ const FirstPediatricDentistryForm = ({
             value={formData.dentalCondition}
             onChange={handleChange}
             className="border rounded px-2 py-1 w-full"
-            required
           >
             <option value="">Select</option>
             <option value="Cavity">Cavity</option>
@@ -268,14 +292,17 @@ const FirstPediatricDentistryForm = ({
             name="complaint"
             value={formData.complaint}
             onChange={handleChange}
-            className="border px-2 py-1 rounded w-full"
+            className="border rounded px-2 py-1 w-full"
+            required
           >
-            <option value="">Select</option>
-            {chiefComplaints.map((item) => (
-              <option key={item._id} value={item.name}>
-                {item.name}
-              </option>
-            ))}
+            <option value="" disabled>
+              Select a Complaint
+            </option>
+            <option value="Headache">Headache</option>
+            <option value="Cough">Cough</option>
+            <option value="Fever">Fever</option>
+            <option value="Fatigue">Fatigue</option>
+            <option value="Nausea">Nausea</option>
           </select>
         </div>
 
@@ -285,14 +312,17 @@ const FirstPediatricDentistryForm = ({
             name="examination"
             value={formData.examination}
             onChange={handleChange}
-            className="border px-2 py-1 rounded w-full"
+            className="border rounded px-2 py-1 w-full"
+            required
           >
-            <option value="">Select</option>
-            {examinations.map((item) => (
-              <option key={item._id} value={item.name}>
-                {item.name}
-              </option>
-            ))}
+            <option value="" disabled>
+              Select an Examination
+            </option>
+            <option value="Blood Pressure">Blood Pressure</option>
+            <option value="ECG">ECG</option>
+            <option value="Blood Test">Blood Test</option>
+            <option value="X-Ray">X-Ray</option>
+            <option value="CT Scan">CT Scan</option>
           </select>
         </div>
         <div>
@@ -302,7 +332,6 @@ const FirstPediatricDentistryForm = ({
             value={formData.advice}
             onChange={handleChange}
             className="border rounded px-2 py-1 w-full"
-            required
           />
         </div>
       </div>
@@ -381,7 +410,7 @@ const FirstPediatricDentistryForm = ({
               Back
             </button>
             <button
-              onClick={handleNext}
+              onClick={handleNextClick}
               className="bg-teal-600 text-white px-6 py-2 rounded shadow"
             >
               Next
