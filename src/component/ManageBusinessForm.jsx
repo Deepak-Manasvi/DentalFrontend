@@ -34,7 +34,6 @@ const BusinessFormManage = ({ onClose }) => {
 
   useEffect(() => {
     fetchBusinesses();
-    // Log the API base URL for debugging
     console.log("API Base URL:", import.meta.env.VITE_APP_BASE_URL);
   }, []);
 
@@ -62,9 +61,25 @@ const BusinessFormManage = ({ onClose }) => {
       setDropdownOpen(null);
     } else {
       const rect = event.currentTarget.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const dropdownHeight = 150;
+
+      let topPosition;
+      if (spaceBelow < dropdownHeight) {
+        topPosition = rect.top - dropdownHeight;
+      } else {
+        topPosition = rect.bottom + 5;
+      }
+
+      let leftPosition = rect.right - 190;
+      if (leftPosition < 10) {
+        leftPosition = 10;
+      }
+
       setDropdownPosition({
-        top: rect.bottom + 5,
-        left: rect.right - 190,
+        top: topPosition,
+        left: leftPosition,
       });
       setDropdownOpen(id);
     }
@@ -87,11 +102,9 @@ const BusinessFormManage = ({ onClose }) => {
 
   const handleEdit = async (id) => {
     try {
-      // Changed from PUT to GET request
       const { data } = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/business/getbusinessBy/${id}`
       );
-      console.log("Edit business data:", data);
       setBusinessData(data);
       setShowEditForm(true);
     } catch (error) {
@@ -107,7 +120,6 @@ const BusinessFormManage = ({ onClose }) => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/business/getbusinessBy/${id}`
       );
-      console.log("View business data:", data);
       setBusinessData(data);
       setShowBusiness(true);
     } catch (error) {
@@ -124,7 +136,6 @@ const BusinessFormManage = ({ onClose }) => {
     )
   );
 
-  // Updated table headers to match the data you're receiving
   const tableHeaders = [
     "ID",
     "Business Name",
@@ -245,7 +256,6 @@ const BusinessFormManage = ({ onClose }) => {
                     <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       {business.financialYear || "N/A"}
                     </td>
-        
                     <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       <button
                         className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"

@@ -23,6 +23,7 @@ const ClinicTable = ({ onClose }) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
+  const tableContainerRef = useRef(null);
 
   // Base URL from env
   const API_ENDPOINT = `${import.meta.env.VITE_APP_BASE_URL}/clinic-config`;
@@ -63,9 +64,32 @@ const ClinicTable = ({ onClose }) => {
       setDropdownOpen(null);
     } else {
       const rect = event.currentTarget.getBoundingClientRect();
+
+      // Calculate viewport height and check if there's enough space below
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const dropdownHeight = 150; // Approximate height of dropdown
+
+      // Calculate left position (same as before)
+      let leftPosition = rect.right - 190;
+
+      // If not enough space below, position above the button
+      // Otherwise, position below as before
+      let topPosition;
+      if (spaceBelow < dropdownHeight) {
+        topPosition = rect.top - dropdownHeight;
+      } else {
+        topPosition = rect.bottom + 5;
+      }
+
+      // Ensure the dropdown stays within viewport horizontally
+      if (leftPosition < 10) {
+        leftPosition = 10;
+      }
+
       setDropdownPosition({
-        top: rect.bottom + 5,
-        left: rect.right - 190,
+        top: topPosition,
+        left: leftPosition,
       });
       setDropdownOpen(id);
     }
@@ -107,8 +131,16 @@ const ClinicTable = ({ onClose }) => {
 
     try {
       const formDataToSend = new FormData();
-      if (formData.header) formDataToSend.append("header", formData.header);
-      if (formData.footer) formDataToSend.append("footer", formData.footer);
+
+      // Make sure files are properly added to FormData
+      if (formData.header) {
+        formDataToSend.append("header", formData.header);
+      }
+
+      if (formData.footer) {
+        formDataToSend.append("footer", formData.footer);
+      }
+
       formDataToSend.append(
         "termsAndCondition",
         formData.termsAndCondition || ""
@@ -369,7 +401,10 @@ const ClinicTable = ({ onClose }) => {
       </form>
 
       {/* Configuration List */}
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      <div
+        className="bg-white shadow-md rounded-lg overflow-hidden"
+        ref={tableContainerRef}
+      >
         <h3 className="text-lg font-medium p-4 border-b">
           Saved Configurations
         </h3>
