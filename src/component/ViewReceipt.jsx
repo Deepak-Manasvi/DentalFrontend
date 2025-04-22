@@ -58,11 +58,11 @@ const ViewReceipt = () => {
   const handleGenerateInvoice = async (receipt) => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateInvoiceGenerate/${receipt.appId}`,
-        { InvoiceGenerate: true }
+        `${import.meta.env.VITE_APP_BASE_URL}/receipts/updateReceiptById/${receipt.appId}`,
+        { generateInvoice: true }
       );
       if (res.status === 200) {
-        toast.success("Receipt saved successfully!");
+        toast.success("inovice  create successfully!");
         window.location.reload();
       } else {
         toast.error("Failed to save receipt.");
@@ -142,8 +142,9 @@ const ViewReceipt = () => {
                               </li>
                               <li>
                                 <button
+                                  type="button"
                                   className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
-                                  onClick={() => handleGenerateInvoice(receipt)}
+                                  onClick={() => console.log("receipt")}
                                 >
                                   <CheckCircle size={16} /><span>Generate Invoice</span>
                                 </button>

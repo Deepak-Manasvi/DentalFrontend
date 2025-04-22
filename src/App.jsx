@@ -42,6 +42,7 @@ import ForgetPassword from "./pages/ForgetPassword";
 import VerificationCode from "./pages/VerificationCode";
 import ResetPassword from "./pages/ResetPassword";
 import UserProfile from "./component/UserProfile";
+import InvoiceForm from "./component/InvoiceForm";
 
 let userRole;
 // Function to get the user role
@@ -103,7 +104,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="invoicelist" element={<InvoiceList />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
-          <Route path="invoiceform" element={<GenerateInvoice />} />
+          <Route path="invoiceform" element={<InvoiceForm />} />
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="manage-staff" element={<ManageStaff />} />
           <Route path="edit-staff/:id" element={<EditStaff />} />
