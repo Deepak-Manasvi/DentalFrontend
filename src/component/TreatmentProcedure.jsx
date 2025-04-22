@@ -10,9 +10,10 @@ const TreatmentProcedure = ({
   setFinalTreatmentRecords,
   setShowTreatment,
   setRecords,
+  toothName,
 }) => {
   const [procedureList, setProcedureList] = useState([]);
-  const [treatmentId, setTreatmentId] = useState(id); 
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const [procedureForm, setProcedureForm] = useState({
     procedure: "",
     treatment: "",
@@ -47,6 +48,14 @@ const TreatmentProcedure = ({
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedTeeth, setSelectedTeeth] = useState({});
+  console.log("toothName==>", toothName);
+
+  useEffect(() => {
+    setTodayProcedure((prev) => ({
+      ...prev,
+      toothName: toothName,
+    }));
+  }, [toothName]);
 
   const validateProcedureForm = () => {
     const errors = {};
@@ -62,36 +71,10 @@ const TreatmentProcedure = ({
       if (!id) return;
 
       try {
-        // Fetch all treatments for the dropdown
         const treatmentsResponse = await axios.get(
-          "http://localhost:3500/api/services/getAllTreatment"
+          `${BASE_URL}/services/getAllTreatment`
         );
         setTreatmentOptions(treatmentsResponse.data.treatments);
-
-        // Fetch specific treatment data for the patient
-        const treatmentResponse = await axios.get(
-          `http://localhost:3500/api/treatment/getTreatment/${id}`
-        );
-        const treatmentData = treatmentResponse.data.treatment;
-        console.log("Fetched treatment data:", treatmentData); // Log the data
-
-        // Extract tooth numbers from the treatment data
-        if (treatmentData && treatmentData.toothNumber) {
-          setTodayProcedure((prev) => ({
-            ...prev,
-            toothName: `Tooth ${treatmentData.toothNumber}`,
-          }));
-
-          // Also set tooth options for selection
-          const teeth = [
-            ...new Set(
-              treatmentsResponse.data.treatments
-                .map((t) => t.toothNumber)
-                .filter((t) => t)
-            ),
-          ].sort();
-          setToothOptions(teeth);
-        }
       } catch (error) {
         console.error("Error fetching treatment data:", error);
       }
@@ -99,53 +82,13 @@ const TreatmentProcedure = ({
 
     fetchTreatmentData();
   }, [id]);
-  useEffect(() => {
-    const fetchTreatmentData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3500/api/treatment/getTreatment/${id}`
-        );
-        const treatment = response.data;
 
-        setTodayProcedure({
-          date: treatment.date || "",
-          toothName: treatment.toothName || "",
-          procedureDone: treatment.procedureDone || "",
-          materialsUsed: treatment.materialsUsed || "",
-          notes: treatment.notes || "",
-          nextDate: treatment.nextDate || "",
-        });
-      } catch (error) {
-        console.error("Error fetching treatment data", error);
-      }
-    };
-
-    if (treatmentId) {
-      fetchTreatmentData();
-    }
-  }, [treatmentId]);
-  // useEffect(() => {
-  //   const fetchToothNames = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         `http://localhost:3500/api/treatment/getTreatment/${id}`
-  //       );
-  //       if (res.data?.toothNames) {
-  //         setToothOptions(res.data.toothNames);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching tooth names", error);
-  //     }
-  //   };
-
-  //   fetchToothNames();
-  // }, [id]);
 
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3500/api/services/getAllMedicine"
+          `${BASE_URL}/services//getAllMedicine`
         );
         setMedicineOptions(response.data.medicines || []);
       } catch (error) {
@@ -156,10 +99,27 @@ const TreatmentProcedure = ({
     fetchMedicines();
   }, []);
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery) {
+        const filtered = medicineOptions.filter((med) =>
+          med.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setMedicineOptions(filtered);
+      } else {
+        axios
+          .get(`${BASE_URL}/services/getAllMedicine`)
+          .then((res) => setMedicineOptions(res.data.medicines || []))
+          .catch((err) => console.error("Error fetching medicines:", err));
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
   const handleProcedureChange = (e) => {
     const selectedProcedureName = e.target.value;
 
-    // Find the selected treatment from options
     const selectedTreatment = treatmentOptions.find(
       (treatment) => treatment.treatmentName === selectedProcedureName
     );
@@ -576,7 +536,6 @@ const TreatmentProcedure = ({
         </div>
       )}
 
-      {/* [Rest of your component remains exactly the same] */}
       <hr className="my-6" />
       <h3 className="text-2xl font-semibold mb-2 text-gray-600">
         Today Procedure

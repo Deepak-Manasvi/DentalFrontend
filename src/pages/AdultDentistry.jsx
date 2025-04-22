@@ -12,6 +12,7 @@ export default function AdultDentistry() {
   const [showTreatment, setShowTreatment] = useState(true);
   const [finalProcedures, setFinalProcedures] = useState([]);
   const [finalTreatmentRecords, setFinalTreatmentRecords] = useState([]);
+  const [adultdentistryTooth, setAdultdentistryTooth] = useState();
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
     toothName: "",
@@ -23,7 +24,6 @@ export default function AdultDentistry() {
   const [records, setRecords] = useState([]);
 
   const fetchDataForPatient = async () => {
-
     const res = await axios.get(
       `${
         import.meta.env.VITE_APP_BASE_URL
@@ -37,7 +37,6 @@ export default function AdultDentistry() {
     fetchDataForPatient();
   }, []);
 
-
   console.log("Patient Data:", patient);
   const location = useLocation();
   const examinationData = location.state?.records || [];
@@ -46,7 +45,8 @@ export default function AdultDentistry() {
     console.log("Received ID from route:", id);
   }, [id]);
 
-  const handleNext = () => {
+  const handleNext = (name) => {
+    setAdultdentistryTooth(name);
     setShowTreatment(false);
   };
 
@@ -68,6 +68,7 @@ export default function AdultDentistry() {
   ) : (
     <TreatmentProcedure
       id={id}
+      toothName={adultdentistryTooth}
       finalProcedures={finalProcedures}
       setFinalProcedures={setFinalProcedures}
       finalTreatmentRecords={finalTreatmentRecords}

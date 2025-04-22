@@ -1,8 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
 const toothNames = [
   "Upper Right Second Molar",
   "Upper Right First Molar",
@@ -45,9 +44,9 @@ const FirstPediatricDentistryForm = ({
   setFormData,
 }) => {
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
-
   const handleDelete = (index) => {
     const updated = [...records];
     updated.splice(index, 1);
@@ -89,34 +88,31 @@ const FirstPediatricDentistryForm = ({
     setSaved(true);
   };
   useEffect(() => {
-    // Fetch Chief Complaints
-    fetch("http://localhost:3500/api/services/getAllChief")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setChiefComplaints(data);
+    axios
+      .get(`${BASE_URL}/services/getAllChief`)
+      .then((res) => {
+        if (Array.isArray(res.data.chiefs)) {
+          setChiefComplaints(res.data.chiefs);
         }
       })
       .catch((err) => console.error("Error fetching chief complaints:", err));
 
     // Fetch Examinations
-    fetch("http://localhost:3500/api/services/getAllExamination")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setExaminations(data);
+    axios
+      .get(`${BASE_URL}/services/getAllExamination`)
+      .then((res) => {
+        if (Array.isArray(res.data.examinations)) {
+          setExaminations(res.data.examinations);
         }
       })
       .catch((err) => console.error("Error fetching examinations:", err));
   }, []);
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
+    <div className="p-4 md:p-6">
       <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
 
       {/* Patient Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm md:text-base mb-6">
-        {" "}
-        {/* ✅ Fixed overlap with more cols & gaps */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm md:text-base mb-6">
         <div>
           <strong>UHID:</strong> {patient?.uhid}
         </div>
@@ -130,7 +126,11 @@ const FirstPediatricDentistryForm = ({
           <strong>Age:</strong> {patient?.age}
         </div>
         <div>
-          <strong>BP:</strong> {patient?.bp}
+          {patient?.bp && (
+            <div>
+              BP: {patient.bp.systolic}/{patient.bp.diastolic} mmHg
+            </div>
+          )}
         </div>
         <div>
           <strong>Medical History:</strong> {patient?.medicalHistory}
@@ -145,6 +145,7 @@ const FirstPediatricDentistryForm = ({
 
       <h2 className="text-xl font-bold mb-4">Select Teeth</h2>
 
+      {/* Teeth Selection Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {[...Array(6)].map((_, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-1 gap-2">
@@ -168,8 +169,69 @@ const FirstPediatricDentistryForm = ({
         ))}
       </div>
 
+      {/* Top 16 Teeth Row */}
+      {/* Top 10 Teeth Row */}
+      <div className="overflow-x-auto mb-6">
+        <div className="grid grid-cols-10 gap-2">
+          {teethData.slice(0, 10).map((tooth) => (
+            <div
+              key={tooth.id}
+              className="flex flex-col items-center p-2 rounded shadow-sm"
+            >
+              <div className=" p-1 rounded">
+                <img
+                  src={`/pediatricTeeth/tooth${tooth.id}.png`}
+                  alt={tooth.label}
+                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${
+                    selectedTeeth[tooth.id]
+                      ? "border-2 border-teal-500 rounded"
+                      : ""
+                  }`}
+                />
+              </div>
+              <span className="text-xs text-center">{tooth.label}</span>
+              <input
+                type="checkbox"
+                checked={selectedTeeth[tooth.id] || false}
+                onChange={() => handleCheckboxChange(tooth.id)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom 10 Teeth Row */}
+      <div className="overflow-x-auto mb-6">
+        <div className="grid grid-cols-10 gap-2">
+          {teethData.slice(10).map((tooth) => (
+            <div
+              key={tooth.id}
+              className="flex flex-col items-center p-2 rounded shadow-sm"
+            >
+              <div className=" p-1 rounded">
+                <img
+                  src={`/pediatricTeeth/tooth${tooth.id}.png`}
+                  alt={tooth.label}
+                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${
+                    selectedTeeth[tooth.id]
+                      ? "border-2 border-teal-500 rounded"
+                      : ""
+                  }`}
+                />
+              </div>
+              <span className="text-xs text-center">{tooth.label}</span>
+              <input
+                type="checkbox"
+                checked={selectedTeeth[tooth.id] || false}
+                onChange={() => handleCheckboxChange(tooth.id)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Form Fields */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="mt-6 grid grid-cols-5 gap-4">
         <div>
           <label>Tooth Name*</label>
           <input
@@ -216,6 +278,7 @@ const FirstPediatricDentistryForm = ({
             ))}
           </select>
         </div>
+
         <div>
           <label>Examination*</label>
           <select
@@ -244,19 +307,19 @@ const FirstPediatricDentistryForm = ({
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="mt-4 flex flex-col sm:flex-row justify-between gap-4">
+      {/* Buttons: Save and Back */}
+      <div className="mt-4 flex justify-between">
         {!saved ? (
           <>
             <button
               onClick={() => navigate(-1)}
-              className="bg-gray-500 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+              className="bg-gray-500 text-white px-6 py-2 rounded shadow"
             >
               Back
             </button>
             <button
               onClick={handleSave}
-              className="bg-teal-900 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+              className="bg-teal-900 text-white px-6 py-2 rounded shadow"
             >
               Save
             </button>
@@ -273,45 +336,30 @@ const FirstPediatricDentistryForm = ({
         )}
       </div>
 
-      {/* Records Table */}
+      {/* Saved Table */}
       {records.length > 0 && (
-        <div className="mt-8 overflow-x-auto">
+        <div className="mt-8">
           <h3 className="text-2xl mb-4">Saved Records</h3>
-          <table className="w-full border text-sm md:text-base min-w-[700px]">
-            <thead className="bg-teal-900 text-white">
+          <table className="w-full border text-lg">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="border px-4 py-2 text-center">Tooth Name</th>
-                <th className="border px-4 py-2 text-center">
-                  Dental Condition
-                </th>
-                <th className="border px-4 py-2 text-center">
-                  Chief Complaint
-                </th>
-                <th className="border px-4 py-2 text-center">Examination</th>
-                <th className="border px-4 py-2 text-center">Advice</th>
-                <th className="border px-4 py-2 text-center">Delete</th>
+                <th className="border px-4 py-2">Tooth Name</th>
+                <th className="border px-4 py-2">Dental Condition</th>
+                <th className="border px-4 py-2">Chief Complaint</th>
+                <th className="border px-4 py-2">Examination</th>
+                <th className="border px-4 py-2">Advice</th>
+                <th className="border px-4 py-2">Delete</th>
               </tr>
             </thead>
             <tbody>
               {records.map((rec, index) => (
-                <tr
-                  key={index}
-                  className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                >
-                  <td className="border px-4 py-2 text-center">
-                    {rec.toothName}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {rec.dentalCondition}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {rec.complaint}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {rec.examination}
-                  </td>
-                  <td className="border px-4 py-2 text-center">{rec.advice}</td>
-                  <td className="border px-4 py-2 text-center">
+                <tr key={index}>
+                  <td className="border px-4 py-2">{rec.toothName}</td>
+                  <td className="border px-4 py-2">{rec.dentalCondition}</td>
+                  <td className="border px-4 py-2">{rec.complaint}</td>
+                  <td className="border px-4 py-2">{rec.examination}</td>
+                  <td className="border px-4 py-2">{rec.advice}</td>
+                  <td className="border px-4 py-2">
                     <button
                       onClick={() => handleDelete(index)}
                       className="text-red-600 hover:underline"
@@ -324,16 +372,17 @@ const FirstPediatricDentistryForm = ({
             </tbody>
           </table>
 
-          <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
+          {/* Navigation Buttons */}
+          <div className="mt-6 flex justify-between">
             <button
               onClick={() => navigate(-1)}
-              className="bg-gray-500 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+              className="bg-gray-500 text-white px-6 py-2 rounded shadow"
             >
               Back
             </button>
             <button
               onClick={handleNext}
-              className="bg-teal-600 text-white px-6 py-2 rounded shadow w-full sm:w-auto"
+              className="bg-teal-600 text-white px-6 py-2 rounded shadow"
             >
               Next
             </button>

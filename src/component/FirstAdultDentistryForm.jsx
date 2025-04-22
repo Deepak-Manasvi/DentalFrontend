@@ -56,10 +56,10 @@ const FirstAdultDentistryForm = ({
   const navigate = useNavigate();
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   useEffect(() => {
-    // Fetch Chief Complaints
-    fetch("http://localhost:3500/api/services/getAllChief")
+    fetch(`${BASE_URL}/services/getAllChief`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -68,8 +68,7 @@ const FirstAdultDentistryForm = ({
       })
       .catch((err) => console.error("Error fetching chief complaints:", err));
 
-    // Fetch Examinations
-    fetch("http://localhost:3500/api/services/getAllExamination")
+    fetch(`${BASE_URL}/services/getAllExamination`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -101,13 +100,7 @@ const FirstAdultDentistryForm = ({
       return;
 
     setRecords([...records, formData]);
-    setFormData({
-      toothName: "",
-      dentalCondition: "",
-      complaint: "",
-      examination: "",
-      advice: "",
-    });
+
     setSelectedTeeth({});
     setSaved(true);
   };
@@ -120,7 +113,7 @@ const FirstAdultDentistryForm = ({
   useEffect(() => {
     // Fetch Chief Complaints
     axios
-      .get("http://localhost:3500/api/services/getAllChief")
+      .get(`${BASE_URL}/services/getAllChief`)
       .then((res) => {
         console.log("Chief Complaint API Response:", res.data);
         if (Array.isArray(res.data.chiefs)) {
@@ -133,7 +126,7 @@ const FirstAdultDentistryForm = ({
 
     // Fetch Examinations
     axios
-      .get("http://localhost:3500/api/services/getAllExamination")
+      .get(`${BASE_URL}/services/getAllExamination`)
       .then((res) => {
         console.log("Examination API Response:", res.data);
         if (Array.isArray(res.data.examinations)) {
@@ -158,15 +151,24 @@ const FirstAdultDentistryForm = ({
 
     try {
       const response = await axios.post(
-        "http://localhost:3500/api/treatment/createTreatment",
+        `${BASE_URL}/treatment/createTreatment`,
         {
-          uhid: patient?.uhid,
+          uhid: patient?._id,
           treatments: simplifiedRecords,
         }
       );
 
       console.log("Treatment saved:", response.data);
-      handleNext();
+      const { toothName } = formData;
+
+      handleNext(toothName);
+      setFormData({
+        toothName: "",
+        dentalCondition: "",
+        complaint: "",
+        examination: "",
+        advice: "",
+      });
     } catch (error) {
       console.error("Error submitting treatment records:", error.message);
       alert("Error saving treatment data. Please try again.");
