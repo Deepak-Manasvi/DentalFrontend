@@ -22,6 +22,7 @@ export default function Login() {
         { email, password, role }
       );
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("id", res.data.userId);
       localStorage.setItem("role", role);
       navigate(role === "admin" ? "/admin/dashboard" : "/receptionist/dashboard");
     } catch (err) {

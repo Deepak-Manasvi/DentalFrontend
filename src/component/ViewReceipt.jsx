@@ -1,54 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Eye, Edit, CheckCircle, X } from "lucide-react";
+import { Eye, CheckCircle, X } from "lucide-react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReceiptTemplate from "./ReceiptTemplate";
 
 const ViewReceipt = () => {
-  
   const [receipts, setReceipts] = useState([]);
-  const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
+  const receiptRef = useRef(null);
 
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+          `${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`
         );
-        const appointments = response.data.appointmentList;
-        const filtered = appointments.filter(
-          (appointment) => appointment.receiptGenerate
-        );
-        setReceipts(filtered);
+        setReceipts(response.data);
       } catch (error) {
         console.error("Error fetching receipts:", error);
       }
     };
     fetchReceipts();
   }, []);
-
-  const handleGenerateInvoice = async (receipt) => {
-    try {
-      console.log("called")
-      const res = await axios.put(
-        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateInvoiceGenerate/${receipt.appId}`,
-        { InvoiceGenerate: true }
-      );
-
-      if (res.status === 200) {
-        toast.success("Receipt saved successfully!");
-        window.location.reload(); // reload the screen
-      } else {
-        toast.error("Failed to save receipt.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Error saving receipt.");
-    }
-  };
 
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id);
@@ -70,30 +46,32 @@ const ViewReceipt = () => {
     setViewingReceipt(receipt);
   };
 
-  const handleEdit = (receipt) => {
-    setEditingReceipt(receipt);
+  const handlePrint = (receipt) => {
+    setViewingReceipt(receipt);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
-  const handlePrint = (id) => {
-    toast.success(`Print receipt with ID: ${id}`);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditingReceipt({ ...editingReceipt, [name]: value });
-  };
-
-  const handleSave = () => {
-    const updatedReceipts = receipts.map((r) =>
-      r.id === editingReceipt.id ? editingReceipt : r
-    );
-    setReceipts(updatedReceipts);
-    setEditingReceipt(null);
-    toast.success("Receipt Updated Successfully!");
-  };
-
-  const handleCloseEdit = () => setEditingReceipt(null);
   const handleCloseView = () => setViewingReceipt(null);
+
+  const handleGenerateInvoice = async (receipt) => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateInvoiceGenerate/${receipt.appId}`,
+        { InvoiceGenerate: true }
+      );
+      if (res.status === 200) {
+        toast.success("Receipt saved successfully!");
+        window.location.reload();
+      } else {
+        toast.error("Failed to save receipt.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving receipt.");
+    }
+  };
 
   const tableHeaders = [
     "Date", "Receipt No", "UHID", "Name", "Doctor Name",
@@ -102,6 +80,7 @@ const ViewReceipt = () => {
 
   return (
     <div className="p-8">
+      <ToastContainer />
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <div className="relative">
           <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
@@ -117,14 +96,16 @@ const ViewReceipt = () => {
                 {receipts.length > 0 ? (
                   receipts.map((receipt, index) => (
                     <tr key={receipt.id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
-                      <td className="py-2 px-4">{receipt.appointmentDate}</td>
-                      <td className="py-2 px-4">{receipt.receiptNo}</td>
-                      <td className="py-2 px-4">{receipt.uhid}</td>
+                      <td className="py-2 px-4">
+                        {new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString("en-GB")}
+                      </td>
+                      <td className="py-2 px-4">{receipt.receiptId}</td>
+                      <td className="py-2 px-4">{receipt.appointmentId?.uhid}</td>
                       <td className="py-2 px-4">{receipt.patientName}</td>
                       <td className="py-2 px-4">
                         {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
                       </td>
-                      <td className="py-2 px-4">{receipt.treatment}</td>
+                      <td className="py-2 px-4">{receipt.treatmentType}</td>
                       <td className="py-2 px-4">₹{receipt.opdAmount}</td>
                       <td className="py-2 px-4">{receipt.paymentMode}</td>
                       <td className="py-2 px-4 relative" ref={dropdownRef}>
@@ -134,7 +115,6 @@ const ViewReceipt = () => {
                         >
                           Actions
                         </button>
-
                         {dropdownOpen === index && (
                           <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0 top-0">
                             <div className="flex justify-between items-center border-b p-2">
@@ -154,16 +134,8 @@ const ViewReceipt = () => {
                               </li>
                               <li>
                                 <button
-                                  className="w-full text-left px-4 py-2 text-yellow-600 hover:bg-yellow-300 flex items-center gap-2"
-                                  onClick={() => handleEdit(receipt)}
-                                >
-                                  <Edit size={16} /><span>Edit</span>
-                                </button>
-                              </li>
-                              <li>
-                                <button
                                   className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
-                                  onClick={() => handlePrint(receipt.id)}
+                                  onClick={() => handlePrint(receipt)}
                                 >
                                   <CheckCircle size={16} /><span>Print</span>
                                 </button>
@@ -222,69 +194,9 @@ const ViewReceipt = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editingReceipt && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Receipt</h2>
-            <div className="space-y-4">
-              <input
-                type="text"
-                name="patientName"
-                value={editingReceipt.patientName}
-                onChange={handleChange}
-                placeholder="Patient Name"
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                name="doctorName"
-                value={editingReceipt.doctorName}
-                onChange={handleChange}
-                placeholder="Doctor Name"
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                name="treatment"
-                value={editingReceipt.treatment}
-                onChange={handleChange}
-                placeholder="Treatment"
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="number"
-                name="opdAmount"
-                value={editingReceipt.opdAmount}
-                onChange={handleChange}
-                placeholder="Amount"
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                name="paymentMode"
-                value={editingReceipt.paymentMode}
-                onChange={handleChange}
-                placeholder="Payment Mode"
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-            <div className="flex justify-end mt-6 gap-3">
-              <button
-                onClick={handleSave}
-                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={handleCloseEdit}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Hidden Receipt Print Layout */}
+      {viewingReceipt && (
+        <ReceiptTemplate ref={receiptRef} formData={viewingReceipt} />
       )}
     </div>
   );

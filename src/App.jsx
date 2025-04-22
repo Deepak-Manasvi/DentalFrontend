@@ -41,6 +41,7 @@ import PatientHistory from "./component/PatienHistory";
 import ForgetPassword from "./pages/ForgetPassword";
 import VerificationCode from "./pages/VerificationCode";
 import ResetPassword from "./pages/ResetPassword";
+import UserProfile from "./component/UserProfile";
 
 let userRole;
 // Function to get the user role
@@ -123,6 +124,7 @@ function App() {
           <Route path="revenue/invoice" element={<TotalRevenue/>}/>
           <Route path="revenue/service" element={<RevenueByService/>}/>
           <Route path="revenue/payment" element={<RevenueByPaymentMode/>}/>
+          <Route path="user-profile" element={<UserProfile/>}/>
         </Route>
 
         
