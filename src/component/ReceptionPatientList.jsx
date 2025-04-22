@@ -31,7 +31,6 @@ const ReceiptGenerator = () => {
     treatmentType: "",
     receiptId: uuidv4().slice(0, 8).toUpperCase(),
     createdAt: new Date().toLocaleString(),
-    branchId : selectedBranch,
   });
 
   useEffect(() => {
@@ -69,7 +68,7 @@ const ReceiptGenerator = () => {
         }));
       }
     }
-  }, [selectedPatientId, patients, selectedBranch]);
+  }, [selectedPatientId, patients]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -80,7 +79,6 @@ const ReceiptGenerator = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const element = receiptRef.current;
       const opt = {
@@ -92,11 +90,10 @@ const ReceiptGenerator = () => {
       };
 
       const blob = await html2pdf().from(element).set(opt).outputPdf('blob');
-
       const pdfBlob = new Blob([blob], { type: 'application/pdf' });
 
       const uploadData = new FormData();
-      // uploadData.append("pdf", pdfBlob, "receipt.pdf");
+      uploadData.append("appId", formData.appId);
       uploadData.append("uhid", formData.uhid);
       uploadData.append("receiptId", formData.receiptId);
       uploadData.append("totalAmount", formData.totalAmount);
@@ -104,14 +101,18 @@ const ReceiptGenerator = () => {
       uploadData.append("paymentMode", formData.paymentMode);
       uploadData.append("paymentStatus", formData.paymentStatus);
       uploadData.append("transactionId", formData.transactionId);
-
-      for (let [key, value] of uploadData.entries()) {
-        console.log(`${key}:`, value);
-      }
+      uploadData.append("patientName", formData.patientName);
+      uploadData.append("mobileNumber", formData.mobileNumber);
+      uploadData.append("address", formData.address);
+      uploadData.append("doctorName", formData.doctorName);
+      uploadData.append("opdAmount", formData.opdAmount);
+      uploadData.append("branchId", formData.branchId);
+      uploadData.append("receptionist", formData.receptionist);
+      uploadData.append("treatmentType", formData.treatmentType);
 
       await axios.post(
         `${import.meta.env.VITE_APP_BASE_URL}/receipts/create`,
-        uploadData // FormData
+        uploadData
       );
 
       toast.success("Receipt saved and uploaded successfully!");
@@ -138,9 +139,7 @@ const ReceiptGenerator = () => {
     label: `${p.patientName} (${p.uhid})`,
   }));
 
-  const amountInWords = (num) => {
-    return `${num} Rupees Only`.toUpperCase();
-  };
+  const amountInWords = (num) => `${num} Rupees Only`.toUpperCase();
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -228,9 +227,9 @@ const ReceiptGenerator = () => {
         </button>
       </form>
 
-      {/* Receipt Preview for Printing */}
+      {/* Receipt Preview */}
       <div ref={receiptRef} className="hidden print:block">
-        <div className="header">Header</div>
+        <div className="header">Your Clinic Name</div>
         <div className="line" />
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
@@ -243,7 +242,7 @@ const ReceiptGenerator = () => {
             <p><b>Doctor Name:</b> {formData.doctorName}</p>
             <p><b>Treatment Type:</b> {formData.treatmentType}</p>
             <p><b>Amount:</b> ₹{formData.paidAmount}</p>
-            <p><b>Receipt Mode:</b> {formData.paymentMode}</p>
+            <p><b>Mode:</b> {formData.paymentMode}</p>
             <p><b>Transaction Id:</b> {formData.transactionId}</p>
           </div>
         </div>
@@ -273,3 +272,4 @@ const ReceiptGenerator = () => {
 };
 
 export default ReceiptGenerator;
+

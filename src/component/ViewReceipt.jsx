@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const ViewReceipt = () => {
-  
+
   const [receipts, setReceipts] = useState([]);
   const [editingReceipt, setEditingReceipt] = useState(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
@@ -32,7 +32,6 @@ const ViewReceipt = () => {
 
   const handleGenerateInvoice = async (receipt) => {
     try {
-      console.log("called")
       const res = await axios.put(
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/updateInvoiceGenerate/${receipt.appId}`,
         { InvoiceGenerate: true }
