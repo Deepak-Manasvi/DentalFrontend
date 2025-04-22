@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const ClinicTable = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ const ClinicTable = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // Base URL from env
+  const API_ENDPOINT = `${import.meta.env.VITE_APP_BASE_URL}/clinic-config`;
+
   // Fetch existing configurations on component mount
   useEffect(() => {
     fetchConfigurations();
@@ -21,10 +25,9 @@ const ClinicTable = ({ onClose }) => {
 
   const fetchConfigurations = async () => {
     try {
-      const response = await fetch("/api/clinic-config");
-      const data = await response.json();
-      if (data.success) {
-        setConfigs(data.configurations);
+      const response = await axios.get(`${API_ENDPOINT}/getUpload`);
+      if (response.data.success) {
+        setConfigs(response.data.configurations);
       }
     } catch (error) {
       console.error("Error fetching configurations:", error);
@@ -69,23 +72,39 @@ const ClinicTable = ({ onClose }) => {
       const formDataToSend = new FormData();
       if (formData.header) formDataToSend.append("header", formData.header);
       if (formData.footer) formDataToSend.append("footer", formData.footer);
-      formDataToSend.append("termsAndCondition", formData.termsAndCondition);
-      formDataToSend.append("shareOnMail", formData.shareOnMail);
+      formDataToSend.append(
+        "termsAndCondition",
+        formData.termsAndCondition || ""
+      );
+      formDataToSend.append(
+        "shareOnMail",
+        formData.shareOnMail ? "true" : "false"
+      );
 
-      const url = editingId
-        ? `/api/clinic-config/${editingId}`
-        : "/api/clinic-config";
+      let response;
+      if (editingId) {
+        response = await axios.put(
+          `${API_ENDPOINT}/updateUpload/${editingId}`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          `${API_ENDPOINT}/createUpload`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
 
-      const method = editingId ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        body: formDataToSend,
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         // Reset form
         setFormData({
           header: null,
@@ -107,16 +126,23 @@ const ClinicTable = ({ onClose }) => {
     }
   };
 
-  const handleEdit = (config) => {
-    setEditingId(config._id);
-    setFormData({
-      header: null,
-      footer: null,
-      termsAndCondition: config.termsAndCondition || "",
-      shareOnMail: config.shareOnMail || false,
-    });
-    setHeaderPreview(config.headerUrl || "");
-    setFooterPreview(config.footerUrl || "");
+  const handleEdit = async (configId) => {
+    try {
+      const response = await axios.get(`${API_ENDPOINT}/getUpload/${configId}`);
+      const config = response.data.configuration;
+
+      setEditingId(configId);
+      setFormData({
+        header: null,
+        footer: null,
+        termsAndCondition: config.termsAndCondition || "",
+        shareOnMail: config.shareOnMail || false,
+      });
+      setHeaderPreview(config.headerUrl || "");
+      setFooterPreview(config.footerUrl || "");
+    } catch (error) {
+      console.error("Error fetching configuration details:", error);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -124,12 +150,9 @@ const ClinicTable = ({ onClose }) => {
       return;
 
     try {
-      const response = await fetch(`/api/clinic-config/${id}`, {
-        method: "DELETE",
-      });
+      const response = await axios.delete(`${API_ENDPOINT}/deleteUpload/${id}`);
 
-      const result = await response.json();
-      if (result.success) {
+      if (response.data.success) {
         fetchConfigurations();
       }
     } catch (error) {
@@ -342,7 +365,7 @@ const ClinicTable = ({ onClose }) => {
                     <td className="py-4 px-4">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleEdit(config)}
+                          onClick={() => handleEdit(config._id)}
                           className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
                         >
                           Edit
