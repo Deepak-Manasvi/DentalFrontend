@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { Eye, Edit, Trash2, X } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ClinicConfigDetails from "./ClinicConfigDetails";
 
 const ClinicTable = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,9 +18,25 @@ const ClinicTable = ({ onClose }) => {
   const [configs, setConfigs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [selectedConfig, setSelectedConfig] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const dropdownRef = useRef(null);
 
   // Base URL from env
   const API_ENDPOINT = `${import.meta.env.VITE_APP_BASE_URL}/clinic-config`;
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Fetch existing configurations on component mount
   useEffect(() => {
@@ -25,12 +45,29 @@ const ClinicTable = ({ onClose }) => {
 
   const fetchConfigurations = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_ENDPOINT}/getUpload`);
       if (response.data.success) {
         setConfigs(response.data.configurations);
       }
     } catch (error) {
       console.error("Error fetching configurations:", error);
+      toast.error("Failed to fetch configurations");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleDropdown = (id, event) => {
+    if (dropdownOpen === id) {
+      setDropdownOpen(null);
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 5,
+        left: rect.right - 190,
+      });
+      setDropdownOpen(id);
     }
   };
 
@@ -92,6 +129,7 @@ const ClinicTable = ({ onClose }) => {
             },
           }
         );
+        toast.success("Configuration updated successfully!");
       } else {
         response = await axios.post(
           `${API_ENDPOINT}/createUpload`,
@@ -102,6 +140,7 @@ const ClinicTable = ({ onClose }) => {
             },
           }
         );
+        toast.success("Configuration created successfully!");
       }
 
       if (response.data.success) {
@@ -121,17 +160,31 @@ const ClinicTable = ({ onClose }) => {
       }
     } catch (error) {
       console.error("Error saving configuration:", error);
+      toast.error(`Operation failed: ${error.message || "Please try again"}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = async (configId) => {
+  const handleView = async (id) => {
     try {
-      const response = await axios.get(`${API_ENDPOINT}/getUpload/${configId}`);
+      const response = await axios.get(`${API_ENDPOINT}/getUpload/${id}`);
+      setSelectedConfig(response.data.configuration);
+      setShowConfig(true);
+    } catch (error) {
+      console.error("Error fetching configuration details:", error);
+      toast.error("Failed to load configuration details");
+    } finally {
+      setDropdownOpen(null);
+    }
+  };
+
+  const handleEdit = async (id) => {
+    try {
+      const response = await axios.get(`${API_ENDPOINT}/getUpload/${id}`);
       const config = response.data.configuration;
 
-      setEditingId(configId);
+      setEditingId(id);
       setFormData({
         header: null,
         footer: null,
@@ -142,21 +195,22 @@ const ClinicTable = ({ onClose }) => {
       setFooterPreview(config.footerUrl || "");
     } catch (error) {
       console.error("Error fetching configuration details:", error);
+      toast.error("Failed to load configuration for editing");
+    } finally {
+      setDropdownOpen(null);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this configuration?"))
-      return;
-
     try {
-      const response = await axios.delete(`${API_ENDPOINT}/deleteUpload/${id}`);
-
-      if (response.data.success) {
-        fetchConfigurations();
-      }
+      await axios.delete(`${API_ENDPOINT}/deleteUpload/${id}`);
+      fetchConfigurations();
+      toast.error("Configuration Deleted Successfully");
     } catch (error) {
-      console.error("Error deleting configuration:", error);
+      console.error("Delete error details:", error.response || error);
+      toast.error(`Delete failed: ${error.message || "Try again"}`);
+    } finally {
+      setDropdownOpen(null);
     }
   };
 
@@ -172,8 +226,27 @@ const ClinicTable = ({ onClose }) => {
     setFooterPreview("");
   };
 
+  // Table headers
+  const tableHeaders = [
+    "Header",
+    "Footer",
+    "Terms & Conditions",
+    "Share on Mail",
+    "Action",
+  ];
+
   return (
     <div className="mt-8">
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      {showConfig && (
+        <ClinicConfigDetails
+          setShowConfig={setShowConfig}
+          showConfig={showConfig}
+          configData={selectedConfig}
+        />
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Clinic Configuration</h2>
         <button
@@ -301,36 +374,36 @@ const ClinicTable = ({ onClose }) => {
           Saved Configurations
         </h3>
 
-        {configs.length === 0 ? (
+        {loading && configs.length === 0 ? (
+          <div className="flex justify-center items-center h-24">
+            <p className="text-gray-600">Loading configurations...</p>
+          </div>
+        ) : configs.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             No configurations found. Add one above.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-50">
+          <div className="overflow-auto max-h-[70vh]">
+            <table className="w-full border-collapse text-sm md:text-base">
+              <thead className="bg-teal-900 text-white sticky top-0 z-10">
                 <tr>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Header
-                  </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Footer
-                  </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Terms & Conditions
-                  </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Shared
-                  </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  {tableHeaders.map((header) => (
+                    <th
+                      key={header}
+                      className="py-3 px-2 md:px-4 text-left whitespace-nowrap"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
-                {configs.map((config) => (
-                  <tr key={config._id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4">
+              <tbody>
+                {configs.map((config, index) => (
+                  <tr
+                    key={config._id || index}
+                    className="border-b text-gray-700 hover:bg-gray-100"
+                  >
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       {config.headerUrl ? (
                         <img
                           src={config.headerUrl}
@@ -341,7 +414,7 @@ const ClinicTable = ({ onClose }) => {
                         <span className="text-gray-400 text-sm">None</span>
                       )}
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       {config.footerUrl ? (
                         <img
                           src={config.footerUrl}
@@ -352,31 +425,23 @@ const ClinicTable = ({ onClose }) => {
                         <span className="text-gray-400 text-sm">None</span>
                       )}
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       <div className="max-w-xs truncate">
                         {config.termsAndCondition || (
                           <span className="text-gray-400 text-sm">None</span>
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
                       {config.shareOnMail ? "Yes" : "No"}
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(config._id)}
-                          className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(config._id)}
-                          className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                      <button
+                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
+                        onClick={(e) => toggleDropdown(config._id || index, e)}
+                      >
+                        Actions
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -385,6 +450,54 @@ const ClinicTable = ({ onClose }) => {
           </div>
         )}
       </div>
+
+      {/* Dropdown Actions Menu */}
+      {dropdownOpen && (
+        <div
+          ref={dropdownRef}
+          className="fixed z-50 bg-white shadow-lg rounded-md border w-48"
+          style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+        >
+          <div className="flex justify-between items-center border-b p-2">
+            <span className="font-semibold">Actions</span>
+            <button
+              onClick={() => setDropdownOpen(null)}
+              className="p-1 hover:bg-gray-200 rounded"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <ul className="text-left">
+            <li>
+              <button
+                onClick={() => handleView(dropdownOpen)}
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
+              >
+                <Eye size={16} />
+                <span>View</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => handleEdit(dropdownOpen)}
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-yellow-500 hover:text-white flex items-center gap-2"
+              >
+                <Edit size={16} />
+                <span>Edit</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => handleDelete(dropdownOpen)}
+                className="w-full text-left px-4 py-2 text-white bg-red-500 hover:bg-red-600 flex items-center gap-2"
+              >
+                <Trash2 size={16} />
+                <span>Delete</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
