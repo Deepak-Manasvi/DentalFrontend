@@ -7,7 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 const InvoiceGenerator = () => {
   const selectedBranch = localStorage.getItem("selectedBranch");
-  const receptionistName = localStorage.getItem("receptionistName") || "Receptionist";
+  const receptionistName =
+    localStorage.getItem("receptionistName") || "Receptionist";
   const invoiceRef = useRef();
 
   const [patients, setPatients] = useState([]);
@@ -27,17 +28,17 @@ const InvoiceGenerator = () => {
     receptionist: receptionistName,
     services: [],
     discount: 0,
-    subtotal:"",
-    netPayable:""
+    subtotal: 0,
+    netPayable: 0,
   });
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`);
-        const filteredReceipts = res.data.filter(receipt => receipt.generateInvoice === true);
-        console.log(filteredReceipts)
-        setPatients(filteredReceipts);
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`
+        );
+        setPatients(res.data.filter((r) => r.generateInvoice === true));
       } catch (err) {
         console.error("Failed to fetch receipts:", err);
       }
@@ -45,15 +46,14 @@ const InvoiceGenerator = () => {
 
     const fetchServices = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`);
-        const treatments = res.data.treatments;
-
-        const formatted = treatments.map(t => ({
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`
+        );
+        const formatted = res.data.treatments.map((t) => ({
           _id: t._id,
           name: `${t.treatmentName} (${t.procedureName})`,
           amount: parseFloat(t.price),
         }));
-
         setServicesList(formatted);
       } catch (err) {
         console.error("Failed to fetch services:", err);
@@ -64,159 +64,178 @@ const InvoiceGenerator = () => {
     fetchServices();
   }, []);
 
+  // When a patient is selected, fill in their details:
   useEffect(() => {
-    if (selectedPatientId) {
-      const patient = patients.find(p => p._id === selectedPatientId);
-      if (patient) {
-        setFormData(prev => ({
-          ...prev,
-          uhid: patient.appointmentId.uhid,
-          appId: patient.appointmentId.appId,
-          patientName: patient.patientName,
-          mobileNumber: patient.mobileNumber,
-          address: patient.address,
-          doctorName: patient.doctorName,
-          treatmentType: patient.treatmentType,
-        }));
-      }
-    }
+    if (!selectedPatientId) return;
+    const p = patients.find((x) => x._id === selectedPatientId);
+    if (!p) return;
+
+    setFormData((f) => ({
+      ...f,
+      uhid: p.appointmentId.uhid,
+      appId: p.appointmentId.appId,
+      patientName: p.patientName,
+      mobileNumber: p.mobileNumber,
+      address: p.address,
+      doctorName: p.doctorName,
+      treatmentType: p.treatmentType,
+    }));
   }, [selectedPatientId, patients]);
 
-  const handleServiceChange = (index, field, value) => {
-    const updatedServices = [...formData.services];
+  // Whenever services or discount change, recalc totals:
+  useEffect(() => {
+    const subtotal = formData.services.reduce((sum, s) => sum + s.amount, 0);
+    const net = subtotal - formData.discount;
+    setFormData((f) => ({
+      ...f,
+      subtotal,
+      netPayable: net >= 0 ? net : 0,
+    }));
+  }, [formData.services, formData.discount]);
 
+  const handleServiceChange = (i, field, val) => {
+    const copy = [...formData.services];
     if (field === "serviceId") {
-      const selectedService = servicesList.find(s => s._id === value);
-      if (selectedService) {
-        updatedServices[index] = {
-          serviceId: selectedService._id,
-          description: selectedService.name,
-          rate: selectedService.amount,
-          quantity: 1,
-          amount: selectedService.amount,
-        };
-      }
+      const svc = servicesList.find((s) => s._id === val);
+      copy[i] = {
+        serviceId: svc._id,
+        description: svc.name,
+        rate: svc.amount,
+        quantity: 1,
+        amount: svc.amount,
+      };
     } else if (field === "quantity") {
-      const quantity = parseInt(value) || 0;
-      updatedServices[index].quantity = quantity;
-      updatedServices[index].amount = quantity * updatedServices[index].rate;
+      const qty = parseInt(val, 10) || 0;
+      copy[i].quantity = qty;
+      copy[i].amount = copy[i].rate * qty;
     }
-
-    setFormData(prev => ({
-      ...prev,
-      services: updatedServices,
-    }));
+    setFormData((f) => ({ ...f, services: copy }));
   };
 
-  const handleAddService = () => {
-    setFormData(prev => ({
-      ...prev,
-      services: [...prev.services, { description: "", quantity: 1, rate: 0, amount: 0 }],
+  const handleAddService = () =>
+    setFormData((f) => ({
+      ...f,
+      services: [
+        ...f.services,
+        { serviceId: "", description: "", rate: 0, quantity: 1, amount: 0 },
+      ],
     }));
-  };
 
-  const handleRemoveService = (index) => {
-    const updated = [...formData.services];
-    updated.splice(index, 1);
-    setFormData(prev => ({
-      ...prev,
-      services: updated,
-    }));
-  };
+  const handleRemoveService = (i) =>
+    setFormData((f) => {
+      const copy = [...f.services];
+      copy.splice(i, 1);
+      return { ...f, services: copy };
+    });
 
   const handleDiscountChange = (e) => {
-    const discount = parseInt(e.target.value) || 0;
-    setFormData(prev => ({ ...prev, discount }));
+    const d = parseInt(e.target.value, 10) || 0;
+    setFormData((f) => ({ ...f, discount: d }));
   };
 
   const handleSave = async () => {
-  console.log(formData)
-  await axios.post(
-    `${import.meta.env.VITE_APP_BASE_URL}/invoices/create`,
-    formData
-  );
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/invoices/create`,
+        formData
+      );
+      toast.success("Invoice saved successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save invoice");
+    }
   };
 
   const handlePrint = () => {
-    const printContents = invoiceRef.current.innerHTML;
-    const printWindow = window.open("", "_blank", "width=800,height=600");
-  
-    printWindow.document.write(`
+    const html = invoiceRef.current.innerHTML;
+    const win = window.open("", "_blank", "width=800,height=600");
+    win.document.write(`
       <html>
         <head>
           <title>Invoice</title>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+          <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+          />
           <style>
-            body { padding: 2rem; color: #000; background: #fff; font-family: sans-serif; }
-            table, th, td { border: 1px solid #000; border-collapse: collapse; }
-            th, td { padding: 8px; text-align: left; }
+            body { padding:2rem; color:#000; background:#fff; font-family:sans-serif;}
+            table, th, td { border:1px solid #000; border-collapse:collapse;}
+            th, td { padding:8px; text-align:left;}
           </style>
         </head>
         <body>
-          ${printContents}
+          ${html}
           <script>
-            window.onload = function() {
-              setTimeout(() => {
-                window.print();
-                window.close();
-              }, 500);
+            window.onload = () => {
+              setTimeout(() => { window.print(); window.close(); }, 500);
             };
           </script>
         </body>
       </html>
     `);
-  
-    printWindow.document.close();
+    win.document.close();
   };
-  
-  
 
-  const patientOptions = patients.map(p => ({
+  const patientOptions = patients.map((p) => ({
     value: p._id,
     label: `${p.patientName} (${p.appointmentId.uhid})`,
   }));
 
-  const subtotal = formData.services.reduce((acc, item) => acc + item.amount, 0);
-  const netPayable = subtotal - formData.discount;
-  if(subtotal){
-    formData.subtotal=subtotal
-  }
-  if(netPayable){
-    formData.netPayable=netPayable
-  }
-
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <ToastContainer />
-      <h2 className="text-2xl font-bold mb-4 text-teal-800">Generate Invoice</h2>
+      <h2 className="text-2xl font-bold mb-4 text-teal-800">
+        Generate Invoice
+      </h2>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-1">Select Patient</label>
+        <label className="block text-gray-700 font-medium mb-1">
+          Select Patient
+        </label>
         <Select
           options={patientOptions}
-          onChange={option => setSelectedPatientId(option?.value || "")}
+          onChange={(o) => setSelectedPatientId(o?.value || "")}
           placeholder="Search or select patient..."
           isClearable
         />
       </div>
 
-      <div ref={invoiceRef} className="p-6 border rounded text-black bg-white">
+      <div
+        ref={invoiceRef}
+        className="p-6 border rounded text-black bg-white"
+      >
+        {/* Header */}
         <div className="text-center text-2xl font-bold">Header</div>
         <div className="flex justify-between my-4">
           <div>
-            <p><b>Date:</b> {formData.createdAt}</p>
-            <p><b>Invoice No:</b> {formData.invoiceId}</p>
-            <p><b>Patient Name:</b> {formData.patientName}</p>
-            <p><b>UHID:</b> {formData.uhid}</p>
+            <p>
+              <b>Date:</b> {formData.createdAt}
+            </p>
+            <p>
+              <b>Invoice No:</b> {formData.invoiceId}
+            </p>
+            <p>
+              <b>Patient Name:</b> {formData.patientName}
+            </p>
+            <p>
+              <b>UHID:</b> {formData.uhid}
+            </p>
           </div>
           <div>
-            <p><b>Doctor Name:</b> {formData.doctorName}</p>
-            <p><b>Treatment Type:</b> {formData.treatmentType}</p>
+            <p>
+              <b>Doctor Name:</b> {formData.doctorName}
+            </p>
+            <p>
+              <b>Treatment Type:</b> {formData.treatmentType}
+            </p>
           </div>
         </div>
 
-        <h2 className="text-center text-red-600 text-xl font-bold my-4 underline">Invoice</h2>
+        <h2 className="text-center text-red-600 text-xl font-bold my-4 underline">
+          Invoice
+        </h2>
 
+        {/* Services */}
         <table className="w-full border text-sm mb-4">
           <thead>
             <tr className="border-b">
@@ -229,19 +248,21 @@ const InvoiceGenerator = () => {
             </tr>
           </thead>
           <tbody>
-            {formData.services.map((item, index) => (
-              <tr key={index}>
-                <td className="p-2 border">{index + 1}</td>
+            {formData.services.map((s, i) => (
+              <tr key={i}>
+                <td className="p-2 border">{i + 1}</td>
                 <td className="p-2 border">
                   <select
                     className="w-full px-2 py-1"
-                    value={item.serviceId || ""}
-                    onChange={e => handleServiceChange(index, "serviceId", e.target.value)}
+                    value={s.serviceId}
+                    onChange={(e) =>
+                      handleServiceChange(i, "serviceId", e.target.value)
+                    }
                   >
                     <option value="">Select Service</option>
-                    {servicesList.map(service => (
-                      <option key={service._id} value={service._id}>
-                        {service.name}
+                    {servicesList.map((svc) => (
+                      <option key={svc._id} value={svc._id}>
+                        {svc.name}
                       </option>
                     ))}
                   </select>
@@ -250,17 +271,19 @@ const InvoiceGenerator = () => {
                   <input
                     type="number"
                     min="1"
-                    className="w-full  px-2 py-1"
-                    value={item.quantity}
-                    onChange={e => handleServiceChange(index, "quantity", e.target.value)}
+                    className="w-full px-2 py-1"
+                    value={s.quantity}
+                    onChange={(e) =>
+                      handleServiceChange(i, "quantity", e.target.value)
+                    }
                   />
                 </td>
-                <td className="p-2 border">₹{item.rate}</td>
-                <td className="p-2 border">₹{item.amount}</td>
+                <td className="p-2 border">₹{s.rate}</td>
+                <td className="p-2 border">₹{s.amount}</td>
                 <td className="p-2 border text-center">
                   <button
                     className="text-red-500 font-bold"
-                    onClick={() => handleRemoveService(index)}
+                    onClick={() => handleRemoveService(i)}
                   >
                     ×
                   </button>
@@ -277,26 +300,26 @@ const InvoiceGenerator = () => {
           + Add Service
         </button>
 
-        <div className="text-right mt-2 space-y-1">
-  <div className="flex justify-end items-center gap-2">
-    <span className="font-semibold">Sub Total:</span>
-    <span>₹{subtotal}</span>
-  </div>
-  <div className="flex justify-end items-center gap-2">
-    <span className="font-semibold">Discount:</span>
-    <input
-      type="number"
-      className="border-b border-gray-400 w-24 text-right focus:outline-none"
-      value={formData.discount}
-      onChange={handleDiscountChange}
-    />
-  </div>
-  <div className="flex justify-end items-center gap-2">
-    <span className="font-semibold">Net Payable:</span>
-    <span>₹{netPayable}</span>
-  </div>
-</div>
-
+        {/* Totals */}
+        <div className="text-right mt-4 space-y-1">
+          <div className="flex justify-end items-center gap-2">
+            <span className="font-semibold">Sub Total:</span>
+            <span>₹{formData.subtotal}</span>
+          </div>
+          <div className="flex justify-end items-center gap-2">
+            <span className="font-semibold">Discount:</span>
+            <input
+              type="number"
+              className="border-b border-gray-400 w-24 text-right focus:outline-none"
+              value={formData.discount}
+              onChange={handleDiscountChange}
+            />
+          </div>
+          <div className="flex justify-end items-center gap-2">
+            <span className="font-semibold">Net Payable:</span>
+            <span>₹{formData.netPayable}</span>
+          </div>
+        </div>
 
         <p className="text-center mt-10 font-semibold">
           “Thank you for choosing our services.”
