@@ -58,25 +58,7 @@ const FirstAdultDentistryForm = ({
   const [examinations, setExaminations] = useState([]);
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-  useEffect(() => {
-    fetch(`${BASE_URL}/services/getAllChief`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setChiefComplaints(data);
-        }
-      })
-      .catch((err) => console.error("Error fetching chief complaints:", err));
-
-    fetch(`${BASE_URL}/services/getAllExamination`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setExaminations(data);
-        }
-      })
-      .catch((err) => console.error("Error fetching examinations:", err));
-  }, []);
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +93,6 @@ const FirstAdultDentistryForm = ({
     setRecords(updated);
   };
   useEffect(() => {
-    // Fetch Chief Complaints
     axios
       .get(`${BASE_URL}/services/getAllChief`)
       .then((res) => {
