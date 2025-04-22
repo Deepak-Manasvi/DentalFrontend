@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 const toothNames = [
   "Upper Right Third Molar",
   "Upper Right Second Molar",
@@ -51,14 +52,13 @@ const FirstAdultDentistryForm = ({
   setRecords,
   saved,
   setSaved,
-  handleNext,
+  handleNext
 }) => {
   const navigate = useNavigate();
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
-  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
- 
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,7 +82,6 @@ const FirstAdultDentistryForm = ({
       return;
 
     setRecords([...records, formData]);
-
     setSelectedTeeth({});
     setSaved(true);
   };
@@ -125,24 +124,30 @@ const FirstAdultDentistryForm = ({
       return;
     }
 
-    // Extract only toothName from each record
-    const simplifiedRecords = records.map((record) => ({
-      toothName: record.toothName,
-    }));
-
     try {
+      const payload = {
+        appointmentId: patient?._id,
+        type: "Adult",
+        treatments: records.map((rec) => ({
+          toothName: rec.toothName,
+          dentalCondition: rec.dentalCondition,
+        })),
+        chiefComplaint: formData.complaint,
+        examinationNotes: formData.examination,
+        advice: formData.advice,
+      };
       const response = await axios.post(
-        `${BASE_URL}/treatment/createTreatment`,
-        {
-          uhid: patient?._id,
-          treatments: simplifiedRecords,
-        }
+        `${BASE_URL}/treatment/createTreatmentProcedure`,
+        payload
       );
+      const treatmentId = response.data?.data?._id;
 
-      console.log("Treatment saved:", response.data);
-      const { toothName } = formData;
-
-      handleNext(toothName);
+      if (!treatmentId) {
+        alert("Could not retrieve treatment ID.");
+        return;
+      }
+      localStorage.setItem("treatmentId", treatmentId);
+      handleNext(formData.toothName, treatmentId);
       setFormData({
         toothName: "",
         dentalCondition: "",
@@ -150,18 +155,22 @@ const FirstAdultDentistryForm = ({
         examination: "",
         advice: "",
       });
+      setRecords([]);
+      setSelectedTeeth({});
+      setSaved(false);
     } catch (error) {
-      console.error("Error submitting treatment records:", error.message);
-      alert("Error saving treatment data. Please try again.");
+      console.error("Error submitting examination data:", error.message);
+      alert("Error saving examination data. Please try again.");
     }
   };
 
   return (
     <div className="p-4 text-sm font-medium">
-      <h2 className="text-xl font-semibold mb-2">Examination Dashboard</h2>
+      <h2 className="text-xl font-semibold mb-2">Adult Examination Dashboard</h2>
 
       {/* Patient Info */}
       <div className="grid grid-cols-4 gap-2 mb-4">
+        <div>Appointment: {patient?.appId}</div>
         <div>UHID: {patient?.uhid}</div>
         <div>Name: {patient?.patientName}</div>
         <div>Contact: {patient?.mobileNumber}</div>
@@ -186,9 +195,8 @@ const FirstAdultDentistryForm = ({
             <img
               src={`/adultdentistryTooth/tooth${tooth.id}.png`}
               alt={tooth.label}
-              className={`w-14 h-14 object-contain ${
-                selectedTeeth[tooth.id] ? "ring-2 ring-teal-500 rounded-md" : ""
-              }`}
+              className={`w-14 h-14 object-contain ${selectedTeeth[tooth.id] ? "ring-2 ring-teal-500 rounded-md" : ""
+                }`}
             />
             <span className="text-[10px] text-center">{tooth.label}</span>
             <input
