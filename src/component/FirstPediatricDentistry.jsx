@@ -58,10 +58,10 @@ const FirstPediatricDentistryForm = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleNextClick = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  // const handleNextClick = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  // };
   const handleCheckboxChange = (toothId) => {
     setSelectedTeeth((prev) => {
       const updated = { ...prev, [toothId]: !prev[toothId] };
@@ -91,30 +91,12 @@ const FirstPediatricDentistryForm = ({
     setSelectedTeeth({});
     setSaved(true);
   };
-  useEffect(() => {
-    axios
-      .get(`${BASE_URL}/services/getAllChief`)
-      .then((res) => {
-        if (Array.isArray(res.data.chiefs)) {
-          setChiefComplaints(res.data.chiefs);
-        }
-      })
-      .catch((err) => console.error("Error fetching chief complaints:", err));
 
-    // Fetch Examinations
-    axios
-      .get(`${BASE_URL}/services/getAllExamination`)
-      .then((res) => {
-        if (Array.isArray(res.data.examinations)) {
-          setExaminations(res.data.examinations);
-        }
-      })
-      .catch((err) => console.error("Error fetching examinations:", err));
-  }, []);
   useEffect(() => {
     axios
       .get(`${BASE_URL}/services/getAllChief`)
       .then((res) => {
+        console.log("Chief Complaint API Response:", res.data);
         if (Array.isArray(res.data.chiefs)) {
           setChiefComplaints(res.data.chiefs);
         }
@@ -123,9 +105,11 @@ const FirstPediatricDentistryForm = ({
         console.error("Error fetching chief complaints:", err.message)
       );
 
+    // Fetch Examinations
     axios
-      .get(`${BASE_URL}services/getAllExamination`)
+      .get(`${BASE_URL}/services/getAllExamination`)
       .then((res) => {
+        console.log("Examination API Response:", res.data);
         if (Array.isArray(res.data.examinations)) {
           setExaminations(res.data.examinations);
         }
@@ -134,6 +118,43 @@ const FirstPediatricDentistryForm = ({
         console.error("Error fetching examinations:", err.message)
       );
   }, []);
+  const handleNextClick = async () => {
+    if (records.length === 0) {
+      alert("Please save at least one treatment record before proceeding.");
+      return;
+    }
+
+    // Extract only toothName from each record
+    const simplifiedRecords = records.map((record) => ({
+      toothName: record.toothName,
+    }));
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/treatment/createPediatricTreatment`,
+        {
+          uhid: patient?._id,
+          treatments: simplifiedRecords,
+        }
+      );
+
+      console.log("Treatment saved:", response.data);
+      const { toothName } = formData;
+
+      handleNext(toothName);
+      setFormData({
+        toothName: "",
+        dentalCondition: "",
+        complaint: "",
+        examination: "",
+        advice: "",
+      });
+    } catch (error) {
+      console.error("Error submitting treatment records:", error.message);
+      alert("Error saving treatment data. Please try again.");
+    }
+  };
+
   return (
     <div className="p-4 md:p-6">
       <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
@@ -196,67 +217,6 @@ const FirstPediatricDentistryForm = ({
         ))}
       </div>
 
-      {/* Top 16 Teeth Row */}
-      {/* Top 10 Teeth Row */}
-      <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-10 gap-2">
-          {teethData.slice(0, 10).map((tooth) => (
-            <div
-              key={tooth.id}
-              className="flex flex-col items-center p-2 rounded shadow-sm"
-            >
-              <div className=" p-1 rounded">
-                <img
-                  src={`/pediatricTeeth/tooth${tooth.id}.png`}
-                  alt={tooth.label}
-                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${
-                    selectedTeeth[tooth.id]
-                      ? "border-2 border-teal-500 rounded"
-                      : ""
-                  }`}
-                />
-              </div>
-              <span className="text-xs text-center">{tooth.label}</span>
-              <input
-                type="checkbox"
-                checked={selectedTeeth[tooth.id] || false}
-                onChange={() => handleCheckboxChange(tooth.id)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom 10 Teeth Row */}
-      <div className="overflow-x-auto mb-6">
-        <div className="grid grid-cols-10 gap-2">
-          {teethData.slice(10).map((tooth) => (
-            <div
-              key={tooth.id}
-              className="flex flex-col items-center p-2 rounded shadow-sm"
-            >
-              <div className=" p-1 rounded">
-                <img
-                  src={`/pediatricTeeth/tooth${tooth.id}.png`}
-                  alt={tooth.label}
-                  className={`w-20 h-20 md:w-24 md:h-24 mb-2 ${
-                    selectedTeeth[tooth.id]
-                      ? "border-2 border-teal-500 rounded"
-                      : ""
-                  }`}
-                />
-              </div>
-              <span className="text-xs text-center">{tooth.label}</span>
-              <input
-                type="checkbox"
-                checked={selectedTeeth[tooth.id] || false}
-                onChange={() => handleCheckboxChange(tooth.id)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="mt-6 grid grid-cols-5 gap-4">
         <div>
           <label>Tooth Name*</label>
@@ -292,17 +252,14 @@ const FirstPediatricDentistryForm = ({
             name="complaint"
             value={formData.complaint}
             onChange={handleChange}
-            className="border rounded px-2 py-1 w-full"
-            required
+            className="border px-2 py-1 rounded w-full"
           >
-            <option value="" disabled>
-              Select a Complaint
-            </option>
-            <option value="Headache">Headache</option>
-            <option value="Cough">Cough</option>
-            <option value="Fever">Fever</option>
-            <option value="Fatigue">Fatigue</option>
-            <option value="Nausea">Nausea</option>
+            <option value="">Select</option>
+            {chiefComplaints.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -312,17 +269,14 @@ const FirstPediatricDentistryForm = ({
             name="examination"
             value={formData.examination}
             onChange={handleChange}
-            className="border rounded px-2 py-1 w-full"
-            required
+            className="border px-2 py-1 rounded w-full"
           >
-            <option value="" disabled>
-              Select an Examination
-            </option>
-            <option value="Blood Pressure">Blood Pressure</option>
-            <option value="ECG">ECG</option>
-            <option value="Blood Test">Blood Test</option>
-            <option value="X-Ray">X-Ray</option>
-            <option value="CT Scan">CT Scan</option>
+            <option value="">Select</option>
+            {examinations.map((item) => (
+              <option key={item._id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>

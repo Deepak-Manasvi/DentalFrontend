@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+
+import { Listbox } from "@headlessui/react";
 import jsPDF from "jspdf";
 
 export default function PrescriptionForm() {
@@ -8,7 +10,32 @@ export default function PrescriptionForm() {
   const { id } = useParams();
 
   const [patientData, setPatientData] = useState(null);
+  const dosageOptions = [
+    "1 tablet",
+    "1 tsp",
+    "1-0-1",
+    "0-1-0",
+    "1-1-1",
+    "As directed",
+    "0-0-0-0",
+    "0-0-0-1",
+    "0-0-1-0",
+    "0-0-1-1",
+    "0-1-0-0",
+    "0-1-0-1",
+    "0-1-1-0",
+    "0-1-1-1",
+    "1-0-0-0",
+    "1-0-0-1",
+    "1-0-1-0",
+    "1-0-1-1",
+    "1-1-0-0",
+    "1-1-0-1",
+    "1-1-1-0",
+    "1-1-1-1",
+  ];
 
+  const [selected, setSelected] = useState("");
   const savePrescriptionItems = (items) => {
     localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
   };
@@ -218,7 +245,7 @@ export default function PrescriptionForm() {
     doc.setFont("helvetica", "normal");
     prescriptionInfo.medicalHistory.forEach((item) => {
       doc.text(`- ${item}`, 12, y);
-      y += lineSpacing; 
+      y += lineSpacing;
     });
 
     y += 4;
@@ -262,15 +289,29 @@ export default function PrescriptionForm() {
 
     doc.save(`prescription-${prescriptionInfo.patient.name}.pdf`);
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+
+    // Format the date
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US", options);
+  };
 
   return (
     <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
       <div className="pb-4 mb-6 border-b-2 border-teal-700">
         <h1 className="text-3xl font-bold text-teal-700">Prescription</h1>
         <div className="flex justify-between items-end mt-2">
-          <p className="text-xl text-gray-700">{patientData?.doctorName}</p>
-          <p className="text-sm text-gray-600 px-16">
-            Date: {new Date().toLocaleDateString()}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+            <span className="font-bold text-black text-lg">Dr. Name: </span>
+            <p className="text-xl text-gray-700 col-span-3">
+              {patientData?.doctorName}
+            </p>
+          </div>
+
+          <p className="text-sm text-black px-16">
+            <span className="font-bold">Date: </span>
+            {new Date().toLocaleDateString()}
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mt-4 text-sm">
@@ -286,9 +327,13 @@ export default function PrescriptionForm() {
             <span className="font-bold text-black">Gender: </span>
             {patientData?.gender}
           </div>
-          <div>
-            <span className="font-bold text-black py-16">Appt. Date: </span>
-            {patientData?.appointmentDate}
+          <div className="flex gap-2">
+            <span className="font-bold text-black py-2">Appt. Date: </span>
+            <p className="text-sm text-gray-700 mt-2">
+              {patientData?.appointmentDate
+                ? formatDate(patientData.appointmentDate)
+                : "N/A"}
+            </p>
           </div>
         </div>
       </div>
@@ -360,7 +405,6 @@ export default function PrescriptionForm() {
               {loading && (
                 <div className="text-center py-2 text-sm text-gray-500 bg-gray-100 rounded">
                   <p>Searching medicines...</p>
-                  
                 </div>
               )}
 
@@ -420,20 +464,43 @@ export default function PrescriptionForm() {
                   {selectedMedicine.name}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <select
-                    value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
-                  >
-                    <option value="">Select Dosage</option>
-                    <option value="1 tablet">1 tablet</option>
-                    <option value="1 tsp">1 tsp</option>
-                    <option value="1-0-1">1-0-1</option>
-                    <option value="0-1-0">0-1-0</option>
-                    <option value="1-1-1">1-1-1</option>
-                    <option value="As directed">As directed</option>
-                  </select>
-
+                  <Listbox value={selected} onChange={setSelected}>
+                    <div className="relative mt-1">
+                      <Listbox.Button className="w-full rounded border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-sm flex items-center justify-between">
+                        {selected || "Select Dosage"}
+                        <svg
+                          className="h-4 w-4 ml-2"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute mt-1 max-h-48 w-full overflow-y-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                        {dosageOptions.map((option, idx) => (
+                          <Listbox.Option
+                            key={idx}
+                            value={option}
+                            className={({ active }) =>
+                              `cursor-pointer select-none px-4 py-2 ${
+                                active ? "bg-blue-100" : ""
+                              }`
+                            }
+                          >
+                            {option}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                   <input
                     type="text"
                     value={timing}
