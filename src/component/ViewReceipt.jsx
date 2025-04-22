@@ -16,13 +16,9 @@ const ViewReceipt = () => {
     const fetchReceipts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+          `${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`
         );
-        const appointments = response.data.appointmentList;
-        const filtered = appointments.filter(
-          (appointment) => appointment.receiptGenerate
-        );
-        setReceipts(filtered);
+        setReceipts(response.data);
       } catch (error) {
         console.error("Error fetching receipts:", error);
       }
@@ -100,14 +96,16 @@ const ViewReceipt = () => {
                 {receipts.length > 0 ? (
                   receipts.map((receipt, index) => (
                     <tr key={receipt.id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
-                      <td className="py-2 px-4">{receipt.appointmentDate}</td>
-                      <td className="py-2 px-4">{receipt.receiptNo}</td>
-                      <td className="py-2 px-4">{receipt.uhid}</td>
+                      <td className="py-2 px-4">
+                        {new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString("en-GB")}
+                      </td>
+                      <td className="py-2 px-4">{receipt.receiptId}</td>
+                      <td className="py-2 px-4">{receipt.appointmentId?.uhid}</td>
                       <td className="py-2 px-4">{receipt.patientName}</td>
                       <td className="py-2 px-4">
                         {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
                       </td>
-                      <td className="py-2 px-4">{receipt.treatment}</td>
+                      <td className="py-2 px-4">{receipt.treatmentType}</td>
                       <td className="py-2 px-4">₹{receipt.opdAmount}</td>
                       <td className="py-2 px-4">{receipt.paymentMode}</td>
                       <td className="py-2 px-4 relative" ref={dropdownRef}>
