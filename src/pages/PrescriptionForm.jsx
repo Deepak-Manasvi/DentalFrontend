@@ -3,10 +3,37 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import jsPDF from "jspdf";
 
+import { Listbox } from "@headlessui/react";
+
+const dosageOptions = [
+  "1 tablet",
+  "1 tsp",
+  "1-0-1",
+  "0-1-0",
+  "1-1-1",
+  "As directed",
+  "0-0-0-0",
+  "0-0-0-1",
+  "0-0-1-0",
+  "0-0-1-1",
+  "0-1-0-0",
+  "0-1-0-1",
+  "0-1-1-0",
+  "0-1-1-1",
+  "1-0-0-0",
+  "1-0-0-1",
+  "1-0-1-0",
+  "1-0-1-1",
+  "1-1-0-0",
+  "1-1-0-1",
+  "1-1-1-0",
+  "1-1-1-1",
+];
+
 export default function PrescriptionForm() {
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const [selected, setSelected] = useState("");
   const [patientData, setPatientData] = useState(null);
 
   const savePrescriptionItems = (items) => {
@@ -435,19 +462,28 @@ export default function PrescriptionForm() {
                   {selectedMedicine.name}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <select
-                    value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
-                  >
-                    <option value="">Select Dosage</option>
-                    <option value="1 tablet">1 tablet</option>
-                    <option value="1 tsp">1 tsp</option>
-                    <option value="1-0-1">1-0-1</option>
-                    <option value="0-1-0">0-1-0</option>
-                    <option value="1-1-1">1-1-1</option>
-                    <option value="As directed">As directed</option>
-                  </select>
+                  <Listbox value={selected} onChange={setSelected}>
+                    <div className="relative mt-1">
+                      <Listbox.Button className="w-full rounded border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-sm">
+                        {selected || "Select Dosage"}
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute mt-1 max-h-48 w-full overflow-y-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                        {dosageOptions.map((option, idx) => (
+                          <Listbox.Option
+                            key={idx}
+                            value={option}
+                            className={({ active }) =>
+                              `cursor-pointer select-none px-4 py-2 ${
+                                active ? "bg-blue-100" : ""
+                              }`
+                            }
+                          >
+                            {option}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
 
                   <input
                     type="text"
