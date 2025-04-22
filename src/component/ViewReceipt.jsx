@@ -57,10 +57,11 @@ const ViewReceipt = () => {
 
   const handleGenerateInvoice = async (receipt) => {
     try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_APP_BASE_URL}/receipts/updateReceiptById/${receipt.appId}`,
+      const res = await axios.patch(
+        `${import.meta.env.VITE_APP_BASE_URL}/receipts/updateReceiptById/${receipt._id}`,
         { generateInvoice: true }
       );
+      console.log(res, "Invoice response");
       if (res.status === 200) {
         toast.success("inovice  create successfully!");
         window.location.reload();
@@ -144,7 +145,7 @@ const ViewReceipt = () => {
                                 <button
                                   type="button"
                                   className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
-                                  onClick={() => console.log("receipt")}
+                                  onClick={() => handleGenerateInvoice(receipt)}
                                 >
                                   <CheckCircle size={16} /><span>Generate Invoice</span>
                                 </button>

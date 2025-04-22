@@ -34,8 +34,9 @@ const InvoiceGenerator = () => {
     const fetchPatients = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`);
-        // const filtered = res.data.receipts.filter(p => p.branchId === selectedBranch);
-        setPatients(res.data);
+        console.log(res.data, "res.data");
+        const filteredReceipts = res.data.filter(receipt => receipt.generateInvoice === true);
+        setPatients(filteredReceipts);
       } catch (err) {
         console.error("Failed to fetch receipts:", err);
       }
