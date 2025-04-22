@@ -313,57 +313,68 @@ const FirstPediatricDentistryForm = ({
 
       {/* Saved Table */}
       {records.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-2xl mb-4">Saved Records</h3>
-          <table className="w-full border text-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-4 py-2">Tooth Name</th>
-                <th className="border px-4 py-2">Dental Condition</th>
-                <th className="border px-4 py-2">Chief Complaint</th>
-                <th className="border px-4 py-2">Examination</th>
-                <th className="border px-4 py-2">Advice</th>
-                <th className="border px-4 py-2">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((rec, index) => (
-                <tr key={index}>
-                  <td className="border px-4 py-2">{rec.toothName}</td>
-                  <td className="border px-4 py-2">{rec.dentalCondition}</td>
-                  <td className="border px-4 py-2">{rec.complaint}</td>
-                  <td className="border px-4 py-2">{rec.examination}</td>
-                  <td className="border px-4 py-2">{rec.advice}</td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  <div className="mt-8">
+    <h3 className="text-lg font-bold mb-4">Saved Records</h3>
+    <table className="w-full text-sm bg-white border border-[#2B7A6F]">
+      <thead className="bg-[#2B7A6F] text-white">
+        <tr>
+          <th className="px-3 py-2 border border-white">Tooth Name</th>
+          <th className="px-3 py-2 border border-white">Dental Condition</th>
+          <th className="px-3 py-2 border border-white">Complaint</th>
+          <th className="px-3 py-2 border border-white">Examination</th>
+          <th className="px-3 py-2 border border-white">Advice</th>
+          <th className="px-3 py-2 border border-white">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {records.map((rec, index) => (
+          <tr key={index} className="border border-[#2B7A6F]">
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              {rec.toothName}
+            </td>
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              {rec.dentalCondition}
+            </td>
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              {rec.complaint}
+            </td>
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              {rec.examination}
+            </td>
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              {rec.advice}
+            </td>
+            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+              <button
+                onClick={() => handleDelete(index)}
+                className="text-red-600 hover:underline"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-          {/* Navigation Buttons */}
-          <div className="mt-6 flex justify-between">
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-gray-500 text-white px-6 py-2 rounded shadow"
-            >
-              Back
-            </button>
-            <button
-              onClick={handleNextClick}
-              className="bg-teal-600 text-white px-6 py-2 rounded shadow"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
+    {/* Navigation Buttons */}
+    <div className="mt-6 flex justify-between">
+      <button
+        onClick={() => navigate(-1)}
+        className="bg-gray-500 text-white px-6 py-2 rounded shadow"
+      >
+        Back
+      </button>
+      <button
+        onClick={handleNextClick}
+        className="bg-teal-600 text-white px-6 py-2 rounded shadow"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
