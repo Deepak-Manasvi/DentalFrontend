@@ -10,8 +10,33 @@ const InvoiceList = () => {
   const [viewingInvoice, setViewingInvoice] = useState(null);
   const invoiceRef = useRef();
 
+
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+  const [headerUrl, setHeaderUrl] = useState([]);
+  const [footerUrl, setFooterUrl] = useState([]);
+
+
   // 1. Fetch invoices
   useEffect(() => {
+
+    const getHeaderByAdminId = async (adminId) => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        if (response) {
+          setHeaderUrl(response.data.headerUrl)
+          setFooterUrl(response.data.footerUrl)
+        }
+        return response.data; // { headerUrl, headerPublicId }
+      } catch (error) {
+        console.error("Error fetching header config:", error);
+        throw error;
+      }
+    };
+
+    getHeaderByAdminId(adminId)
+    
     const fetchInvoices = async () => {
       try {
         const { data } = await axios.get(
@@ -162,9 +187,11 @@ const InvoiceList = () => {
 
             <div ref={invoiceRef} className="text-black">
               {/* Header */}
-              <div className="text-center text-2xl font-bold mb-4">
-                Header
-              </div>
+              {headerUrl && (
+          <div className="w-full text-center mb-4">
+            <img src={headerUrl} alt="Header" className="w-full h-auto object-cover" />
+          </div>
+        )}
               <div className="flex justify-between mb-6">
                 <div>
                   <p><b>Date:</b> {viewingInvoice.createdAt}</p>
@@ -217,7 +244,13 @@ const InvoiceList = () => {
                 “Thank you for choosing our services.”
               </p>
             </div>
+            {footerUrl && (
+          <div className="w-full text-center mb-4">
+            <img src={footerUrl} alt="Footer" className="mx-auto w-full max-h-40 object-contain" />
           </div>
+        )}
+          </div>
+          
         </div>
       )}
     </div>

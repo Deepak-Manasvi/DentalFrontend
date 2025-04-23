@@ -6,7 +6,7 @@ const TabNavigation = ({ activeTab, onTabChange }) => {
     { id: "appointment", label: "Appointment" },
     { id: "treatment", label: "Treatment" },
     { id: "billing", label: "Billing" },
-    { id: "clinical", label: "Clinical Examine" },
+    // { id: "clinical", label: "Clinical Examine" },
     { id: "prescription", label: "Prescription" },
     { id: "timeline", label: "TimeLine" },
     { id: "files", label: "Files" },

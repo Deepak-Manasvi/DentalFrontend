@@ -11,6 +11,13 @@ const InvoiceGenerator = () => {
     localStorage.getItem("receptionistName") || "Receptionist";
   const invoiceRef = useRef();
 
+  const token = localStorage.getItem("token");
+    const decodedToken = JSON.parse(atob(token.split(".")[1]));
+    const adminId = decodedToken.id;
+   const [headerUrl, setHeaderUrl] = useState([]);
+    const [footerUrl, setFooterUrl] = useState([]);
+
+
   const [patients, setPatients] = useState([]);
   const [servicesList, setServicesList] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
@@ -33,6 +40,22 @@ const InvoiceGenerator = () => {
   });
 
   useEffect(() => {
+    const getHeaderByAdminId = async (adminId) => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        if (response) {
+          setHeaderUrl(response.data.headerUrl)
+          setFooterUrl(response.data.footerUrl)
+        }
+        return response.data; // { headerUrl, headerPublicId }
+      } catch (error) {
+        console.error("Error fetching header config:", error);
+        throw error;
+      }
+    };
+
+    getHeaderByAdminId(adminId)
+
     const fetchPatients = async () => {
       try {
         const res = await axios.get(
@@ -205,7 +228,11 @@ const InvoiceGenerator = () => {
         className="p-6 border rounded text-black bg-white"
       >
         {/* Header */}
-        <div className="text-center text-2xl font-bold">Header</div>
+         {headerUrl && (
+          <div className="w-full text-center mb-4">
+           <img src={headerUrl} alt="Header" className="w-full h-auto object-cover" />
+          </div>
+        )}
         <div className="flex justify-between my-4">
           <div>
             <p>
@@ -333,13 +360,18 @@ const InvoiceGenerator = () => {
         >
           Save Invoice
         </button>
-        <button
+        {/* <button
           onClick={handlePrint}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Print Invoice
-        </button>
+        </button> */}
       </div>
+      {footerUrl && (
+          <div className="w-full text-center mb-4">
+            <img src={footerUrl} alt="Footer" className="mx-auto w-full max-h-40 object-contain" />
+          </div>
+        )}
     </div>
   );
 };

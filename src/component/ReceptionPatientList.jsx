@@ -11,7 +11,14 @@ const ReceiptGenerator = () => {
   const receptionistName = localStorage.getItem("receptionistName") || "Receptionist";
   const receiptRef = useRef();
 
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+
+
   const [patients, setPatients] = useState([]);
+  const [headerUrl, setHeaderUrl] = useState([]);
+  const [footerUrl, setFooterUrl] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [formData, setFormData] = useState({
     appId: "",
@@ -20,7 +27,6 @@ const ReceiptGenerator = () => {
     mobileNumber: "",
     address: "",
     doctorName: "",
-    opdAmount: "",
     paymentMode: "",
     transactionId: "",
     receptionist: receptionistName,
@@ -34,6 +40,22 @@ const ReceiptGenerator = () => {
   });
 
   useEffect(() => {
+
+    const getHeaderByAdminId = async (adminId) => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        if (response) {
+          setHeaderUrl(response.data.headerUrl)
+          setFooterUrl(response.data.footerUrl)
+        }
+        return response.data; // { headerUrl, headerPublicId }
+      } catch (error) {
+        console.error("Error fetching header config:", error);
+        throw error;
+      }
+    };
+
+    getHeaderByAdminId(adminId)
     const fetchPatients = async () => {
       try {
         const response = await axios.get(
@@ -157,31 +179,20 @@ const ReceiptGenerator = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {[
-          { name: "appId", label: "Appointment ID" },
-          { name: "uhid", label: "UHID" },
-          { name: "patientName", label: "Patient Name" },
-          { name: "mobileNumber", label: "Contact" },
-          { name: "address", label: "Address" },
-          { name: "doctorName", label: "Doctor" },
-          { name: "treatmentType", label: "Treatment Type" },
-          { name: "opdAmount", label: "OPD Amount (₹)" },
-          { name: "transactionId", label: "Transaction ID" },
-          { name: "totalAmount", label: "Total Amount (₹)" },
-          { name: "paidAmount", label: "Paid Amount (₹)" },
-        ].map((field) => (
-          <div key={field.name}>
-            <label className="block text-gray-700 mb-1">{field.label}</label>
+        {["appId", "uhid", "patientName", "mobileNumber", "address", "doctorName", "treatmentType", "totalAmount", "paidAmount"].map((name) => (
+          <div key={name}>
+            <label className="block text-gray-700 mb-1">{name.replace(/([A-Z])/g, " $1")}</label>
             <input
               type="text"
-              name={field.name}
-              value={formData[field.name]}
+              name={name}
+              value={formData[name]}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />
           </div>
         ))}
 
+        {/* Conditionally render transaction ID */}
         <div>
           <label className="block text-gray-700 mb-1">Payment Mode</label>
           <select
@@ -196,6 +207,20 @@ const ReceiptGenerator = () => {
             <option value="UPI">UPI</option>
           </select>
         </div>
+        {(formData.paymentMode === "Card" || formData.paymentMode === "UPI") && (
+          <div>
+            <label className="block text-gray-700 mb-1">Transaction ID</label>
+            <input
+              type="text"
+              name="transactionId"
+              value={formData.transactionId}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            />
+          </div>
+        )}
+
+
 
         <div>
           <label className="block text-gray-700 mb-1">Payment Status</label>
@@ -228,45 +253,102 @@ const ReceiptGenerator = () => {
       </form>
 
       {/* Receipt Preview */}
+      <style>
+        {`
+    @media print {
+      .print-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .print-header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
+
+      .print-body {
+        margin-top: 160px; /* Adjust based on header height */
+        margin-bottom: 120px; /* Adjust based on footer height */
+      }
+
+      .no-break {
+        page-break-inside: avoid;
+      }
+    }
+  `}
+      </style>
+
       <div ref={receiptRef} className="hidden print:block">
-        <div className="header">Your Clinic Name</div>
-        <div className="line" />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            <p><b>Date:</b> {formData.createdAt}</p>
-            <p><b>Receipt No:</b> {formData.receiptId}</p>
-            <p><b>Patient Name:</b> {formData.patientName}</p>
-            <p><b>UHID:</b> {formData.uhid}</p>
+        {/* ✅ Fixed Header for Every Page */}
+        {headerUrl && (
+          <div className="print-header">
+            <img
+              src={headerUrl}
+              alt="Header"
+              className="w-full h-auto object-cover block"
+              style={{ width: "100%" }}
+            />
           </div>
-          <div>
-            <p><b>Doctor Name:</b> {formData.doctorName}</p>
-            <p><b>Treatment Type:</b> {formData.treatmentType}</p>
-            <p><b>Amount:</b> ₹{formData.paidAmount}</p>
-            <p><b>Mode:</b> {formData.paymentMode}</p>
-            <p><b>Transaction Id:</b> {formData.transactionId}</p>
+        )}
+
+        <div className="print-body">
+          <div className="line no-break" />
+
+          <div style={{ display: "flex", justifyContent: "space-between" }} className="no-break">
+            <div>
+              <p><b>Date:</b> {formData.createdAt}</p>
+              <p><b>Receipt No:</b> {formData.receiptId}</p>
+              <p><b>Patient Name:</b> {formData.patientName}</p>
+              <p><b>UHID:</b> {formData.uhid}</p>
+            </div>
+            <div>
+              <p><b>Doctor Name:</b> {formData.doctorName}</p>
+              <p><b>Treatment Type:</b> {formData.treatmentType}</p>
+              <p><b>Amount:</b> ₹{formData.paidAmount}</p>
+              <p><b>Mode:</b> {formData.paymentMode}</p>
+              <p><b>Transaction Id:</b> {formData.transactionId}</p>
+            </div>
+          </div>
+
+          <h2 style={{ textAlign: "center", color: "red", margin: "20px 0" }} className="no-break">
+            Receipt
+          </h2>
+
+          <p className="no-break">
+            Received with sincere thanks from <b>{formData.patientName}</b> towards
+            the charges for <b>{formData.treatmentType}</b> a total amount of
+            <b> ₹{formData.paidAmount}</b>.
+          </p>
+          <p className="no-break">Amount in words: <b>{amountInWords(formData.paidAmount)}</b></p>
+          <p className="no-break">Mode of Payment: {formData.paymentMode}</p>
+
+          <p style={{ fontWeight: "bold", marginTop: "30px", textAlign: "center" }} className="no-break">
+            “We appreciate your trust in our services and look forward to serving you again.”
+          </p>
+
+          <div className="footer text-center mt-6 no-break">
+            <p><b>Authorized Signatory:</b></p>
+            <p>{formData.receptionist}</p>
+            <p>{formData.createdAt}</p>
           </div>
         </div>
 
-        <h2 style={{ textAlign: "center", color: "red", margin: "20px 0" }}>Receipt</h2>
-
-        <p>
-          Received with sincere thanks from <b>{formData.patientName}</b> towards
-          the charges for <b>{formData.treatmentType}</b> a total amount of
-          <b> ₹{formData.paidAmount}</b>.
-        </p>
-        <p>Amount in words: <b>{amountInWords(formData.paidAmount)}</b></p>
-        <p>Mode of Payment: {formData.paymentMode}</p>
-
-        <p style={{ fontWeight: "bold", marginTop: "30px", textAlign: "center" }}>
-          “We appreciate your trust in our services and look forward to serving you again.”
-        </p>
-
-        <div className="footer">
-          <p><b>Authorized Signatory:</b></p>
-          <p>{formData.receptionist}</p>
-          <p>{formData.createdAt}</p>
-        </div>
+        {/* ✅ Fixed Footer for Every Page */}
+        {footerUrl && (
+          <div className="print-footer">
+            <img
+              src={footerUrl}
+              alt="Footer"
+              className="w-full h-auto object-contain"
+              style={{ maxHeight: "100px" }}
+            />
+          </div>
+        )}
       </div>
+
+
     </div>
   );
 };

@@ -5,7 +5,7 @@ import OverviewTab from "./patientHistory/OverViewTab";
 import AppointmentTab from "./patientHistory/AppoitmentTab";
 import TreatmentTab from "./patientHistory/TreatmentTab";
 import BillingTab from "./patientHistory/BillingTab";
-import ClinicalExamineTab from "./patientHistory/CilinicalExamineTab";
+// import ClinicalExamineTab from "./patientHistory/CilinicalExamineTab";
 import PrescriptionTab from "./patientHistory/PrescriptionTab";
 import TimeLineTab from "./patientHistory/TimeLineTab";
 import FilesTab from "./patientHistory/FilesTab";
@@ -39,8 +39,8 @@ const PatientHistory = () => {
         return <TreatmentTab />;
       case "billing":
         return <BillingTab />;
-      case "clinical":
-        return <ClinicalExamineTab />;
+      // case "clinical":
+      //   return <ClinicalExamineTab />;
       case "prescription":
         return <PrescriptionTab />;
       case "timeline":

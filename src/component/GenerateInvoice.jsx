@@ -9,7 +9,30 @@ const GenerateInvoice = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
 
+  
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+ const [headerUrl, setHeaderUrl] = useState([]);
+  const [footerUrl, setFooterUrl] = useState([]);
+
   useEffect(() => {
+    const getHeaderByAdminId = async (adminId) => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        if (response) {
+          setHeaderUrl(response.data.headerUrl)
+          setFooterUrl(response.data.footerUrl)
+        }
+        return response.data; // { headerUrl, headerPublicId }
+      } catch (error) {
+        console.error("Error fetching header config:", error);
+        throw error;
+      }
+    };
+
+    getHeaderByAdminId(adminId)
+
     const fetchAppointments = async () => {
       try {
         const response = await axios.get(

@@ -6,11 +6,17 @@ import "react-toastify/dist/ReactToastify.css";
 import ClinicConfigDetails from "./ClinicConfigDetails";
 
 const ClinicTable = ({ onClose }) => {
+
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+
   const [formData, setFormData] = useState({
     header: null,
     footer: null,
     termsAndCondition: "",
     shareOnMail: false,
+    adminId:adminId
   });
 
   const [headerPreview, setHeaderPreview] = useState("");
@@ -132,6 +138,7 @@ const ClinicTable = ({ onClose }) => {
     try {
       const formDataToSend = new FormData();
 
+      formDataToSend.append("adminId", adminId);
       // Make sure files are properly added to FormData
       if (formData.header) {
         formDataToSend.append("header", formData.header);
@@ -182,6 +189,7 @@ const ClinicTable = ({ onClose }) => {
           footer: null,
           termsAndCondition: "",
           shareOnMail: false,
+          adminId:adminId
         });
         setHeaderPreview("");
         setFooterPreview("");
