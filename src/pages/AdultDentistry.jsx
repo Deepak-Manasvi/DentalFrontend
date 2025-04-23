@@ -29,7 +29,6 @@ export default function AdultDentistry() {
         import.meta.env.VITE_APP_BASE_URL
       }/appointments/getAppointmentByAppId/${id}`
     );
-
     setPatient(res.data.appointment);
   };
 
@@ -37,7 +36,6 @@ export default function AdultDentistry() {
     fetchDataForPatient();
   }, []);
 
-  console.log("Patient Data:", patient);
   const location = useLocation();
   const examinationData = location.state?.records || [];
 
