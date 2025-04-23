@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 
-const TreatmentProcedure = ({
+export default function TreatmentProcedure({
   id,
   patient,
   finalProcedures,
@@ -13,11 +13,10 @@ const TreatmentProcedure = ({
   setShowTreatment,
   setRecords,
   toothName,
-  chiefComplaint = "", 
+  chiefComplaint = "",
   examinationNotes = "",
-  advice = ""
-}) => {
-
+  advice = "",
+}) {
   const [procedureList, setProcedureList] = useState([]);
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const [loading, setLoading] = useState(false);
@@ -38,9 +37,10 @@ const TreatmentProcedure = ({
     notes: "",
     nextDate: "",
   });
+  const [todayProceduresList, setTodayProceduresList] = useState([]); // Add new state for today's procedures list
   const [todayErrors, setTodayErrors] = useState({});
   const navigate = useNavigate();
-  const { examinationId } = useParams(); 
+  const { examinationId } = useParams();
   const [medicineList, setMedicineList] = useState([]);
   const [medicineForm, setMedicineForm] = useState({
     name: "",
@@ -63,6 +63,27 @@ const TreatmentProcedure = ({
       toothName: toothName,
     }));
   }, [toothName]);
+
+  const updateSave = async () => {
+    const data = {
+      procedureList: procedureList,
+      medicines: medicineList,
+      materialsUsed: todayProcedure,
+    };
+
+    const response = await axios.patch(
+      `${BASE_URL}/treatment/updateTreatmentById/${localStorage.getItem(
+        "treatmentId"
+      )}`,
+      data
+    );
+    console.log("Response from updateSave:", response.data);
+    if (response.status === 200) {
+      toast.success("Data saved successfully!");
+    } else {
+      toast.error("Failed to save data.");
+    }
+  };
 
   const validateProcedureForm = () => {
     const errors = {};
@@ -162,20 +183,70 @@ const TreatmentProcedure = ({
     setProcedureErrors({});
   };
 
+  const handleDeleteTodayProcedure = (index) => {
+    setTodayProceduresList((prev) => prev.filter((_, i) => i !== index));
+    
+    // Also remove from finalProcedures
+    setFinalProcedures((prev) => {
+      // This is a simplified approach. In a real app, you might need a more robust way to identify which items to remove
+      const updatedProcedures = [...prev];
+      updatedProcedures.splice(index, 1);
+      return updatedProcedures;
+    });
+  };
+
+
+  const handleTodayProcedureSave = () => {
+    if (!validateTodayProcedure()) return;
+    
+    // Create a new today's procedure record
+    const newTodayProcedure = {
+      ...todayProcedure,
+      procedureDone: procedureList
+        .map((p) => `${p.procedure} - ${p.treatment} (Cost: ${p.cost})`)
+        .join(", "),
+    };
+    
+    // Add to today's procedures list
+    setTodayProceduresList((prev) => [...prev, newTodayProcedure]);
+    
+    // Add to final procedures 
+    setFinalProcedures((prev) => [...prev, newTodayProcedure]);
+    
+    // Reset today's procedure form
+    setTodayProcedure({
+      date: new Date().toISOString().split("T")[0],
+      toothName: toothName,
+      procedureDone: "",
+      materialsUsed: "",
+      notes: "",
+      nextDate: "",
+    });
+    
+    // Clear the procedure list
+    setProcedureList([]);
+    
+    // Clear errors
+    setTodayErrors({});
+    
+    toast.success("Today's procedure saved successfully!");
+  };
+  
   const validateTodayProcedure = () => {
     const errors = {};
     if (!todayProcedure.date) errors.date = "Date is required";
     if (!todayProcedure.toothName) errors.toothName = "Tooth name is required";
-    if (!todayProcedure.materialsUsed) errors.materialsUsed = "Materials used is required";
+    if (!todayProcedure.materialsUsed)
+      errors.materialsUsed = "Materials used is required";
     if (!todayProcedure.nextDate) errors.nextDate = "Next date is required";
+    if (procedureList.length === 0) errors.procedureDone = "At least one procedure must be added";
     setTodayErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  
   // Save only the procedure data
   const handleFinalSave = async () => {
     if (!validateTodayProcedure()) return;
-    
+
     setLoading(true);
 
     const selectedToothNames = Object.entries(selectedTeeth)
@@ -206,24 +277,27 @@ const TreatmentProcedure = ({
 
     if (examinationId) {
       try {
-        const response = await axios.patch(`${BASE_URL}/treatment/updateTreatmentProcedureById/${examinationId}`, {
-          treatments: updatedProcedures,
-          chiefComplaint,
-          examinationNotes,
-          advice
-        });
+        const response = await axios.patch(
+          `${BASE_URL}/treatment/updateTreatmentProcedureById/${examinationId}`,
+          {
+            treatments: updatedProcedures,
+            chiefComplaint,
+            examinationNotes,
+            advice,
+          }
+        );
         console.log("Treatment procedure updated successfully:", response);
         toast.success("Procedure saved successfully!");
       } catch (error) {
         console.error("Error updating treatment procedure", error);
         toast.error("Failed to save procedure to backend");
-        
+
         // Save to localStorage as fallback
         localStorage.setItem(
-          `treatment_procedure_${examinationId}`, 
+          `treatment_procedure_${examinationId}`,
           JSON.stringify({
             treatments: updatedProcedures,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           })
         );
         toast.info("Saved procedure locally. Please try again later.");
@@ -231,13 +305,15 @@ const TreatmentProcedure = ({
     } else {
       // Save to localStorage if no examinationId
       localStorage.setItem(
-        "temp_treatment_procedure", 
+        "temp_treatment_procedure",
         JSON.stringify({
           treatments: updatedProcedures,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         })
       );
-      toast.info("Saved procedure locally. Please create an examination record first.");
+      toast.info(
+        "Saved procedure locally. Please create an examination record first."
+      );
     }
 
     // Reset form
@@ -257,7 +333,7 @@ const TreatmentProcedure = ({
   // Save all data (procedure + medicines)
   const handleFinalSaveAll = async () => {
     if (!validateTodayProcedure()) return;
-    
+
     setLoading(true);
 
     const selectedToothNames = Object.entries(selectedTeeth)
@@ -289,28 +365,31 @@ const TreatmentProcedure = ({
       patientId: patient?.id || id,
       chiefComplaint,
       examinationNotes,
-      advice
+      advice,
     };
 
     // Only attempt to save to backend if we have an examinationId
     if (examinationId) {
       try {
-        const response = await axios.patch(`${BASE_URL}/treatment/update/${examinationId}`, treatmentData);
+        const response = await axios.patch(
+          `${BASE_URL}/treatment/update/${examinationId}`,
+          treatmentData
+        );
         console.log("All treatment data updated successfully:", response);
         toast.success("All treatment data saved successfully!");
-        
+
         // Navigate to patient treatment page
         navigate("/patient-treatment");
       } catch (error) {
         console.error("Error updating all treatment data", error);
         toast.error("Failed to save all treatment data to backend");
-        
+
         // Save to localStorage as fallback
         localStorage.setItem(
-          `complete_treatment_${examinationId}`, 
+          `complete_treatment_${examinationId}`,
           JSON.stringify({
             ...treatmentData,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           })
         );
         toast.info("Saved all treatment data locally. Please try again later.");
@@ -318,14 +397,16 @@ const TreatmentProcedure = ({
     } else {
       // Save to localStorage if no examinationId
       localStorage.setItem(
-        "temp_complete_treatment", 
+        "temp_complete_treatment",
         JSON.stringify({
           ...treatmentData,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         })
       );
-      toast.info("Saved all treatment data locally. Please create an examination record first.");
-      
+      toast.info(
+        "Saved all treatment data locally. Please create an examination record first."
+      );
+
       // Navigate to patient treatment page
       navigate("/patient-treatment");
     }
@@ -379,7 +460,9 @@ const TreatmentProcedure = ({
   // If needed, load saved data from localStorage on component mount
   useEffect(() => {
     if (examinationId) {
-      const localData = localStorage.getItem(`treatment_procedure_${examinationId}`);
+      const localData = localStorage.getItem(
+        `treatment_procedure_${examinationId}`
+      );
       if (localData) {
         try {
           const parsedData = JSON.parse(localData);
@@ -387,18 +470,18 @@ const TreatmentProcedure = ({
           const timestamp = new Date(parsedData.timestamp);
           const now = new Date();
           const hoursDiff = (now - timestamp) / (1000 * 60 * 60);
-          
+
           if (hoursDiff < 24 && parsedData.treatments?.length) {
             // Confirm with user before loading local data
             const confirmLoad = window.confirm(
               "We found unsaved treatment data from your previous session. Would you like to load it?"
             );
-            
+
             if (confirmLoad) {
               setFinalProcedures(parsedData.treatments);
               setFinalTreatmentRecords(parsedData.treatments);
               toast.info("Loaded previously unsaved treatment data");
-              
+
               // Try to save to backend
               handleSyncLocalData();
             } else {
@@ -416,23 +499,28 @@ const TreatmentProcedure = ({
   // Function to sync local data with backend
   const handleSyncLocalData = async () => {
     if (!examinationId) return;
-    
-    const localData = localStorage.getItem(`treatment_procedure_${examinationId}`);
+
+    const localData = localStorage.getItem(
+      `treatment_procedure_${examinationId}`
+    );
     if (!localData) return;
-    
+
     try {
       const parsedData = JSON.parse(localData);
-      
-      const response = await axios.patch(`${BASE_URL}/treatment/update/${examinationId}`, {
-        treatments: parsedData.treatments,
-        chiefComplaint,
-        examinationNotes,
-        advice
-      });
-      
+
+      const response = await axios.patch(
+        `${BASE_URL}/treatment/update/${examinationId}`,
+        {
+          treatments: parsedData.treatments,
+          chiefComplaint,
+          examinationNotes,
+          advice,
+        }
+      );
+
       console.log("Synced local treatment data to backend:", response);
       toast.success("Successfully synced local treatment data to server");
-      
+
       // Clear local storage after successful sync
       localStorage.removeItem(`treatment_procedure_${examinationId}`);
     } catch (error) {
@@ -440,9 +528,9 @@ const TreatmentProcedure = ({
       toast.error("Failed to sync local treatment data to server");
     }
   };
-
   return (
-    <div className="p-6 ml-10 bg-white">
+    <>
+        <div className="p-6 ml-10 bg-white">
       <h2 className="text-3xl font-bold mb-6 text-center">
         Adult Treatment Procedure
       </h2>
@@ -808,7 +896,7 @@ const TreatmentProcedure = ({
           Save Today's Procedure
         </button>
         <button
-          // onClick={handleFinalSaveFDATA}
+          onClick={updateSave}
           className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
         >
           Save ALL
@@ -870,7 +958,7 @@ const TreatmentProcedure = ({
         </div>
       )}
     </div>
-  );
-};
+    </>
+  )
+}
 
-export default TreatmentProcedure;
