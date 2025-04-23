@@ -72,10 +72,10 @@ const InvoiceGenerator = () => {
 
     setFormData((f) => ({
       ...f,
-      uhid: p.appointmentId.uhid,
-      appId: p.appointmentId.appId,
-      patientName: p.patientName,
-      mobileNumber: p.mobileNumber,
+      uhid: p?.appointmentId?.uhid || "Not Found",
+      appId: p?.appointmentId?.appId || "Not Found",
+      patientName: p?.patientName || "Not Found",
+      mobileNumber: p?.mobileNumber || "Not Found",
       address: p.address,
       doctorName: p.doctorName,
       treatmentType: p.treatmentType,
@@ -178,7 +178,7 @@ const InvoiceGenerator = () => {
 
   const patientOptions = patients.map((p) => ({
     value: p._id,
-    label: `${p.patientName} (${p.appointmentId.uhid})`,
+    label: `${p.patientName} (${p &&  p.appointmentId && p.appointmentId.uhid || "Not Found"})`,
   }));
 
   return (

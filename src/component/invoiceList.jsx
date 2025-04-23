@@ -28,7 +28,7 @@ const InvoiceList = () => {
 
   // 2. Filtered list
   const filteredInvoices = invoices.filter((inv) =>
-    `${inv.patientName} ${inv.appointmentId.uhid} ${inv.invoiceId}`
+    `${inv.patientName} ${inv && inv.appointmentId && inv.appointmentId.uhid} ${inv.invoiceId}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
@@ -118,7 +118,7 @@ const InvoiceList = () => {
                   <td className="py-2 px-4">{inv.patientName}</td>
                   <td className="py-2 px-4">{inv.doctorName}</td>
                   <td className="py-2 px-4">{inv.treatmentType}</td>
-                  <td className="py-2 px-4">{inv.appointmentId.uhid}</td>
+                  <td className="py-2 px-4">{inv && inv.appointmentId && inv.appointmentId.uhid || "not found"}</td>
                   <td className="py-2 px-4">₹{inv.subtotal}</td>
                   <td className="py-2 px-4">₹{inv.discount}</td>
                   <td className="py-2 px-4 font-semibold text-teal-600">
@@ -170,7 +170,7 @@ const InvoiceList = () => {
                   <p><b>Date:</b> {viewingInvoice.createdAt}</p>
                   <p><b>Invoice No:</b> {viewingInvoice.invoiceId}</p>
                   <p><b>Patient:</b> {viewingInvoice.patientName}</p>
-                  <p><b>UHID:</b> {viewingInvoice.appointmentId.uhid}</p>
+                  <p><b>UHID:</b> {viewingInvoice && viewingInvoice.appointmentId && viewingInvoice.appointmentId.uhid || "Not Found"}</p>
                 </div>
                 <div>
                   <p><b>Doctor:</b> {viewingInvoice.doctorName}</p>
