@@ -532,7 +532,7 @@ export default function TreatmentProcedure({
     <>
         <div className="p-6 ml-10 bg-white">
       <h2 className="text-3xl font-bold mb-6 text-center">
-        Adult Treatment Procedure
+        Treatment Procedure
       </h2>
 
       {/* Procedure Section */}

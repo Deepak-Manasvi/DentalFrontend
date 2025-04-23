@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const toothNames = [
   "Upper Right Second Molar",
   "Upper Right First Molar",
@@ -30,47 +31,36 @@ const teethData = toothNames.map((name, index) => ({
 }));
 
 const FirstPediatricDentistryForm = ({
-  saved,
-  setSaved,
+  patient,
+  formData,
+  setFormData,
+  selectedTeeth,
+  setSelectedTeeth,
   records,
   setRecords,
-  patient,
-  selectedTeeth,
-  showTreatment,
-  setSelectedTeeth,
-  formData,
+  saved,
+  setSaved,
   handleNext,
-  setFormData,
 }) => {
   const navigate = useNavigate();
-
-  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
-  const handleDelete = (index) => {
-    const updated = [...records];
-    updated.splice(index, 1);
-    setRecords(updated);
-  };
+
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  // const handleNextClick = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({ ...prev, [name]: value }));
-  // };
-  const handleCheckboxChange = (toothId) => {
-    setSelectedTeeth((prev) => {
-      const updated = { ...prev, [toothId]: !prev[toothId] };
-      const selectedNames = teethData
-        .filter((t) => updated[t.id])
-        .map((t) => t.label)
-        .join(", ");
-      setFormData((form) => ({ ...form, toothName: selectedNames }));
-      return updated;
-    });
+
+  const handleCheckboxChange = (id) => {
+    const updated = { ...selectedTeeth, [id]: !selectedTeeth[id] };
+    setSelectedTeeth(updated);
+    const selected = teethData
+      .filter((tooth) => updated[tooth.id])
+      .map((tooth) => tooth.label)
+      .join(", ");
+    setFormData((f) => ({ ...f, toothName: selected }));
   };
 
   const handleSave = () => {
@@ -80,9 +70,14 @@ const FirstPediatricDentistryForm = ({
       return;
 
     setRecords([...records, formData]);
-
     setSelectedTeeth({});
     setSaved(true);
+  };
+
+  const handleDelete = (index) => {
+    const updated = [...records];
+    updated.splice(index, 1);
+    setRecords(updated);
   };
 
   useEffect(() => {
@@ -111,26 +106,39 @@ const FirstPediatricDentistryForm = ({
         console.error("Error fetching examinations:", err.message)
       );
   }, []);
+
   const handleNextClick = async () => {
     if (records.length === 0) {
       alert("Please save at least one treatment record before proceeding.");
       return;
     }
-    const simplifiedRecords = records.map((record) => ({
-      toothName: record.toothName,
-    }));
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/pediatric/createPediatricTreatment`,
-        {
-          uhid: patient?._id,
-          treatments: simplifiedRecords,
-        }
-      );
+      const payload = {
+        appointmentId: patient?._id,
+        type: "Pediatric",
+        treatments: records.map((rec) => ({
+          toothName: rec.toothName,
+          dentalCondition: rec.dentalCondition,
+        })),
+        chiefComplaint: formData.complaint,
+        examinationNotes: formData.examination,
+        advice: formData.advice,
+      };
 
-      console.log("Treatment saved:", response.data);
-      handleNext(formData.toothName);
+      const response = await axios.post(
+        `${BASE_URL}/treatment/createTreatmentProcedure`,
+        payload
+      );
+      const treatmentId = response.data?.data?._id;
+
+      if (!treatmentId) {
+        alert("Could not retrieve treatment ID.");
+        return;
+      }
+      localStorage.setItem("treatmentId", treatmentId);
+      console.log(formData.toothName, "formData.toothNameformData.toothName");
+      handleNext(formData.toothName, treatmentId);
       setFormData({
         toothName: "",
         dentalCondition: "",
@@ -141,18 +149,20 @@ const FirstPediatricDentistryForm = ({
     } catch (error) {
       console.error("Error submitting treatment records:", error);
       alert(
-        `Error saving treatment data: ${
-          error.response?.data?.message || error.message
+        `Error saving treatment data: ${error.response?.data?.message || error.message
         }`
       );
     }
   };
+
   return (
     <div className="p-4 md:p-6">
-      <h2 className="text-2xl font-semibold mb-4">Examination Dashboard</h2>
-
+      <h2 className="text-2xl font-semibold mb-4">Pediatric Examination Dashboard</h2>
       {/* Patient Info */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm md:text-base mb-6">
+        <div>
+          <strong>Appointment ID:</strong> {patient?.appId}
+        </div>
         <div>
           <strong>UHID:</strong> {patient?.uhid}
         </div>
@@ -168,7 +178,7 @@ const FirstPediatricDentistryForm = ({
         <div>
           {patient?.bp && (
             <div>
-              BP: {patient.bp.systolic}/{patient.bp.diastolic} mmHg
+              <strong>BP:</strong> {patient.bp.systolic}/{patient.bp.diastolic} mmHg
             </div>
           )}
         </div>
@@ -313,67 +323,67 @@ const FirstPediatricDentistryForm = ({
 
       {/* Saved Table */}
       {records.length > 0 && (
-  <div className="mt-8">
-    <h3 className="text-lg font-bold mb-4">Saved Records</h3>
-    <table className="w-full text-sm bg-white border border-[#2B7A6F]">
-      <thead className="bg-[#2B7A6F] text-white">
-        <tr>
-          <th className="px-3 py-2 border border-white">Tooth Name</th>
-          <th className="px-3 py-2 border border-white">Dental Condition</th>
-          <th className="px-3 py-2 border border-white">Complaint</th>
-          <th className="px-3 py-2 border border-white">Examination</th>
-          <th className="px-3 py-2 border border-white">Advice</th>
-          <th className="px-3 py-2 border border-white">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {records.map((rec, index) => (
-          <tr key={index} className="border border-[#2B7A6F]">
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              {rec.toothName}
-            </td>
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              {rec.dentalCondition}
-            </td>
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              {rec.complaint}
-            </td>
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              {rec.examination}
-            </td>
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              {rec.advice}
-            </td>
-            <td className="px-3 py-2 border border-[#2B7A6F] text-center">
-              <button
-                onClick={() => handleDelete(index)}
-                className="text-red-600 hover:underline"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+        <div className="mt-8">
+          <h3 className="text-lg font-bold mb-4">Saved Records</h3>
+          <table className="w-full text-sm bg-white border border-[#2B7A6F]">
+            <thead className="bg-[#2B7A6F] text-white">
+              <tr>
+                <th className="px-3 py-2 border border-white">Tooth Name</th>
+                <th className="px-3 py-2 border border-white">Dental Condition</th>
+                <th className="px-3 py-2 border border-white">Complaint</th>
+                <th className="px-3 py-2 border border-white">Examination</th>
+                <th className="px-3 py-2 border border-white">Advice</th>
+                <th className="px-3 py-2 border border-white">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((rec, index) => (
+                <tr key={index} className="border border-[#2B7A6F]">
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.toothName}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.dentalCondition}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.complaint}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.examination}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    {rec.advice}
+                  </td>
+                  <td className="px-3 py-2 border border-[#2B7A6F] text-center">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-    {/* Navigation Buttons */}
-    <div className="mt-6 flex justify-between">
-      <button
-        onClick={() => navigate(-1)}
-        className="bg-gray-500 text-white px-6 py-2 rounded shadow"
-      >
-        Back
-      </button>
-      <button
-        onClick={handleNextClick}
-        className="bg-teal-600 text-white px-6 py-2 rounded shadow"
-      >
-        Next
-      </button>
-    </div>
-  </div>
-)}
+          {/* Navigation Buttons */}
+          <div className="mt-6 flex justify-between">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-500 text-white px-6 py-2 rounded shadow"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleNextClick}
+              className="bg-teal-600 text-white px-6 py-2 rounded shadow"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
