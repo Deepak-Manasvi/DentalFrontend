@@ -11,7 +11,7 @@ const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
-  const [showBusinessForm, setShowBusinessForm] = useState(false);
+  const [showBusinessForm, setShowBusinessForm] = useState(true);
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
   const [businessName, setbusinessName] = useState("");
@@ -69,7 +69,7 @@ const AdminLayout = () => {
     if (isAdmin && isFirstVisit) {
       // Set a small delay to ensure dashboard is loaded before showing popup
       const timer = setTimeout(() => {
-        setShowBusinessForm(true);
+       
         // Mark that the dashboard has been visited to avoid showing popup again
         localStorage.setItem("dashboardVisited", "true");
       }, 500);
@@ -79,6 +79,17 @@ const AdminLayout = () => {
   }, [businessName]);
 
   useEffect(() => {
+    const details = JSON.parse(localStorage.getItem("userDetails"))
+    if(details.businessDetails) {
+      setShowBusinessForm(false);
+      setbusinessName(details.businessDetails.businessName);
+      setProfilePhoto(details.businessDetails.businessPhoto.url);
+      setcontact(details.businessDetails.contact);
+      setaddress(details.businessDetails.address);
+      setfinancialYear(details.businessDetails.financialYear);
+      setlicenseNumber(details.businessDetails.licenseNumber);
+    }
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
     }, 1000);

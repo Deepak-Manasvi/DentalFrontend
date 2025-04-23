@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const BusinessForm = ({ onClose }) => {
@@ -13,7 +13,7 @@ const BusinessForm = ({ onClose }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -67,6 +67,7 @@ const BusinessForm = ({ onClose }) => {
   };
 
   return (
+    
     <div className="w-full max-w-md mx-auto bg-white p-4 rounded-lg shadow-md overflow-y-auto max-h-screen">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-lg font-bold text-gray-800">
