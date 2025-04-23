@@ -253,32 +253,7 @@ const ReceiptGenerator = () => {
       </form>
 
       {/* Receipt Preview */}
-      <style>
-        {`
-    @media print {
-      .print-footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }
-
-      .print-header {
-        position: fixed;
-        top: 0;
-        width: 100%;
-      }
-
-      .print-body {
-        margin-top: 160px; /* Adjust based on header height */
-        margin-bottom: 120px; /* Adjust based on footer height */
-      }
-
-      .no-break {
-        page-break-inside: avoid;
-      }
-    }
-  `}
-      </style>
+      
 
       <div ref={receiptRef} className="hidden print:block">
         {/* ✅ Fixed Header for Every Page */}
@@ -308,7 +283,9 @@ const ReceiptGenerator = () => {
               <p><b>Treatment Type:</b> {formData.treatmentType}</p>
               <p><b>Amount:</b> ₹{formData.paidAmount}</p>
               <p><b>Mode:</b> {formData.paymentMode}</p>
+              {formData.transactionId &&
               <p><b>Transaction Id:</b> {formData.transactionId}</p>
+              }
             </div>
           </div>
 
@@ -347,7 +324,6 @@ const ReceiptGenerator = () => {
           </div>
         )}
       </div>
-
 
     </div>
   );
