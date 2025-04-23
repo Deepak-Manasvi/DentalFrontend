@@ -9,12 +9,12 @@ export default function EditStaff() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
-    username: "",
+    firstName: "",
+    lastName: "",
     password: "",
     address: "",
     email: "",
-    contactNumber: "",
+    phone: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -27,21 +27,18 @@ export default function EditStaff() {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/staff/getstaffById/${id}`
+          `${import.meta.env.VITE_APP_BASE_URL}/user/getUserById/${id}`
         );
-
         // Update form with existing staff data
-        const staffData = response.data.data.staff;
+        const staffData = response.data;
         setFormData({
-          name: staffData.name || "",
-          username: staffData.username || "",
-          // Password field is left empty for security reasons
-          password: staffData.password,
+          firstName: staffData.firstName || "",
+          lastName: staffData.lastName || "",
+          password: "",
           address: staffData.address || "",
           email: staffData.email || "",
-          contactNumber: staffData.contactNumber || "",
+          phone: staffData.phone || "",
         });
-
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch staff data. Please try again.");
@@ -70,29 +67,14 @@ export default function EditStaff() {
 
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.username.trim()) newErrors.username = "Username is required";
-
-    // Only validate password if it's provided (optional during edit)
-    if (formData.password.trim() && formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (formData.password.trim() && formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
     if (!formData.address.trim()) newErrors.address = "Address is required";
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.contactNumber.trim()) {
-      newErrors.contactNumber = "Contact Number is required";
-    } else if (!/^[0-9]{10}$/.test(formData.contactNumber)) {
-      newErrors.contactNumber = "Contact Number must be 10 digits";
-    }
-
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    else if (!/^[0-9]{10}$/.test(formData.phone)) newErrors.phone = "Phone number must be 10 digits";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -104,11 +86,11 @@ export default function EditStaff() {
       try {
         // Create data object, only include password if provided
         const updateData = {
-          name: formData.name,
-          username: formData.username,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           address: formData.address,
           email: formData.email,
-          contactNumber: formData.contactNumber,
+          phone: formData.phone,
         };
 
         // Only include password in update if user entered one
@@ -117,7 +99,7 @@ export default function EditStaff() {
         }
 
         const res = await axios.patch(
-          `${import.meta.env.VITE_APP_BASE_URL}/staff/updatestaffById/${id}`,
+          `${import.meta.env.VITE_APP_BASE_URL}/user/updateUserById/${id}`,
           updateData
         );
 
@@ -170,15 +152,15 @@ export default function EditStaff() {
           {/* Staff Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Name<span className="text-red-500">*</span>
+              First Name<span className="text-red-500">*</span>
             </label>
             <input
-              name="name"
-              value={formData.name}
+              name="firstName"
+              value={formData.firstName}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter staff name"
+              placeholder="Enter first name"
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name}</p>
@@ -188,15 +170,15 @@ export default function EditStaff() {
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Username<span className="text-red-500">*</span>
+              Last Name<span className="text-red-500">*</span>
             </label>
             <input
-              name="username"
-              value={formData.username}
+              name="lastName"
+              value={formData.lastName}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"
-              placeholder="Enter username"
+              placeholder="Enter last name"
             />
             {errors.username && (
               <p className="text-red-500 text-sm mt-1">{errors.username}</p>
@@ -268,8 +250,8 @@ export default function EditStaff() {
             </label>
             <input
               type="text"
-              name="contactNumber"
-              value={formData.contactNumber}
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               required
               className="w-full p-3 border rounded-xl"

@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function AddStaff() {
   const navigate = useNavigate();
-
+  const branchId = localStorage.getItem("selectedBranch");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -15,6 +15,7 @@ export default function AddStaff() {
     email: "",
     phone: "",
     role: "receptionist", 
+    branchId: branchId,
   });
 
   const [errors, setErrors] = useState({});
