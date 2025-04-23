@@ -163,21 +163,18 @@ const ManageServices = () => {
   };
 
   const handleDeleteService = async (serviceId) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+    if (window.confirm("Are you sure you want to delete this Service?")) {
       try {
         const category = serviceTypes.find(
           (type) => type.title === activeCategory
         );
         await axios.delete(
-          `${baseURL}/services${category.deleteEndpoint}${serviceId}`
+          `${baseURL}/services${category.deleteEndpoint}${serviceId._id}`
         );
-
         toast.success("Service deleted successfully!");
-
         setIsModalOpen(false);
         setDropdownOpen(null);
         setEditingService(null);
-
         fetchServices(activeCategory);
       } catch (err) {
         console.error("Error deleting service:", err);
@@ -275,7 +272,7 @@ const ManageServices = () => {
 const EditServiceForm = ({ service, onSave, onCancel, onChange }) => {
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200">
-      ß<h3 className="text-lg font-semibold mb-4">Edit Service</h3>
+      <h3 className="text-lg font-semibold mb-4">Edit Service</h3>
       <div className="space-y-4">
         {Object.entries(service)
           .filter(([key]) => key !== "__v" && key !== "_id")

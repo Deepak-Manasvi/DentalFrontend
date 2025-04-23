@@ -7,12 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 const serviceTypes = [
   { id: 1, title: "Chief Complaint", icon: "🩺", endpoint: "createChief" },
   { id: 2, title: "Examination", icon: "🔍", endpoint: "createExamination" },
-  {
-    id: 3,
-    title: "Treatment Procedure",
-    icon: "💊",
-    endpoint: "createTreatment",
-  },
+  { id: 3, title: "Treatment Procedure", icon: "💊", endpoint: "createTreatment"},
   { id: 4, title: "Medicine", icon: "💉", endpoint: "createMedicine" },
 ];
 
@@ -23,8 +18,6 @@ const initialFormState = {
   name: "",
   branchId: localStorage.getItem("selectedBranch"),
 };
-
-console.log(initialFormState.branchId, "brbbabfjadsjfsdfjdsa");
 
 const AddServices = () => {
   const [showForm, setShowForm] = useState(false);
