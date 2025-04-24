@@ -244,11 +244,11 @@ const InvoiceList = () => {
                 “Thank you for choosing our services.”
               </p>
             </div>
-            {footerUrl && (
+            {/* {footerUrl && (
           <div className="w-full text-center mb-4">
             <img src={footerUrl} alt="Footer" className="mx-auto w-full max-h-40 object-contain" />
           </div>
-        )}
+        )} */}
           </div>
           
         </div>
