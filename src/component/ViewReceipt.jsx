@@ -49,58 +49,20 @@ const ViewReceipt = () => {
 
   const handlePrint = (receipt) => {
     setViewingReceipt(receipt);
-
-    setTimeout(() => {
-      const printWindow = window.open("", "_blank");
-      const printContent = document.getElementById("receipt-print-content");
-
-      if (printWindow && printContent) {
-        printWindow.document.open();
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Print Receipt</title>
-              <style>
-                @media print {
-                  .print-header, .print-footer {
-                    position: fixed;
-                    left: 0;
-                    right: 0;
-                    width: 100%;
-                    z-index: 10;
-                  }
-                  .print-header {
-                    top: 0;
-                  }
-                  .print-footer {
-                    bottom: 0;
-                  }
-                  .print-body {
-                    margin-top: 120px;
-                    margin-bottom: 100px;
-                  }
-                }
-                body {
-                  font-family: sans-serif;
-                }
-              </style>
-            </head>
-            <body>
-              ${printContent.innerHTML}
-              <script>
-                window.onload = function() {
-                  window.print();
-                  setTimeout(() => window.close(), 500);
-                };
-              </script>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-      }
-    }, 100);
+  
+    // Delay to ensure the modal and receipt are rendered
+    const printContent = receiptRef.current;
+    const newWindow = window.open("", "_blank", "width=800,height=600");
+    newWindow.document.write("<html><head><title>Receipt</title>");
+    newWindow.document.write("<style>body{font-family:sans-serif;padding:20px;} h2{color:#c00;} .header{text-align:center;font-size:24px;margin-bottom:10px;} .line{border-top:1px solid #aaa;margin:10px 0;} .bold{font-weight:bold;} .footer{text-align:right;margin-top:40px;}</style>");
+    newWindow.document.write("</head><body>");
+    newWindow.document.write(printContent.innerHTML);
+    newWindow.document.write("</body></html>");
+    newWindow.document.close();
+    newWindow.print();
   };
 
+  
   const handleGenerateInvoice = async (receipt) => {
     try {
       const res = await axios.patch(

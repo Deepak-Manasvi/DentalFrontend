@@ -5,9 +5,40 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import html2pdf from "html2pdf.js";
-import PrintableReceipt from "./PrintableReceipt";
 
 const ReceiptGenerator = () => {
+
+  const amountInWords = (num) => {
+    const a = [
+      "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+      "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+      "Seventeen", "Eighteen", "Nineteen"
+    ];
+    const b = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    ];
+  
+    const numToWords = (n) => {
+      if (n < 20) return a[n];
+      if (n < 100) return b[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + a[n % 10] : "");
+      if (n < 1000) return a[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " and " + numToWords(n % 100) : "");
+      if (n < 100000) return numToWords(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + numToWords(n % 1000) : "");
+      if (n < 10000000) return numToWords(Math.floor(n / 100000)) + " Lakh" + (n % 100000 !== 0 ? " " + numToWords(n % 100000) : "");
+      return numToWords(Math.floor(n / 10000000)) + " Crore" + (n % 10000000 !== 0 ? " " + numToWords(n % 10000000) : "");
+    };
+  
+    if (num === 0) return "Zero Rupees Only";
+  
+    const whole = Math.floor(num);
+    const fraction = Math.round((num - whole) * 100);
+  
+    let words = numToWords(whole) + " Rupees";
+    if (fraction > 0) {
+      words += " and " + numToWords(fraction) + " Paise";
+    }
+    return words + " Only";
+  };
+
   const selectedBranch = localStorage.getItem("selectedBranch");
   const receptionistName = localStorage.getItem("receptionistName") || "Receptionist";
   const receiptRef = useRef();
@@ -18,7 +49,6 @@ const ReceiptGenerator = () => {
 
 
   const [patients, setPatients] = useState([]);
-  const [treatmentDetail, setTreamentDetail] = useState("")
   const [headerUrl, setHeaderUrl] = useState([]);
   const [footerUrl, setFooterUrl] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
@@ -50,7 +80,6 @@ const ReceiptGenerator = () => {
           setHeaderUrl(response.data.headerUrl)
           setFooterUrl(response.data.footerUrl)
         }
-        console.log(response.data)
         return response.data; // { headerUrl, headerPublicId }
       } catch (error) {
         console.error("Error fetching header config:", error);
@@ -65,7 +94,6 @@ const ReceiptGenerator = () => {
           `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
         const filtered = response.data.appointmentList.filter((p) => p.isPatient && p.branchId === selectedBranch);
-        console.log(filtered)
         setPatients(filtered);
       } catch (error) {
         console.error("Error fetching patients", error);
@@ -73,24 +101,6 @@ const ReceiptGenerator = () => {
     };
     fetchPatients();
   }, []);
-
-  const treatmentDetails = async () => {
-    try{
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`
-      );
-      console.log("data", response.data)
-     //const filteredData = response.data.treatments.filter((p) => p.isPatient && p.branchId === selectedBranch);
-     // console.log("data2",filteredData)
-      setTreamentDetail(response.data);
-    }catch(error) {
-      console.error("Error fetching treatment details", error);   
-    }
-  }
-  useEffect(() => {
-    treatmentDetails()
-  },[])
- 
 
   useEffect(() => {
     if (selectedPatientId) {
@@ -182,8 +192,6 @@ const ReceiptGenerator = () => {
     value: p._id,
     label: `${p.patientName} (${p.uhid})`,
   }));
-
-  const amountInWords = (num) => `${num} Rupees Only`.toUpperCase();
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
