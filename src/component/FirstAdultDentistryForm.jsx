@@ -37,6 +37,41 @@ const toothNames = [
   "Lower Right Third Molar",
 ];
 
+// const toothNames = [
+//   "1",
+//   "2",
+//   "3",
+//   "4",
+//   "5",
+//   "6",
+//   "7",
+//   "8",
+//   "9",
+//   "10",
+//   "11",
+//   "12",
+//   "13",
+//   "14",
+//   "15",
+//   "16",
+//   "17",
+//   "18",
+//   "19",
+//   "20",
+//   "21",
+//   "22",
+//   "23",
+//   "24",
+//   "25",
+//   "26",
+//   "27",
+//   "28",
+//   "29",
+//   "30",
+//   "31",
+//   "32",
+// ];
+
 const teethData = toothNames.map((name, index) => ({
   id: index + 1,
   label: name,
@@ -52,7 +87,7 @@ const FirstAdultDentistryForm = ({
   setRecords,
   saved,
   setSaved,
-  handleNext
+  handleNext,
 }) => {
   const navigate = useNavigate();
   const [chiefComplaints, setChiefComplaints] = useState([]);
@@ -91,7 +126,7 @@ const FirstAdultDentistryForm = ({
     updated.splice(index, 1);
     setRecords(updated);
   };
-  
+
   useEffect(() => {
     axios
       .get(`${BASE_URL}/services/getAllChief`)
@@ -167,7 +202,9 @@ const FirstAdultDentistryForm = ({
 
   return (
     <div className="p-4 text-sm font-medium">
-      <h2 className="text-xl font-semibold mb-2">Adult Examination Dashboard</h2>
+      <h2 className="text-xl font-semibold mb-2">
+        Adult Examination Dashboard
+      </h2>
 
       {/* Patient Info */}
       <div className="grid grid-cols-4 gap-2 mb-4">
@@ -194,10 +231,13 @@ const FirstAdultDentistryForm = ({
         {teethData.map((tooth) => (
           <div key={tooth.id} className="flex flex-col items-center p-1">
             <img
-              src={`/adultdentistryTooth/tooth${tooth.id}.png`}
+              src={`/adultNew/${tooth.id}.jpeg`}
               alt={tooth.label}
-              className={`w-14 h-14 object-contain ${selectedTeeth[tooth.id] ? "ring-2 ring-teal-500 rounded-md" : ""
-                }`}
+              className={`w-14 h-14 object-contain ${
+                selectedTeeth[tooth.id]
+                  ? "ring-2 ring-teal-500 rounded-md  "
+                  : ""
+              }`}
             />
             <span className="text-[10px] text-center">{tooth.label}</span>
             <input
