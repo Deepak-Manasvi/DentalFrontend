@@ -109,7 +109,7 @@ const PatientListHistory = () => {
   return (
     <div className="px-4 py-6 max-w-screen-xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Patient List</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Patient History</h2>
         <div className="relative w-full md:w-1/3 max-w-md">
           <input
             type="text"

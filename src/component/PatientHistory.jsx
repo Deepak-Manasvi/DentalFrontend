@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 import PatientSidebar from "./patientHistory/PatientSideBar";
 import TabNavigation from "./patientHistory/TabNavigation";
 import OverviewTab from "./patientHistory/OverViewTab";
@@ -10,60 +13,63 @@ import TimeLineTab from "./patientHistory/TimeLineTab";
 import FilesTab from "./patientHistory/FilesTab";
 
 const PatientHistory = () => {
+  const { id } = useParams(); // Get patient ID from URL
   const [activeTab, setActiveTab] = useState("files");
+  const [patientData, setPatientData] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // Dummy patient data that would come from API
-  const patientData = {
-    name: "deepak",
-    patientType: "General",
-    uhid: "DH_196",
-    gender: "Male",
-    mobile: "8319955741",
-    email: "",
-    dob: "1994-05-16",
-    age: "30",
-    address: "Ashoka Garden",
-    aadhaarNumber: "",
-    bloodGroup: "A-",
-  };
+  // Fetch patient data
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointments/getAppointment/${id}`);
+        await setPatientData(response.data.appointment);
+        console.log(patientData)
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Render content based on active tab
+    fetchPatientData();
+  }, [id]);
+
   const renderContent = () => {
+    const tabProps = { patientData };
+
     switch (activeTab) {
       case "overview":
-        return <OverviewTab />;
+        return <OverviewTab {...tabProps} />;
       case "appointment":
-        return <AppointmentTab />;
+        return <AppointmentTab {...tabProps} />;
       case "treatment":
-        return <TreatmentTab />;
+        return <TreatmentTab {...tabProps} />;
       case "billing":
-        return <BillingTab />;
-      // case "clinical":
-      //   return <ClinicalExamineTab />;
+        return <BillingTab {...tabProps} />;
       case "prescription":
-        return <PrescriptionTab />;
+        return <PrescriptionTab {...tabProps} />;
       case "timeline":
-        return <TimeLineTab />;
+        return <TimeLineTab {...tabProps} />;
       case "files":
-        return <FilesTab />;
+        return <FilesTab {...tabProps} />;
       default:
         return <div>Select a tab</div>;
     }
   };
 
+  if (loading) return <div className="p-4">Loading...</div>;
+  if (!patientData) return <div className="p-4 text-red-500">Patient not found</div>;
+
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Fixed left sidebar */}
       <PatientSidebar patientData={patientData} />
 
-      {/* Right side dynamic content */}
       <div className="flex-1 flex flex-col">
         <div className="bg-teal-500 text-white border">
-          {/* Top navigation tabs */}
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
 
-        {/* Content area that changes based on active tab */}
         <div className="flex-1 p-6 overflow-y-auto bg-white">
           {renderContent()}
         </div>
