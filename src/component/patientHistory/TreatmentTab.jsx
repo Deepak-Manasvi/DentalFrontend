@@ -7,13 +7,15 @@ const TreatmentTab = ({ patientData }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!patientData?.appId) return;
+    console.log(patientData._id)
+
+    if (!patientData?._id) return;
 
     const fetchTreatments = async () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/treatment/getTreatmentById/${patientData.appId}`
+          `${import.meta.env.VITE_APP_BASE_URL}/treatment/getTreatmentById/${patientData._id}`
         );
         // assume API returns { success: true, treatments: [...] }
         if (res.data.success) {
