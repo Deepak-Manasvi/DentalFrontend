@@ -78,24 +78,23 @@ const AdminLayout = () => {
     }
   }, [businessName]);
 
-  useEffect(() => {
-    const details = JSON.parse(localStorage.getItem("userDetails"))
-    if(details.businessDetails) {
-      setShowBusinessForm(false);
-      setbusinessName(details.businessDetails.businessName);
-      setProfilePhoto(details.businessDetails.businessPhoto.url);
-      setcontact(details.businessDetails.contact);
-      setaddress(details.businessDetails.address);
-      setfinancialYear(details.businessDetails.financialYear);
-      setlicenseNumber(details.businessDetails.licenseNumber);
-    }
-    
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleString());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+ useEffect(() => {
+   const details = JSON.parse(localStorage.getItem("userDetails"));
+   if (details && details.businessDetails) {
+     setShowBusinessForm(false);
+     setbusinessName(details.businessDetails.businessName);
+     setProfilePhoto(details.businessDetails.businessPhoto.url);
+     setcontact(details.businessDetails.contact);
+     setaddress(details.businessDetails.address);
+     setfinancialYear(details.businessDetails.financialYear);
+     setlicenseNumber(details.businessDetails.licenseNumber);
+   }
 
+   const timer = setInterval(() => {
+     setCurrentTime(new Date().toLocaleString());
+   }, 1000);
+   return () => clearInterval(timer);
+ }, []);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
