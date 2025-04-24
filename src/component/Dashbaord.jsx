@@ -123,7 +123,6 @@ const Dashboard = () => {
     }).format(amount);
   };
 
-  // card data
   const cards = [
     {
       icon: <FaUserMd className="text-2xl text-teal-500" />,
@@ -198,7 +197,6 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Patient Trends Block */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <button
               className="flex items-center justify-between w-full px-4 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-600"
@@ -215,7 +213,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Quick Links Section */}
         <div className="mt-6">
           <QuickLinks />
         </div>

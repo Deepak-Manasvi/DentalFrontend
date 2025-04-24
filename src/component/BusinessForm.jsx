@@ -13,7 +13,8 @@ const BusinessForm = ({ onClose }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
- 
+  const token = localStorage.getItem("token")
+  // console.log(token)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -48,6 +49,7 @@ const BusinessForm = ({ onClose }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );

@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import html2pdf from "html2pdf.js";
+import PrintableReceipt from "./PrintableReceipt";
 
 const ReceiptGenerator = () => {
   const selectedBranch = localStorage.getItem("selectedBranch");
@@ -17,6 +18,7 @@ const ReceiptGenerator = () => {
 
 
   const [patients, setPatients] = useState([]);
+  const [treatmentDetail, setTreamentDetail] = useState("")
   const [headerUrl, setHeaderUrl] = useState([]);
   const [footerUrl, setFooterUrl] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
@@ -48,6 +50,7 @@ const ReceiptGenerator = () => {
           setHeaderUrl(response.data.headerUrl)
           setFooterUrl(response.data.footerUrl)
         }
+        console.log(response.data)
         return response.data; // { headerUrl, headerPublicId }
       } catch (error) {
         console.error("Error fetching header config:", error);
@@ -62,6 +65,7 @@ const ReceiptGenerator = () => {
           `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
         const filtered = response.data.appointmentList.filter((p) => p.isPatient && p.branchId === selectedBranch);
+        console.log(filtered)
         setPatients(filtered);
       } catch (error) {
         console.error("Error fetching patients", error);
@@ -69,6 +73,24 @@ const ReceiptGenerator = () => {
     };
     fetchPatients();
   }, []);
+
+  const treatmentDetails = async () => {
+    try{
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`
+      );
+      console.log("data", response.data)
+     //const filteredData = response.data.treatments.filter((p) => p.isPatient && p.branchId === selectedBranch);
+     // console.log("data2",filteredData)
+      setTreamentDetail(response.data);
+    }catch(error) {
+      console.error("Error fetching treatment details", error);   
+    }
+  }
+  useEffect(() => {
+    treatmentDetails()
+  },[])
+ 
 
   useEffect(() => {
     if (selectedPatientId) {
