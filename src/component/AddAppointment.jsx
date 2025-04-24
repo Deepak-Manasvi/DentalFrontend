@@ -867,6 +867,7 @@ const AddAppointment = () => {
           Book Appointment
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

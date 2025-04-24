@@ -69,7 +69,6 @@ const AdminLayout = () => {
     if (isAdmin && isFirstVisit) {
       // Set a small delay to ensure dashboard is loaded before showing popup
       const timer = setTimeout(() => {
-       
         // Mark that the dashboard has been visited to avoid showing popup again
         localStorage.setItem("dashboardVisited", "true");
       }, 500);
@@ -78,23 +77,23 @@ const AdminLayout = () => {
     }
   }, [businessName]);
 
- useEffect(() => {
-   const details = JSON.parse(localStorage.getItem("userDetails"));
-   if (details && details.businessDetails) {
-     setShowBusinessForm(false);
-     setbusinessName(details.businessDetails.businessName);
-     setProfilePhoto(details.businessDetails.businessPhoto.url);
-     setcontact(details.businessDetails.contact);
-     setaddress(details.businessDetails.address);
-     setfinancialYear(details.businessDetails.financialYear);
-     setlicenseNumber(details.businessDetails.licenseNumber);
-   }
+  useEffect(() => {
+    const details = JSON.parse(localStorage.getItem("userDetails"));
+    if (details && details.businessDetails) {
+      setShowBusinessForm(false);
+      setbusinessName(details.businessDetails.businessName);
+      setProfilePhoto(details.businessDetails.businessPhoto.url);
+      setcontact(details.businessDetails.contact);
+      setaddress(details.businessDetails.address);
+      setfinancialYear(details.businessDetails.financialYear);
+      setlicenseNumber(details.businessDetails.licenseNumber);
+    }
 
-   const timer = setInterval(() => {
-     setCurrentTime(new Date().toLocaleString());
-   }, 1000);
-   return () => clearInterval(timer);
- }, []);
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleString());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -135,8 +134,9 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-58" : "ml-0"
-          }`}
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isSidebarOpen ? "ml-58" : "ml-0"
+        }`}
       >
         {/* Navbar */}
         <div className="bg-[#2B7A6F] text-white flex justify-between items-center px-6 py-4 fixed top-0 left-0 w-full z-10 shadow-md">
@@ -176,7 +176,10 @@ const AdminLayout = () => {
                   );
 
                   if (selectedBranchObj) {
-                    localStorage.setItem("selectedBranch", selectedBranchObj.branchId); // ✅ Save branchId to localStorage
+                    localStorage.setItem(
+                      "selectedBranch",
+                      selectedBranchObj.branchId
+                    ); // ✅ Save branchId to localStorage
                   }
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#2B7A6F] focus:border-teal-500 text-white bg-[#2B7A6F]"
@@ -189,7 +192,6 @@ const AdminLayout = () => {
                 ))}
               </select>
             </div>
-
 
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm">{currentTime}</span>
