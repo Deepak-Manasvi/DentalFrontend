@@ -889,12 +889,12 @@ export default function TreatmentProcedure({
       </div>
 
       <div className="flex gap-4">
-        <button
+        {/* <button
           onClick={handleFinalSave}
           className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
         >
           Save Today's Procedure
-        </button>
+        </button> */}
         <button
           onClick={updateSave}
           className="bg-teal-500 text-white px-6 py-2 rounded mb-6"
