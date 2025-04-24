@@ -354,14 +354,14 @@ const AdminSidebar = ({
                   >
                     Generate Invoice
                   </Link>
-                  {userRole === "admin" && (
+                
                     <Link
                       to={`/${userRole}/invoicelist`}
                       className="block p-2 hover:bg-teal-700"
                     >
                       Invoice List
                     </Link>
-                  )}
+                  
                 </div>
               )}
             </>
