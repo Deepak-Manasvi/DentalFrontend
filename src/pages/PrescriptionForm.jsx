@@ -8,6 +8,15 @@ export default function PrescriptionForm() {
   const { id } = useParams();
 
   const [patientData, setPatientData] = useState(null);
+  const [diagnosisList, setDiagnosisList] = useState(() => {
+    const saved = localStorage.getItem("diagnosisList");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newDiagnosis, setNewDiagnosis] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("diagnosisList", JSON.stringify(diagnosisList));
+  }, [diagnosisList]);
 
   const savePrescriptionItems = (items) => {
     localStorage.setItem(`prescription_${id}`, JSON.stringify(items));
@@ -58,13 +67,9 @@ export default function PrescriptionForm() {
   }, [id]);
   console.log(patientData);
 
-  const [diagnosisList, setDiagnosisList] = useState([
-    "Toothache",
-    "Sensitivity",
-  ]);
   const [diagnosis, setDiagnosis] = useState("");
-  const [tests, setTests] = useState("X-Ray");
-  const [advice, setAdvice] = useState("Avoid cold drinks and sweets");
+  const [tests, setTests] = useState("");
+  const [advice, setAdvice] = useState("");
 
   const [medicineSearch, setMedicineSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -126,9 +131,9 @@ export default function PrescriptionForm() {
   };
 
   const addDiagnosis = () => {
-    if (diagnosis.trim()) {
-      setDiagnosisList([...diagnosisList, diagnosis.trim()]);
-      setDiagnosis("");
+    if (newDiagnosis.trim()) {
+      setDiagnosisList([...diagnosisList, newDiagnosis.trim()]);
+      setNewDiagnosis("");
     }
   };
 
@@ -164,23 +169,29 @@ export default function PrescriptionForm() {
 
   const handlePrintPDF = () => {
     const doc = new jsPDF();
-
+    const leftMargin = 15;
+    const rightMargin = 195;
     const lineSpacing = 8;
-    let y = 10;
+    let y = 15;
+
+    const formattedDate = new Date().toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
     const prescriptionInfo = {
       clinicName: "Smiles Dental Care",
-      doctorName: patientData?.doctorName || "Dr. XYZ (BDS, MDS)",
+      doctorName: `Dr. ${patientData?.doctorName || "XYZ (BDS, MDS)"}`,
       patient: {
         name: patientData?.patientName || "N/A",
         age: patientData?.age || "N/A",
         gender: patientData?.gender || "N/A",
-        date: patientData?.appointmentDate || new Date().toLocaleDateString(),
+        date: formattedDate,
       },
-      medicalHistory: patientData?.medicalHistory || diagnosisList,
+      diagnosis: diagnosisList || [],
       tests: tests || "N/A",
       advice: advice || "N/A",
-      prescriptionItems: prescriptionItems,
+      prescriptionItems: prescriptionItems || [],
     };
 
     doc.setFont("helvetica", "bold");
@@ -192,69 +203,87 @@ export default function PrescriptionForm() {
     doc.setFont("helvetica", "normal");
     doc.text(prescriptionInfo.doctorName, 105, y, null, null, "center");
 
-    y += lineSpacing + 2;
-    doc.setDrawColor(0);
+    y += lineSpacing + 4;
     doc.setLineWidth(0.5);
-    doc.line(10, y, 200, y);
+    doc.line(leftMargin, y, rightMargin, y);
 
+    // Section: Patient Details
     y += lineSpacing;
     doc.setFont("helvetica", "bold");
-    doc.text("Patient Details", 10, y);
-    y += lineSpacing;
+    doc.setFontSize(13);
+    doc.text("Patient Details", leftMargin, y);
 
+    y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(`Name: ${prescriptionInfo.patient.name}`, 10, y);
-    doc.text(`Age: ${prescriptionInfo.patient.age}`, 80, y);
-    doc.text(`Gender: ${prescriptionInfo.patient.gender}`, 130, y);
+    doc.setFontSize(11);
+    doc.text(`Name: ${prescriptionInfo.patient.name}`, leftMargin, y);
+    doc.text(`Age: ${prescriptionInfo.patient.age}`, 90, y);
+    doc.text(`Gender: ${prescriptionInfo.patient.gender}`, 140, y);
 
     y += lineSpacing;
-    doc.text(`Date: ${prescriptionInfo.patient.date}`, 10, y);
+    doc.text(`Date & Time: ${prescriptionInfo.patient.date}`, leftMargin, y);
 
-    y += lineSpacing + 2;
+    // Section: Diagnosis
+    y += lineSpacing + 4;
     doc.setFont("helvetica", "bold");
-    doc.text("Diagnosis", 10, y);
-    y += lineSpacing;
+    doc.text("Diagnosis", leftMargin, y);
 
+    y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    prescriptionInfo.medicalHistory.forEach((item) => {
-      doc.text(`- ${item}`, 12, y);
+    if (prescriptionInfo.diagnosis.length > 0) {
+      prescriptionInfo.diagnosis.forEach((item) => {
+        doc.text(`• ${item}`, leftMargin + 5, y);
+        y += lineSpacing;
+      });
+    } else {
+      doc.text("N/A", leftMargin + 5, y);
       y += lineSpacing;
-    });
+    }
 
-    y += 4;
+    // Section: Tests
+    y += lineSpacing;
     doc.setFont("helvetica", "bold");
-    doc.text("Tests", 10, y);
+    doc.text("Tests", leftMargin, y);
+
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionInfo.tests, 12, y);
+    doc.text(prescriptionInfo.tests, leftMargin + 5, y);
 
-    y += lineSpacing + 2;
+    // Section: Advice
+    y += lineSpacing + 4;
     doc.setFont("helvetica", "bold");
-    doc.text("Advice", 10, y);
+    doc.text("Advice", leftMargin, y);
+
     y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    doc.text(prescriptionInfo.advice, 12, y, { maxWidth: 180 });
+    const adviceLines = doc.splitTextToSize(prescriptionInfo.advice, 180);
+    doc.text(adviceLines, leftMargin + 5, y);
+    y += adviceLines.length * lineSpacing;
 
-    y += lineSpacing * 2;
-    doc.setFont("helvetica", "bold");
-    doc.text("Prescribed Medicines", 10, y);
+    // Section: Medicines
     y += lineSpacing;
+    doc.setFont("helvetica", "bold");
+    doc.text("Prescribed Medicines", leftMargin, y);
 
+    y += lineSpacing;
     doc.setFont("helvetica", "normal");
-    prescriptionInfo.prescriptionItems.forEach((item) => {
-      const itemText = `• ${item.name} - ${item.dosage} - ${item.timing}`;
-      doc.text(itemText, 12, y);
+    if (prescriptionInfo.prescriptionItems.length > 0) {
+      prescriptionInfo.prescriptionItems.forEach((item) => {
+        const itemText = `• ${item.name} - ${item.dosage} - ${item.timing}`;
+        doc.text(itemText, leftMargin + 5, y);
+        y += lineSpacing;
+      });
+    } else {
+      doc.text("N/A", leftMargin + 5, y);
       y += lineSpacing;
-    });
-
-    y += 10;
+    }
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     doc.text(
       "Get well soon! For any concerns, call us at +91-XXXXXXXXXX",
       105,
-      290,
+      285,
       null,
       null,
       "center"
@@ -262,10 +291,10 @@ export default function PrescriptionForm() {
 
     doc.save(`prescription-${prescriptionInfo.patient.name}.pdf`);
   };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
 
-    // Format the date
     const options = { year: "numeric", month: "long", day: "numeric" };
     return date.toLocaleDateString("en-US", options);
   };
@@ -315,10 +344,40 @@ export default function PrescriptionForm() {
             <h3 className="text-2xl font-bold mb-4 text-teal-700">
               2. Diagnosis
             </h3>
-            <ul className="list-disc pl-5">
-              {patientData?.medicalHistory?.map((historyItem, index) => (
-                <li key={index} className="text-sm text-gray-700">
-                  {historyItem}
+
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={newDiagnosis}
+                onChange={(e) => setNewDiagnosis(e.target.value)}
+                placeholder="Enter diagnosis"
+                className="flex-1 p-2 border border-gray-300 rounded text-sm"
+              />
+              <button
+                onClick={addDiagnosis}
+                className="px-3 py-2 bg-teal-700 text-white rounded text-sm hover:bg-teal-800"
+              >
+                Add
+              </button>
+            </div>
+
+            <ul className="space-y-1">
+              {diagnosisList.map((item, index) => (
+                <li
+                  key={index}
+                  className="bg-gray-100 text-sm text-gray-800 px-3 py-1 rounded flex justify-between items-center"
+                >
+                  <span>{item}</span>
+                  <button
+                    onClick={() =>
+                      setDiagnosisList(
+                        diagnosisList.filter((_, i) => i !== index)
+                      )
+                    }
+                    className="text-gray-400 hover:text-red-500 text-lg px-2"
+                  >
+                    ✕
+                  </button>
                 </li>
               ))}
             </ul>
@@ -446,7 +505,7 @@ export default function PrescriptionForm() {
                     <option value="1-0-1">1-0-1</option>
                     <option value="0-1-0">0-1-0</option>
                     <option value="1-1-1">1-1-1</option>
-                    
+
                     <option value="As directed">As directed</option>
                   </select>
 
