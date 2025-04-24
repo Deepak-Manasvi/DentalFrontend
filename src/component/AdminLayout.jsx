@@ -57,12 +57,12 @@ const AdminLayout = () => {
     const isFirstVisit = !localStorage.getItem("dashboardVisited");
     if (localStorage.getItem("user")) {
       const panel = JSON.parse(localStorage.getItem("user"));
-      setbusinessName(panel.businessName);
-      setProfilePhoto(panel.businessPhoto.url);
-      setcontact(panel.contact);
-      setaddress(panel.address);
-      setfinancialYear(panel.financialYear);
-      setlicenseNumber(panel.licenseNumber);
+      setbusinessName(panel.business.businessName);
+      setProfilePhoto(panel.business.businessPhoto.url);
+      setcontact(panel.business.contact);
+      setaddress(panel.business.address);
+      setfinancialYear(panel.business.financialYear);
+      setlicenseNumber(panel.business.licenseNumber);
     } else {
       setbusinessName(userRole);
     }
