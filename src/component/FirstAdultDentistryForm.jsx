@@ -91,6 +91,7 @@ const FirstAdultDentistryForm = ({
     updated.splice(index, 1);
     setRecords(updated);
   };
+  
   useEffect(() => {
     axios
       .get(`${BASE_URL}/services/getAllChief`)

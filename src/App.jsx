@@ -143,6 +143,9 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="receipt" element={<Receipt />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+          <Route path="patient-History" element={<PatientHistory />} />
+          <Route path="invoicelist" element={<InvoiceList />} />
+          <Route path="invoiceform" element={<InvoiceForm />} />
 
           {/* <Route path="invoiceform" element={<InvoiceForm />} /> */}
         </Route>

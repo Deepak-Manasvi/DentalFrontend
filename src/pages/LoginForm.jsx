@@ -13,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [businessDetailsPresent, setBusinessDetailsPresent] = useState(null)
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ export default function Login() {
         { email, password, role }
       );
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("id", res.data.userId);
+      localStorage.setItem("userDetails", JSON.stringify(res.data.user));
       localStorage.setItem("role", role);
       navigate(role === "admin" ? "/admin/dashboard" : "/receptionist/dashboard");
     } catch (err) {

@@ -1,42 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const dummyData = [
-  { date: "2025-04-01", name: "John Doe", contact: "1234567890", doctor: "Dr. Smith", treatment: "Cleaning", amount: 2000, mode: "Cash" },
-  { date: "2025-04-02", name: "Jane Smith", contact: "9876543210", doctor: "Dr. Clark", treatment: "Filling", amount: 1500, mode: "UPI" },
-  { date: "2025-04-03", name: "Alice", contact: "5554443322", doctor: "Dr. Strange", treatment: "Extraction", amount: 2500, mode: "Card" },
-  { date: "2025-04-04", name: "Bob", contact: "2223334444", doctor: "Dr. Brown", treatment: "Root Canal", amount: 3500, mode: "Cash" },
-  { date: "2025-04-05", name: "Eva", contact: "6667778888", doctor: "Dr. Banner", treatment: "Whitening", amount: 1800, mode: "UPI" },
-];
-
-const COLORS = ["#3b82f6", "#10b981", "#facc15"]; // teal, teal, Yellow
+const COLORS = ["#3b82f6", "#10b981", "#facc15"]; // blue, green, yellow
 
 const RevenueByPaymentMode = () => {
+  const [receipts, setReceipts] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedMode, setSelectedMode] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const filteredData = dummyData.filter((item) => {
-    const itemDate = new Date(item.date);
-    const matchMode = selectedMode ? item.mode === selectedMode : true;
+  useEffect(() => {
+    const fetchReceipts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`
+        );
+        setReceipts(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching receipts:", error);
+        setLoading(false);
+      }
+    };
+    fetchReceipts();
+  }, []);
+
+  const filteredData = receipts.filter((item) => {
+    const itemDate = new Date(item.createdAt);
+    const matchMode = selectedMode ? item.paymentMode === selectedMode : true;
     const matchStart = startDate ? itemDate >= startDate : true;
     const matchEnd = endDate ? itemDate <= endDate : true;
     return matchMode && matchStart && matchEnd;
   });
 
-  const paymentCounts = ["Cash", "Card", "UPI"].map((mode) => ({
+  const getPaymentModes = () => {
+    if (receipts.length === 0) return ["Cash", "Card", "UPI"];
+
+    // Extract unique payment modes from the receipts
+    const uniqueModes = [...new Set(receipts.map((item) => item.paymentMode))];
+    return uniqueModes.length > 0 ? uniqueModes : ["Cash", "Card", "UPI"];
+  };
+
+  const paymentModes = getPaymentModes();
+
+  const paymentCounts = paymentModes.map((mode) => ({
     name: mode,
-    value: filteredData.filter((item) => item.mode === mode).length,
+    value: filteredData.filter((item) => item.paymentMode === mode).length,
   }));
+
+  const resetFilters = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setSelectedMode("");
+  };
 
   return (
     <div className="p-6 bg-white min-h-screen">
-      <h2 className="text-2xl font-semibold text-center mb-4 text-[#2e7b74]">Revenue by Payment Mode</h2>
+      <h2 className="text-2xl font-semibold text-center mb-4 text-[#2e7b74]">
+        Revenue by Payment Mode
+      </h2>
 
       {/* Filters */}
       <div className="flex flex-wrap justify-center gap-4 mb-6">
@@ -66,10 +96,20 @@ const RevenueByPaymentMode = () => {
             className="border px-4 py-2 rounded"
           >
             <option value="">All</option>
-            <option value="Cash">Cash</option>
-            <option value="Card">Card</option>
-            <option value="UPI">UPI</option>
+            {paymentModes.map((mode, index) => (
+              <option key={index} value={mode}>
+                {mode}
+              </option>
+            ))}
           </select>
+        </div>
+        <div className="self-end">
+          <button
+            onClick={resetFilters}
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition"
+          >
+            Reset Filters
+          </button>
         </div>
       </div>
 
@@ -84,35 +124,60 @@ const RevenueByPaymentMode = () => {
               <th className="border px-4 py-2">Doctor</th>
               <th className="border px-4 py-2">Treatment</th>
               <th className="border px-4 py-2">Amount</th>
+              <th className="border px-4 py-2">Payment Mode</th>
               <th className="border px-4 py-2">Status</th>
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((item, idx) => {
-              const isSelected = selectedRow === idx;
-              return (
-                <tr
-                  key={idx}
-                  onClick={() => setSelectedRow(idx)}
-                  className={`cursor-pointer transition ${
-                    isSelected ? "bg-[#2e7b74] text-white" : "hover:bg-[#e0f5f2] text-[#2e7b74]"
-                  }`}
-                >
-                  <td className="border px-4 py-2">{item.date}</td>
-                  <td className="border px-4 py-2">{item.name}</td>
-                  <td className="border px-4 py-2">{item.contact}</td>
-                  <td className="border px-4 py-2">{item.doctor}</td>
-                  <td className="border px-4 py-2">{item.treatment}</td>
-                  <td className="border px-4 py-2 font-semibold">₹{item.amount}</td>
-                  <td className="border px-4 py-2 font-medium">
-                    <span className={isSelected ? "text-white" : "text-teal-600"}>Paid</span>
-                  </td>
-                </tr>
-              );
-            })}
-            {filteredData.length === 0 && (
+            {loading ? (
               <tr>
-                <td colSpan="7" className="text-center p-3 text-gray-500">
+                <td colSpan="8" className="text-center p-3 text-gray-500">
+                  Loading data...
+                </td>
+              </tr>
+            ) : filteredData.length > 0 ? (
+              filteredData.map((item, idx) => {
+                const isSelected = selectedRow === idx;
+                return (
+                  <tr
+                    key={idx}
+                    onClick={() => setSelectedRow(idx)}
+                    className={`cursor-pointer transition ${
+                      isSelected
+                        ? "bg-[#2e7b74] text-white"
+                        : "hover:bg-[#e0f5f2] text-[#2e7b74]"
+                    }`}
+                  >
+                    <td className="border px-4 py-2">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="border px-4 py-2">{item.patientName}</td>
+                    <td className="border px-4 py-2">{item.mobileNumber}</td>
+                    <td className="border px-4 py-2">{item.doctorName}</td>
+                    <td className="border px-4 py-2">{item.treatmentType}</td>
+                    <td className="border px-4 py-2 font-semibold">
+                      ₹{item.totalAmount}
+                    </td>
+                    <td className="border px-4 py-2">{item.paymentMode}</td>
+                    <td className="border px-4 py-2 font-medium">
+                      <span
+                        className={`${
+                          isSelected
+                            ? "text-white"
+                            : item.paymentStatus === "Paid"
+                            ? "text-teal-600"
+                            : "text-orange-500"
+                        }`}
+                      >
+                        {item.paymentStatus}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center p-3 text-gray-500">
                   No data available
                 </td>
               </tr>
@@ -133,30 +198,62 @@ const RevenueByPaymentMode = () => {
 
       {/* Total */}
       <div className="text-right font-bold text-xl mb-4 text-[#2e7b74]">
-        Total: ₹{filteredData.reduce((sum, item) => sum + item.amount, 0)}
+        Total: ₹
+        {filteredData
+          .reduce((sum, item) => sum + parseFloat(item.totalAmount || 0), 0)
+          .toFixed(2)}
       </div>
 
       {/* Pie Chart */}
-      <div className="w-full h-[300px] mb-6">
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie
-              data={paymentCounts}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={({ name }) => name}
-            >
-              {paymentCounts.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      {!loading && filteredData.length > 0 && (
+        <div className="w-full h-[300px] mb-6">
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={paymentCounts}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label={({ name, value }) =>
+                  value > 0 ? `${name}: ${value}` : ""
+                }
+              >
+                {paymentCounts.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => `${value} receipt(s)`} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Additional Revenue Details */}
+      {!loading && filteredData.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {paymentModes.map((mode, index) => {
+            const modeData = filteredData.filter(
+              (item) => item.paymentMode === mode
+            );
+            const total = modeData.reduce(
+              (sum, item) => sum + parseFloat(item.totalAmount || 0),
+              0
+            );
+
+            return (
+              <div key={index} className="bg-gray-50 p-4 rounded shadow">
+                <h3 className="font-semibold text-lg text-[#2e7b74] mb-2">
+                  {mode} Payments
+                </h3>
+                <p>Number of transactions: {modeData.length}</p>
+                <p className="font-bold">Total amount: ₹{total.toFixed(2)}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

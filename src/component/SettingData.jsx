@@ -17,14 +17,14 @@ export const cards = [
     borderColor: "border-teal-300",
     iconColor: "text-teal-500",
   },
-  {
-    id: "user",
-    title: "User",
-    icon: <User size={24} className="text-purple-600" />,
-    color: "bg-teal-500 hover:bg-teal-700",
-    borderColor: "border-purple-300",
-    iconColor: "text-purple-500",
-  },
+  // {
+  //   id: "user",
+  //   title: "User",
+  //   icon: <User size={24} className="text-purple-600" />,
+  //   color: "bg-teal-500 hover:bg-teal-700",
+  //   borderColor: "border-purple-300",
+  //   iconColor: "text-purple-500",
+  // },
   {
     id: "business",
     title: "Business Form",
