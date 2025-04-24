@@ -3,7 +3,7 @@ import { Eye, CheckCircle, X } from "lucide-react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReceiptTemplate from "./ReceiptTemplate";
+import PrintableReceipt from "./PrintableReceipt";
 
 const ViewReceipt = () => {
   const [receipts, setReceipts] = useState([]);
@@ -11,6 +11,9 @@ const ViewReceipt = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
   const receiptRef = useRef(null);
+
+  const headerUrl = "https://yourdomain.com/header.png"; // Replace with actual URL
+  const footerUrl = "https://yourdomain.com/footer.png"; // Replace with actual URL
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -37,9 +40,7 @@ const ViewReceipt = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleView = (receipt) => {
@@ -48,12 +49,57 @@ const ViewReceipt = () => {
 
   const handlePrint = (receipt) => {
     setViewingReceipt(receipt);
+
     setTimeout(() => {
-      window.print();
+      const printWindow = window.open("", "_blank");
+      const printContent = document.getElementById("receipt-print-content");
+
+      if (printWindow && printContent) {
+        printWindow.document.open();
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print Receipt</title>
+              <style>
+                @media print {
+                  .print-header, .print-footer {
+                    position: fixed;
+                    left: 0;
+                    right: 0;
+                    width: 100%;
+                    z-index: 10;
+                  }
+                  .print-header {
+                    top: 0;
+                  }
+                  .print-footer {
+                    bottom: 0;
+                  }
+                  .print-body {
+                    margin-top: 120px;
+                    margin-bottom: 100px;
+                  }
+                }
+                body {
+                  font-family: sans-serif;
+                }
+              </style>
+            </head>
+            <body>
+              ${printContent.innerHTML}
+              <script>
+                window.onload = function() {
+                  window.print();
+                  setTimeout(() => window.close(), 500);
+                };
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
     }, 100);
   };
-
-  const handleCloseView = () => setViewingReceipt(null);
 
   const handleGenerateInvoice = async (receipt) => {
     try {
@@ -61,17 +107,20 @@ const ViewReceipt = () => {
         `${import.meta.env.VITE_APP_BASE_URL}/receipts/updateReceiptById/${receipt._id}`,
         { generateInvoice: true }
       );
-      console.log(res, "Invoice response");
       if (res.status === 200) {
-        toast.success("inovice  create successfully!");
+        toast.success("Invoice created successfully!");
         window.location.reload();
       } else {
-        toast.error("Failed to save receipt.");
+        toast.error("Failed to generate invoice.");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Error saving receipt.");
+      toast.error("Error generating invoice.");
     }
+  };
+
+  const handleCloseView = () => {
+    setViewingReceipt(null);
   };
 
   const tableHeaders = [
@@ -83,122 +132,103 @@ const ViewReceipt = () => {
     <div className="p-8">
       <ToastContainer />
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <div className="relative">
-          <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
-            <table className="w-full border-collapse table-fixed">
-              <thead className="bg-teal-900 text-white sticky top-0 z-10">
-                <tr className="text-sm md:text-base">
-                  {tableHeaders.map((header, idx) => (
-                    <th key={idx} className="py-2 px-4 text-left w-1/10">{header}</th>
-                  ))}
+        <table className="w-full border-collapse table-fixed">
+          <thead className="bg-teal-900 text-white sticky top-0 z-10">
+            <tr className="text-sm md:text-base">
+              {tableHeaders.map((header, idx) => (
+                <th key={idx} className="py-2 px-4 text-left w-1/10">{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {receipts.length > 0 ? (
+              receipts.map((receipt, index) => (
+                <tr key={receipt._id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
+                  <td className="py-2 px-4">{new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString("en-GB")}</td>
+                  <td className="py-2 px-4">{receipt.receiptId}</td>
+                  <td className="py-2 px-4">{receipt.appointmentId?.uhid}</td>
+                  <td className="py-2 px-4">{receipt.patientName}</td>
+                  <td className="py-2 px-4">{Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}</td>
+                  <td className="py-2 px-4">{receipt.treatmentType}</td>
+                  <td className="py-2 px-4">₹{receipt.opdAmount}</td>
+                  <td className="py-2 px-4">{receipt.paymentMode}</td>
+                  <td className="py-2 px-4 relative" ref={dropdownRef}>
+                    <button
+                      className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
+                      onClick={() => toggleDropdown(index)}
+                    >
+                      Actions
+                    </button>
+                    {dropdownOpen === index && (
+                      <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0 top-0">
+                        <div className="flex justify-between items-center border-b p-2">
+                          <span className="font-semibold">Actions</span>
+                          <button onClick={() => setDropdownOpen(null)} className="p-1 hover:bg-gray-200 rounded">
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <ul className="text-left">
+                          <li>
+                            <button
+                              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
+                              onClick={() => handleView(receipt)}
+                            >
+                              <Eye size={16} /><span>View</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
+                              onClick={() => handlePrint(receipt)}
+                            >
+                              <CheckCircle size={16} /><span>Print</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
+                              onClick={() => handleGenerateInvoice(receipt)}
+                            >
+                              <CheckCircle size={16} /><span>Generate Invoice</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {receipts.length > 0 ? (
-                  receipts.map((receipt, index) => (
-                    <tr key={receipt.id || index} className="border-b text-sm md:text-base text-gray-700 hover:bg-gray-100">
-                      <td className="py-2 px-4">
-                        {new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString("en-GB")}
-                      </td>
-                      <td className="py-2 px-4">{receipt.receiptId}</td>
-                      <td className="py-2 px-4">{receipt.appointmentId?.uhid}</td>
-                      <td className="py-2 px-4">{receipt.patientName}</td>
-                      <td className="py-2 px-4">
-                        {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
-                      </td>
-                      <td className="py-2 px-4">{receipt.treatmentType}</td>
-                      <td className="py-2 px-4">₹{receipt.opdAmount}</td>
-                      <td className="py-2 px-4">{receipt.paymentMode}</td>
-                      <td className="py-2 px-4 relative" ref={dropdownRef}>
-                        <button
-                          className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600 flex items-center gap-1"
-                          onClick={() => toggleDropdown(index)}
-                        >
-                          Actions
-                        </button>
-                        {dropdownOpen === index && (
-                          <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-md border right-0 top-0">
-                            <div className="flex justify-between items-center border-b p-2">
-                              <span className="font-semibold">Actions</span>
-                              <button onClick={() => setDropdownOpen(null)} className="p-1 hover:bg-gray-200 rounded">
-                                <X size={16} />
-                              </button>
-                            </div>
-                            <ul className="text-left">
-                              <li>
-                                <button
-                                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-teal-500 hover:text-white flex items-center gap-2"
-                                  onClick={() => handleView(receipt)}
-                                >
-                                  <Eye size={16} /><span>View</span>
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
-                                  onClick={() => handlePrint(receipt)}
-                                >
-                                  <CheckCircle size={16} /><span>Print</span>
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  type="button"
-                                  className="w-full text-left px-4 py-2 text-teal-600 hover:bg-teal-100 flex items-center gap-2"
-                                  onClick={() => handleGenerateInvoice(receipt)}
-                                >
-                                  <CheckCircle size={16} /><span>Generate Invoice</span>
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={10} className="text-center text-gray-500 py-4">
-                      No Receipts Found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={10} className="text-center text-gray-500 py-4">
+                  No Receipts Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* View Modal */}
       {viewingReceipt && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full sm:w-96">
-            <h2 className="text-xl font-bold mb-4">View Receipt</h2>
-            <div className="space-y-2">
-              <p><strong>Date:</strong> {viewingReceipt.appointmentDate}</p>
-              <p><strong>Receipt No:</strong> {viewingReceipt.receiptNo}</p>
-              <p><strong>UHID:</strong> {viewingReceipt.uhid}</p>
-              <p><strong>Name:</strong> {viewingReceipt.patientName}</p>
-              <p><strong>Doctor:</strong> {Array.isArray(viewingReceipt.doctorName) ? viewingReceipt.doctorName.join(", ") : viewingReceipt.doctorName}</p>
-              <p><strong>Treatment:</strong> {viewingReceipt.treatment}</p>
-              <p><strong>Amount:</strong> ₹{viewingReceipt.opdAmount}</p>
-              <p><strong>Mode:</strong> {viewingReceipt.paymentMode}</p>
-            </div>
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={handleCloseView}
-                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full p-6 overflow-auto max-h-[90vh] relative">
+            <button
+              onClick={handleCloseView}
+              className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
+            >
+              <X size={24} />
+            </button>
+            <div id="receipt-print-content">
+              <PrintableReceipt
+                formData={viewingReceipt}
+                headerUrl={headerUrl}
+                footerUrl={footerUrl}
+                receiptRef={receiptRef}
+              />
             </div>
           </div>
         </div>
-      )}
-
-      {/* Hidden Receipt Print Layout */}
-      {viewingReceipt && (
-        <ReceiptTemplate ref={receiptRef} formData={viewingReceipt} />
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import html2pdf from "html2pdf.js";
+import PrintableReceipt from "./PrintableReceipt";
 
 const ReceiptGenerator = () => {
   const selectedBranch = localStorage.getItem("selectedBranch");
