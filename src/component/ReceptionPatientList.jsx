@@ -343,7 +343,7 @@ const ReceiptGenerator = () => {
         </div>
 
         {/* ✅ Fixed Footer for Every Page */}
-        {footerUrl && (
+        {/* {footerUrl && (
           <div className="print-footer">
             <img
               src={footerUrl}
@@ -352,7 +352,7 @@ const ReceiptGenerator = () => {
               style={{ maxHeight: "100px" }}
             />
           </div>
-        )}
+        )} */}
       </div>
 
     </div>
