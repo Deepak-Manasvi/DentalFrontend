@@ -1,46 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import Card from './Card';
-import RevenueChart from './RevenueChart';
-import PatientTrends from './PatientTrends';
-import QuickLinks from './QuickLinks';
-import { FaUserMd, FaUsers, FaCalendarCheck, FaMoneyBill } from 'react-icons/fa';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import Card from "./Card";
+import RevenueChart from "./RevenueChart";
+import PatientTrends from "./PatientTrends";
+import QuickLinks from "./QuickLinks";
+import {
+  FaUserMd,
+  FaUsers,
+  FaCalendarCheck,
+  FaMoneyBill,
+} from "react-icons/fa";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import axios from "axios";
 
 const Dashboard = () => {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState(null);
+  const [revenueData, setRevenueData] = useState(null);
   const [showRevenue, setShowRevenue] = useState(true);
   const [showTrends, setShowTrends] = useState(true);
 
   async function fetchDetails() {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/admin/dashboardDetails`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/admin/dashboardDetails`
+      );
       setData(res.data);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     }
   }
 
+  async function fetchRevenueData() {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_BASE_URL}/invoices/getAllInvoices`
+      );
+
+      // Calculate total revenue from invoices (using netPayable)
+      const totalRevenue = res.data.reduce(
+        (sum, invoice) => sum + (invoice.netPayable || 0),
+        0
+      );
+
+      // Calculate period-specific revenues
+      const today = new Date();
+      const todayString = today.toDateString();
+
+      // Filter invoices for today
+      const todayInvoices = res.data.filter((invoice) => {
+        const invoiceDate = new Date(invoice.createdAt);
+        return invoiceDate.toDateString() === todayString;
+      });
+
+      // Filter invoices for last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(today.getDate() - 7);
+      const last7DaysInvoices = res.data.filter((invoice) => {
+        const invoiceDate = new Date(invoice.createdAt);
+        return invoiceDate >= sevenDaysAgo;
+      });
+
+      // Filter invoices for last month
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(today.getMonth() - 1);
+      const lastMonthInvoices = res.data.filter((invoice) => {
+        const invoiceDate = new Date(invoice.createdAt);
+        return invoiceDate >= oneMonthAgo;
+      });
+
+      // Filter invoices for last 3 months
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(today.getMonth() - 3);
+      const last3MonthsInvoices = res.data.filter((invoice) => {
+        const invoiceDate = new Date(invoice.createdAt);
+        return invoiceDate >= threeMonthsAgo;
+      });
+
+      // Calculate net amounts for each period
+      const todayRevenue = todayInvoices.reduce(
+        (sum, invoice) => sum + (invoice.netPayable || 0),
+        0
+      );
+      const last7DaysRevenue = last7DaysInvoices.reduce(
+        (sum, invoice) => sum + (invoice.netPayable || 0),
+        0
+      );
+      const lastMonthRevenue = lastMonthInvoices.reduce(
+        (sum, invoice) => sum + (invoice.netPayable || 0),
+        0
+      );
+      const last3MonthsRevenue = last3MonthsInvoices.reduce(
+        (sum, invoice) => sum + (invoice.netPayable || 0),
+        0
+      );
+
+      setRevenueData({
+        total: totalRevenue,
+        today: todayRevenue,
+        last7Days: last7DaysRevenue,
+        lastMonth: lastMonthRevenue,
+        last3Months: last3MonthsRevenue,
+      });
+    } catch (error) {
+      console.error("Error fetching revenue data:", error);
+    }
+  }
+
   useEffect(() => {
-    fetchDetails()
-  },[])  
-  
-  
-  if (!data) {
+    fetchDetails();
+    fetchRevenueData();
+  }, []);
+
+  if (!data || !revenueData) {
     return <div className="p-6 text-center text-gray-600">Loading...</div>;
   }
 
-  // card data
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const cards = [
     {
       icon: <FaUserMd className="text-2xl text-teal-500" />,
-      title: 'Total Doctors',
+      title: "Total Doctors",
       count: data.totalDoctors,
       options: data.doctorNames,
     },
     {
       icon: <FaUsers className="text-2xl text-red-500" />,
-      title: 'Total Patients',
+      title: "Total Patients",
       count: data.totalPatients,
       options: {
         today: data.todayPatients,
@@ -51,7 +143,7 @@ const Dashboard = () => {
     },
     {
       icon: <FaCalendarCheck className="text-2xl text-purple-500" />,
-      title: 'Appointments',
+      title: "Appointments",
       count: data.totalAppointments,
       options: {
         today: data.todayAppointments,
@@ -62,8 +154,14 @@ const Dashboard = () => {
     },
     {
       icon: <FaMoneyBill className="text-2xl text-teal-500" />,
-      title: 'Total Revenue',
-      options: ['700','800','900','1000'],
+      title: "Total Revenue",
+      count: formatCurrency(revenueData.total),
+      options: {
+        today: formatCurrency(revenueData.today),
+        last7Days: formatCurrency(revenueData.last7Days),
+        lastMonth: formatCurrency(revenueData.lastMonth),
+        last3Months: formatCurrency(revenueData.last3Months),
+      },
     },
   ];
 
@@ -79,7 +177,6 @@ const Dashboard = () => {
 
         {/* Toggleable Charts Section */}
         <div className="grid grid-cols-1 mt-20 lg:grid-cols-2 gap-6">
-
           {/* Revenue Chart Block */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <button
@@ -87,7 +184,11 @@ const Dashboard = () => {
               onClick={() => setShowRevenue(!showRevenue)}
             >
               <span>Revenue Chart</span>
-              {showRevenue ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {showRevenue ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </button>
             {showRevenue && (
               <div className="mt-4">
@@ -96,7 +197,6 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Patient Trends Block */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <button
               className="flex items-center justify-between w-full px-4 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-600"
@@ -107,14 +207,13 @@ const Dashboard = () => {
             </button>
             {showTrends && (
               <div className="mt-4">
-                <PatientTrends data={data.dailyPatientCounts}/>
+                <PatientTrends data={data.dailyPatientCounts} />
               </div>
             )}
           </div>
         </div>
 
-        {/* Quick Links Section */}
-        <div className="mt-25">
+        <div className="mt-6">
           <QuickLinks />
         </div>
       </main>

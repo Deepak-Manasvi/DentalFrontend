@@ -1,60 +1,142 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+  Legend,
+} from "chart.js";
 
-const data = [
-  { month: 'J', revenue: 550 },
-  { month: 'F', revenue: 700 },
-  { month: 'M', revenue: 650 },
-  { month: 'A', revenue: 720 },
-  { month: 'M', revenue: 900 },
-  { month: 'J', revenue: 720 },
-  { month: 'J', revenue: 730 },
-  { month: 'A', revenue: 500 },
-  { month: 'S', revenue: 350 },
-  { month: 'O', revenue: 480 },
-  { month: 'N', revenue: 680 },
-  { month: 'D', revenue: 520 },
-];
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const RevenueChart = () => {
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_APP_BASE_URL}/invoices/getAllInvoices`
+        );
+        if (!res.ok) throw new Error("Failed to fetch invoices");
+        const invoices = await res.json();
+
+        const grouped = groupRevenueByMonth(invoices);
+        setMonthlyData(grouped);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const groupRevenueByMonth = (invoices) => {
+    const monthlyTotals = new Array(12).fill(0);
+
+    invoices.forEach((invoice) => {
+      const date = new Date(invoice.createdAt);
+      const month = date.getMonth(); // 0 = Jan, 1 = Feb, ...
+      const revenue = invoice.netPayable || 0;
+      monthlyTotals[month] += revenue;
+    });
+
+    return monthlyTotals;
+  };
+
+  const monthLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  if (loading) return <div>Loading chart...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  const chartData = {
+    labels: monthLabels,
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: monthlyData,
+        borderColor: "#14b8a6",
+        backgroundColor: "rgba(20, 184, 166, 0.2)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => `₹${context.raw.toLocaleString()}`,
+        },
+      },
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Monthly Revenue (Jan - Dec)",
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Month",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Revenue (₹)",
+        },
+        ticks: {
+          callback: (value) => `₹${value.toLocaleString()}`,
+        },
+      },
+    },
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-md w-full">
-      <h3 className="text-lg font-semibold mb-4 text-teal-600">Revenue Chart</h3>
-      <div className="overflow-hidden">
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis
-                tickFormatter={(value) => `₹${value}`}
-                label={{
-                  value: 'Thousands',
-                  angle: -90,
-                  position: 'insideLeft',
-                }}
-                domain={[0, 1000]}
-              />
-              <Tooltip formatter={(value) => `₹${value}`} />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke="#3b82f6"
-                strokeWidth={3}
-                dot={{ r: 5, strokeWidth: 2, fill: '#3b82f6' }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+      <h3 className="text-lg font-semibold mb-4 text-emerald-600">
+        Revenue by Month
+      </h3>
+      <div className="h-[350px]">
+        <Line data={chartData} options={chartOptions} />
       </div>
     </div>
   );
