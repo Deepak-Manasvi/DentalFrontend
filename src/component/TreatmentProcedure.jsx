@@ -69,6 +69,7 @@ export default function TreatmentProcedure({
       procedureList: procedureList,
       medicines: medicineList,
       materialsUsed: todayProcedure,
+      
     };
 
     const response = await axios.patch(

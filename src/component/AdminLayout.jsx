@@ -11,7 +11,7 @@ const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
-  const [showBusinessForm, setShowBusinessForm] = useState(true);
+  const [showBusinessForm, setShowBusinessForm] = useState(false);
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
   const [businessName, setbusinessName] = useState("");
@@ -22,6 +22,9 @@ const AdminLayout = () => {
   const [financialYear, setfinancialYear] = useState("");
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
+
+  // Check if user is admin
+  const isAdmin = userRole === "admin";
 
   useEffect(() => {
     const fetchBranches = async () => {
@@ -50,10 +53,9 @@ const AdminLayout = () => {
     fetchBranches();
   }, []);
 
-  // Check if this is the first load after login {"businessName":"Test","address":"gbhjk","contact":"5555555555","licenseNumber":"1235678","financialYear":"2025-2026","businessPhoto":{"url":"https://res.cloudinary.com/dbb8jigqx/image/upload/v1744963345/wsblkebmnoaippihwkfj.png","public_id":"wsblkebmnoaippihwkfj"},"_id":"680207105dbf1af9a42cf722","createdAt":"2025-04-18T08:02:24.783Z","updatedAt":"2025-04-18T08:02:24.783Z","__v":0}
+  // Check if this is the first load after login
   useEffect(() => {
     // Check if user is admin and if this is their first visit to the dashboard
-    const isAdmin = userRole === "admin";
     const isFirstVisit = !localStorage.getItem("dashboardVisited");
     if (localStorage.getItem("user")) {
       const panel = JSON.parse(localStorage.getItem("user"));
@@ -75,16 +77,17 @@ const AdminLayout = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [businessName]);
+  }, [businessName, isAdmin]);
 
   useEffect(() => {
     const userDetails = JSON.parse(localStorage.getItem("userDetails"));
     const user = JSON.parse(localStorage.getItem("user"));
-  
+
     const details = userDetails?.businessDetails || user?.business;
-  
+
     if (details) {
-      setShowBusinessForm(false);
+      // Only show business form for admin if details are missing
+      setShowBusinessForm(isAdmin ? false : false);
       setbusinessName(details.businessName);
       setProfilePhoto(details.businessPhoto?.url);
       setcontact(details.contact);
@@ -92,15 +95,16 @@ const AdminLayout = () => {
       setfinancialYear(details.financialYear);
       setlicenseNumber(details.licenseNumber);
     } else {
-      setShowBusinessForm(true); // Show form only if data is missing
+      // Only show form for admin users if data is missing
+      setShowBusinessForm(isAdmin);
     }
-  
+
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
-  
+  }, [isAdmin]);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -115,18 +119,21 @@ const AdminLayout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
       localStorage.removeItem("token");
-    localStorage.removeItem("userDetails");
-    localStorage.removeItem("role");
-    // localStorage.removeItem("selectedBranch");
+      localStorage.removeItem("userDetails");
+      localStorage.removeItem("role");
+      // localStorage.removeItem("selectedBranch");
 
-    sessionStorage.clear();
+      sessionStorage.clear();
       navigate("/");
       window.location.reload();
     }
   };
 
   const handleOpenBusinessForm = () => {
-    setShowBusinessForm(true);
+    // Only admin can open business form
+    if (isAdmin) {
+      setShowBusinessForm(true);
+    }
   };
 
   return (
@@ -162,13 +169,16 @@ const AdminLayout = () => {
                 ☰
               </button>
             )}
-            {/* <button
-              className="flex items-center gap-2 text-xl font-semibold bg-teal-700 hover:bg-teal-600 ml-60 px-4 py-2 rounded transition"
-              onClick={handleOpenBusinessForm}
-            >
-              <span>Business Name</span>
-              <IoMdArrowDropdown />
-            </button> */}
+            {/* Business name button - only visible for admin */}
+            {isAdmin && (
+              <button
+                className="flex items-center gap-2 text-xl font-semibold bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded transition"
+                onClick={handleOpenBusinessForm}
+              >
+                <span>Business Name</span>
+                <IoMdArrowDropdown />
+              </button>
+            )}
 
             <span className="text-sm md:hidden">{currentTime}</span>
           </div>
@@ -226,8 +236,8 @@ const AdminLayout = () => {
         </div>
       </div>
 
-      {/* Business Form Modal Popup */}
-      {showBusinessForm && (
+      {/* Business Form Modal Popup - Only shown for admin */}
+      {showBusinessForm && isAdmin && (
         <div className="fixed inset-0 backdrop-blur-md bg-white/20 bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-md w-full mx-4 animate-fade-in">
             <BusinessForm onClose={() => setShowBusinessForm(false)} />

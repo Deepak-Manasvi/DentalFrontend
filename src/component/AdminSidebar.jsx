@@ -1,4 +1,4 @@
-import { MdArrowDropDown } from "react-icons/md"; 
+import { MdArrowDropDown } from "react-icons/md";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars } from "react-icons/fa";
@@ -25,7 +25,12 @@ const AdminSidebar = ({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => {
+    // Only toggle if user is admin
+    if (userRole === "admin") {
+      setIsOpen(!isOpen);
+    }
+  };
 
   // Define which sections are visible to which roles
   const roleSections = {
@@ -40,6 +45,7 @@ const AdminSidebar = ({
       "billing",
       "report",
       "setting",
+      "businessForm",
     ],
     receptionist: ["dashboard", "appointment", "patients", "billing"],
   };
@@ -90,18 +96,22 @@ const AdminSidebar = ({
           <div className="relative inline-block text-left">
             <button
               onClick={toggleDropdown}
-              className="flex items-center text-2xl font-semibold uppercase"
+              className={`flex items-center text-2xl font-semibold uppercase ${
+                userRole === "admin" ? "cursor-pointer" : "cursor-default"
+              }`}
             >
               {businessName}
-              <MdArrowDropDown className="ml-1" />
+              {userRole === "admin" && <MdArrowDropDown className="ml-1" />}
             </button>
 
-            {isOpen && (
+            {isOpen && userRole === "admin" && (
               <div className="absolute mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                 <ul className="py-2 px-4 text-sm text-gray-700">
                   <li className="py-1 border-b">Address - {address}</li>
                   <li className="py-1 border-b">Contact - {contact}</li>
-                  <li className="py-1 border-b">License Number - {licenseNumber}</li>
+                  <li className="py-1 border-b">
+                    License Number - {licenseNumber}
+                  </li>
                   <li className="py-1">Financial Year - {financialYear}</li>
                 </ul>
               </div>
@@ -354,14 +364,13 @@ const AdminSidebar = ({
                   >
                     Generate Invoice
                   </Link>
-                
-                    <Link
-                      to={`/${userRole}/invoicelist`}
-                      className="block p-2 hover:bg-teal-700"
-                    >
-                      Invoice List
-                    </Link>
-                  
+
+                  <Link
+                    to={`/${userRole}/invoicelist`}
+                    className="block p-2 hover:bg-teal-700"
+                  >
+                    Invoice List
+                  </Link>
                 </div>
               )}
             </>

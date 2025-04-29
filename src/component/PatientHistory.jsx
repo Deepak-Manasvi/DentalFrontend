@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify"; // Added toast import
 
 import PatientSidebar from "./patientHistory/PatientSideBar";
 import TabNavigation from "./patientHistory/TabNavigation";
@@ -17,15 +18,20 @@ const PatientHistory = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [patientData, setPatientData] = useState({});
   const [treatmentData, setTreatmentData] = useState({});
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch patient data
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointments/getAppointment/${id}`);
-        await setPatientData(response.data.appointment);
-        console.log(patientData,"patient data")
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_APP_BASE_URL
+          }/appointments/getAppointment/${id}`
+        );
+        setPatientData(response.data.appointment);
+        console.log(response, "patient data");
       } catch (error) {
         console.error("Error fetching patient data:", error);
       } finally {
@@ -36,35 +42,62 @@ const PatientHistory = () => {
     fetchPatientData();
   }, [id]);
 
- useEffect(() => {
-   const fetchTreatmentData = async () => {
-     try {
-       const response = await axios.get(
-         `${
-           import.meta.env.VITE_APP_BASE_URL
-         }/saveAllData/getTreatmentById/${id}`
-       );
+  // Fetch treatment data
+  useEffect(() => {
+    const fetchTreatmentData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_APP_BASE_URL
+          }/saveAllData/getTreatmentById/${id}`
+        );
 
-       // Access the correct property from the response
-       if (response.data.success && response.data.data) {
-         setTreatmentData(response.data.data);
-         console.log(response.data.data, "treatment data");
-       } else {
-         console.error("No treatment data found");
-       }
-     } catch (error) {
-       console.error("Error fetching treatment data:", error);
-     } finally {
-       setLoading(false);
-     }
-   };
+        // Access the correct property from the response
+        if (response.data.success && response.data.data) {
+          setTreatmentData(response.data.data);
+          console.log(response.data.data, "treatment data");
+        } else {
+          console.error("No treatment data found");
+        }
+      } catch (error) {
+        console.error("Error fetching treatment data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-   fetchTreatmentData();
- }, [id]);
+    fetchTreatmentData();
+  }, [id]);
+
+  // Fetch all invoices
+     useEffect(() => {
+       const fetchInvoices = async () => {
+         try {
+           setLoading(true);
+           // Use the correct endpoint that matches your updated route
+           const { data } = await axios.get(
+             `${
+               import.meta.env.VITE_APP_BASE_URL
+             }/invoices/getInvoicesByAppointmentId/${id}`
+           );
+           setInvoices(data);
+           console.log(data, "invoices data");
+           setLoading(false);
+         } catch (err) {
+           toast.error("Failed to fetch invoices");
+           console.error(err);
+           setLoading(false);
+         }
+       };
+       fetchInvoices();
+     }, [id]);
 
   const renderContent = () => {
-    const tabProps = { patientData ,treatmentData};
-    
+    const tabProps = {
+      patientData,
+      treatmentData,
+      invoices, // Pass invoices to tabs
+    };
 
     switch (activeTab) {
       case "overview":
@@ -87,7 +120,8 @@ const PatientHistory = () => {
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
-  if (!patientData) return <div className="p-4 text-red-500">Patient not found</div>;
+  if (!patientData)
+    return <div className="p-4 text-red-500">Patient not found</div>;
 
   return (
     <div className="flex h-screen bg-gray-100">
