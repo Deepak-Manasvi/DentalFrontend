@@ -14,8 +14,9 @@ import FilesTab from "./patientHistory/FilesTab";
 
 const PatientHistory = () => {
   const { id } = useParams(); // Get patient ID from URL
-  const [activeTab, setActiveTab] = useState("files");
+  const [activeTab, setActiveTab] = useState("overview");
   const [patientData, setPatientData] = useState({});
+  const [treatmentData, setTreatmentData] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Fetch patient data
@@ -24,7 +25,7 @@ const PatientHistory = () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/appointments/getAppointment/${id}`);
         await setPatientData(response.data.appointment);
-        console.log(patientData)
+        console.log(patientData,"patient data")
       } catch (error) {
         console.error("Error fetching patient data:", error);
       } finally {
@@ -35,8 +36,35 @@ const PatientHistory = () => {
     fetchPatientData();
   }, [id]);
 
+ useEffect(() => {
+   const fetchTreatmentData = async () => {
+     try {
+       const response = await axios.get(
+         `${
+           import.meta.env.VITE_APP_BASE_URL
+         }/saveAllData/getTreatmentById/${id}`
+       );
+
+       // Access the correct property from the response
+       if (response.data.success && response.data.data) {
+         setTreatmentData(response.data.data);
+         console.log(response.data.data, "treatment data");
+       } else {
+         console.error("No treatment data found");
+       }
+     } catch (error) {
+       console.error("Error fetching treatment data:", error);
+     } finally {
+       setLoading(false);
+     }
+   };
+
+   fetchTreatmentData();
+ }, [id]);
+
   const renderContent = () => {
-    const tabProps = { patientData };
+    const tabProps = { patientData ,treatmentData};
+    
 
     switch (activeTab) {
       case "overview":

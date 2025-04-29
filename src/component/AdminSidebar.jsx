@@ -389,12 +389,12 @@ const AdminSidebar = ({
                   >
                     Revenue Report
                   </Link>
-                  <Link
+                  {/* <Link
                     to={`/${userRole}/revenue-report`}
                     className="block p-2 hover:bg-teal-700"
                   >
                     Patient Report
-                  </Link>
+                  </Link> */}
                 </div>
               )}
             </>

@@ -35,11 +35,11 @@ const PatientSidebar = ({ patientData }) => {
           <InfoRow label="UHID" value={patientData.uhid} />
           <InfoRow label="Gender" value={patientData.gender} />
           <InfoRow label="Mobile" value={patientData.mobileNumber} />
-          <InfoRow label="Email" value={patientData.email} />
-          <InfoRow label="DOB" value={patientData.dob} />
+          {/* <InfoRow label="Email" value={patientData.email} />
+          <InfoRow label="DOB" value={patientData.dob} /> */}
           <InfoRow label="Age" value={patientData.age} />
           <InfoRow label="Address" value={patientData.address} />
-          <InfoRow label="Aadhaar Number" value={patientData.aadhaarNumber} />
+          {/* <InfoRow label="Aadhaar Number" value={patientData.aadhaarNumber} /> */}
           <InfoRow label="Blood Group" value={patientData.bloodGroup} />
         </div>
       </div>
