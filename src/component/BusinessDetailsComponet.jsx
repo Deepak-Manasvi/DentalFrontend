@@ -19,7 +19,7 @@ const BusinessDetails = ({ setShowBusiness, showBusiness, businessData }) => {
               <X size={24} />
             </button>
           </div>
-
+ 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h3 className="font-medium text-gray-500">Business Name</h3>

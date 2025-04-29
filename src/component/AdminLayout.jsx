@@ -78,22 +78,29 @@ const AdminLayout = () => {
   }, [businessName]);
 
   useEffect(() => {
-    const details = JSON.parse(localStorage.getItem("userDetails"));
-    if (details && details.businessDetails) {
+    const userDetails = JSON.parse(localStorage.getItem("userDetails"));
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    const details = userDetails?.businessDetails || user?.business;
+  
+    if (details) {
       setShowBusinessForm(false);
-      setbusinessName(details.businessDetails.businessName);
-      setProfilePhoto(details.businessDetails.businessPhoto.url);
-      setcontact(details.businessDetails.contact);
-      setaddress(details.businessDetails.address);
-      setfinancialYear(details.businessDetails.financialYear);
-      setlicenseNumber(details.businessDetails.licenseNumber);
+      setbusinessName(details.businessName);
+      setProfilePhoto(details.businessPhoto?.url);
+      setcontact(details.contact);
+      setaddress(details.address);
+      setfinancialYear(details.financialYear);
+      setlicenseNumber(details.licenseNumber);
+    } else {
+      setShowBusinessForm(true); // Show form only if data is missing
     }
-
+  
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -107,7 +114,12 @@ const AdminLayout = () => {
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
-      localStorage.clear();
+      localStorage.removeItem("token");
+    localStorage.removeItem("userDetails");
+    localStorage.removeItem("role");
+    // localStorage.removeItem("selectedBranch");
+
+    sessionStorage.clear();
       navigate("/");
       window.location.reload();
     }

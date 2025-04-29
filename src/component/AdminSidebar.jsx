@@ -343,7 +343,7 @@ const AdminSidebar = ({
                     Receipt
                   </Link>
                   <Link
-                    to={`/${userRole}/ViewReceipt`}
+                    to={`/${userRole}/receipts`}
                     className="block p-2 hover:bg-teal-700"
                   >
                     Receipt List

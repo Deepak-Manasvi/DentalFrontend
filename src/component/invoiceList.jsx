@@ -30,7 +30,7 @@ const InvoiceList = () => {
         }
         return response.data; // { headerUrl, headerPublicId }
       } catch (error) {
-        console.error("Error fetching header config:", error);
+        console.error("Error header config:", error);
         throw error;
       }
     };
@@ -189,7 +189,7 @@ const InvoiceList = () => {
               {/* Header */}
               {headerUrl && (
           <div className="w-full text-center mb-4">
-            <img src={headerUrl} alt="Header" className="w-full h-auto object-cover" />
+            <img src={headerUrl} alt="Header" className="w-full h-22 object-cover" />
           </div>
         )}
               <div className="flex justify-between mb-6">
@@ -244,11 +244,12 @@ const InvoiceList = () => {
                 “Thank you for choosing our services.”
               </p>
             </div>
-            {/* {footerUrl && (
-          <div className="w-full text-center mb-4">
-            <img src={footerUrl} alt="Footer" className="mx-auto w-full max-h-40 object-contain" />
-          </div>
-        )} */}
+           {footerUrl && (
+  <div className="w-full text-center mt-4">
+    <img src={footerUrl} alt="Footer" className="w-full h-24 object-cover" />
+  </div>
+)}
+
           </div>
           
         </div>

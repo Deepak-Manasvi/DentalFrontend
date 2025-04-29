@@ -45,6 +45,7 @@ import InvoiceForm from "./component/InvoiceForm";
 import TreatmentTab from "./component/patientHistory/TreatmentTab";
 import PatientListHistory from "./component/PatientListHistory";
 import PatientHistory from "./component/PatientHistory";
+import ReceiptList from "./component/ReceiptList";
 
 let userRole;
 // Function to get the user role
@@ -108,6 +109,7 @@ function App() {
           <Route path="reception-patient" element={<ReceptionPatientList />} />
           <Route path="invoicelist" element={<InvoiceList />} />
           <Route path="ViewReceipt" element={<ViewReceipt />} />
+          <Route path="receipts" element={<ReceiptList/>} />
           <Route path="invoiceform" element={<InvoiceForm />} />
           <Route path="add-staff" element={<AddStaff />} />
           <Route path="manage-staff" element={<ManageStaff />} />

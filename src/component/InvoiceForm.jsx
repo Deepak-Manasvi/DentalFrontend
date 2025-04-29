@@ -230,7 +230,7 @@ const InvoiceGenerator = () => {
         {/* Header */}
          {headerUrl && (
           <div className="w-full text-center mb-4">
-           <img src={headerUrl} alt="Header" className="w-full h-auto object-cover" />
+           <img src={headerUrl} alt="Header" className="w-full h-23 object-cover" />
           </div>
         )}
         <div className="flex justify-between my-4">

@@ -29,7 +29,7 @@ const GenerateInvoice = () => {
         console.error("Error fetching header config:", error);
         throw error;
       }
-    };
+    }; 
 
     getHeaderByAdminId(adminId)
 
@@ -75,6 +75,12 @@ const GenerateInvoice = () => {
 
   return (
     <div className="p-8">
+            {/* <div className="header-image-container">
+        {headerUrl && headerUrl.length > 0 && (
+          <img src={headerUrl} alt="Header" className="w-full h-22 " />
+        )}
+      </div> */}
+
       {!selectedInvoice ? (
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <div className="relative">
