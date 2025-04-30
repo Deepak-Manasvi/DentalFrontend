@@ -90,7 +90,7 @@ const FilesTab = () => {
       try {
         setLoading(true);
         await axios.delete(
-          `${import.meta.env.VITE_APP_BASE_URL}/files/deletefileUploadBy${id}`
+          `${import.meta.env.VITE_APP_BASE_URL}/files/deletefileUploadBy/${id}`
         );
         fetchFileRecords();
         setLoading(false);
@@ -100,7 +100,7 @@ const FilesTab = () => {
         console.error("Delete error:", err);
       }
     }
-  };
+  };  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -108,14 +108,6 @@ const FilesTab = () => {
   };
 
   const getFileType = (filename) => {
-    const extension = filename.split(".").pop().toLowerCase();
-    const imageTypes = ["jpg", "jpeg", "png", "gif", "webp"];
-    const videoTypes = ["mp4", "webm", "mov", "avi"];
-    const documentTypes = ["pdf", "doc", "docx"];
-
-    if (imageTypes.includes(extension)) return "Image";
-    if (videoTypes.includes(extension)) return "Video";
-    if (documentTypes.includes(extension)) return "Document";
     return "File";
   };
 
