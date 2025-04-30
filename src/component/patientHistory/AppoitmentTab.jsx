@@ -9,7 +9,7 @@ const AppointmentTab = ({ patientData }) => {
       <div className="bg-gray-50 p-4 rounded shadow">
         <table className="w-full table-auto">
           <thead>
-            <tr className="border-b">
+            <tr className="border-b bg-teal-500">
               <th className="text-left py-2">Date</th>
               <th className="text-left py-2">Time</th>
               <th className="text-left py-2">Doctor</th>
@@ -23,7 +23,9 @@ const AppointmentTab = ({ patientData }) => {
               <td className="py-2">
                 {new Date(patientData.appointmentDate).toLocaleDateString()}
               </td>
-              <td className="py-2">{patientData.appointmentTime?.join(", ")}</td>
+              <td className="py-2">
+                {patientData.appointmentTime?.join(", ")}
+              </td>
               <td className="py-2">{patientData.doctorName?.join(", ")}</td>
               <td className="py-2">{patientData.status}</td>
               <td className="py-2">{patientData.paymentMode}</td>

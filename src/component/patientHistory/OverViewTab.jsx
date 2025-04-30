@@ -36,7 +36,7 @@ const OverviewTab = ({ patientData, treatmentData, invoices }) => {
         <h2 className="text-lg font-medium text-gray-700 mb-2">Appointments</h2>
         <div className="border border-gray-200 rounded">
           <table className="w-full">
-            <thead className="border-b">
+            <thead className="border-b bg-teal-500">
               <tr>
                 <th className="text-left py-2 px-4">Date</th>
                 <th className="text-left py-2 px-4">Time</th>
@@ -73,7 +73,7 @@ const OverviewTab = ({ patientData, treatmentData, invoices }) => {
           <h2 className="text-lg font-medium text-gray-700 mb-2">Treatment</h2>
           <div className="border border-gray-200 rounded">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-teal-500">
                 <tr>
                   <th className="py-2 px-4 text-left text-sm text-gray-700">
                     Procedure
@@ -116,7 +116,7 @@ const OverviewTab = ({ patientData, treatmentData, invoices }) => {
           <h2 className="text-lg font-medium text-gray-700 mb-2">Bill</h2>
           <div className="border border-gray-200 rounded">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-teal-500">
                 <tr>
                   <th className="py-2 px-4 text-left text-sm text-gray-700">
                     Date

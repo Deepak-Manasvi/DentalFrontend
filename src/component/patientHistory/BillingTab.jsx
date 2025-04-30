@@ -74,7 +74,7 @@ const BillingTab = ({ invoices }) => {
         </h2>
         <div className="border border-gray-200 rounded">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-teal-500">
               <tr>
                 <th className="py-2 px-4 text-left text-sm text-gray-700">
                   Invoice No
@@ -91,7 +91,6 @@ const BillingTab = ({ invoices }) => {
                 <th className="py-2 px-4 text-left text-sm text-gray-700">
                   Net Payable
                 </th>
-               
               </tr>
             </thead>
             <tbody>
@@ -105,9 +104,6 @@ const BillingTab = ({ invoices }) => {
                 invoices.map((invoice, index) => {
                   const subtotal = Number(invoice.subtotal) || 0;
                   const netPayable = Number(invoice.netPayable) || 0;
-               
-                 
-                  
 
                   return (
                     <tr key={index} className="border-t border-gray-200">
@@ -134,7 +130,6 @@ const BillingTab = ({ invoices }) => {
           </table>
         </div>
       </div>
-
     </div>
   );
 };
