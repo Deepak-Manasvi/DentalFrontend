@@ -25,8 +25,7 @@ export default function PrescriptionForm() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(
-        `${
-          import.meta.env.VITE_APP_BASE_URL
+        `${import.meta.env.VITE_APP_BASE_URL
         }/appointments/getAppointmentByAppId/${id}`
       );
       setPatientData(res.data.appointment);
@@ -65,7 +64,6 @@ export default function PrescriptionForm() {
 
     fetchData();
   }, [id]);
-  console.log(patientData);
 
   const [diagnosis, setDiagnosis] = useState("");
   const [tests, setTests] = useState("");
@@ -89,7 +87,7 @@ export default function PrescriptionForm() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3500/api/services/getAllMedicine`
+        `${import.meta.env.VITE_APP_BASE_URL}/services/getAllMedicine`
       );
       const data = await response.json();
 
@@ -298,6 +296,41 @@ export default function PrescriptionForm() {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return date.toLocaleDateString("en-US", options);
   };
+
+  const handleSaveAndPrint = async () => {
+    if (!patientData) return;
+
+    const payload = {
+      appointmentId: id,
+      diagnosis: diagnosisList,
+      tests,
+      advice,
+      prescriptionItems,
+      doctorName: patientData.doctorName,
+      patientName: patientData.patientName,
+      age: patientData.age,
+      gender: patientData.gender,
+      date: patientData.date,
+      appDate: patientData.appointmentDate,
+    };
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/prescriptions/createPrescription`,
+        payload
+      );
+      if (res.status === 201) {
+        console.log("Prescription saved:", res.data);
+        handlePrintPDF();
+      } else {
+        alert("Failed to save prescription. Try again.");
+      }
+    } catch (err) {
+      console.error("Error saving prescription:", err);
+      alert("Error saving prescription. Check console.");
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-8 shadow-lg font-sans bg-white">
       <div className="pb-4 mb-6 border-b-2 border-teal-700">
@@ -571,10 +604,10 @@ export default function PrescriptionForm() {
           ⬅ Back
         </button>
         <button
-          onClick={handlePrintPDF}
-          className="px-5 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition text-sm"
+          onClick={handleSaveAndPrint}
+          className="mt-6 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
-          Print PDF
+          Save & Print PDF
         </button>
       </div>
     </div>
