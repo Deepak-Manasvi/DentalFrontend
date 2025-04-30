@@ -176,7 +176,7 @@ const BusinessFormManage = ({ onClose }) => {
       )}
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Business Management</h2>
+        {/* <h2 className="text-xl font-bold">Business Management</h2> */}
         <button
           onClick={onClose}
           className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"

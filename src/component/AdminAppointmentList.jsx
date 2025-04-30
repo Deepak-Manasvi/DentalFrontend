@@ -97,18 +97,34 @@ const AdminAppointmentList = () => {
     }
   };
 
-  const toggleDropdown = (id, event) => {
-    if (dropdownOpen === id) {
-      setDropdownOpen(null);
-    } else {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + 5,
-        left: rect.right - 190,
-      });
-      setDropdownOpen(id);
-    }
-  };
+ const toggleDropdown = (id, event) => {
+   if (dropdownOpen === id) {
+     setDropdownOpen(null);
+   } else {
+     const rect = event.currentTarget.getBoundingClientRect();
+     const viewportHeight = window.innerHeight;
+     const spaceBelow = viewportHeight - rect.bottom;
+     const dropdownHeight = 150;
+
+     let topPosition;
+     if (spaceBelow < dropdownHeight) {
+       topPosition = rect.top - dropdownHeight;
+     } else {
+       topPosition = rect.bottom + 5;
+     }
+
+     let leftPosition = rect.right - 190;
+     if (leftPosition < 10) {
+       leftPosition = 10;
+     }
+
+     setDropdownPosition({
+       top: topPosition,
+       left: leftPosition,
+     });
+     setDropdownOpen(id);
+   }
+ };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {

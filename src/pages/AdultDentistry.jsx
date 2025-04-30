@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import FirstAdultDentistryForm from "../component/FirstAdultDentistryForm";
 import TreatmentProcedure from "../component/TreatmentProcedure";
 import axios from "axios";
@@ -7,7 +7,6 @@ import axios from "axios";
 export default function AdultDentistry() {
   const { id } = useParams();
   const [patient, setPatient] = useState({});
-  const navigate = useNavigate();
   const [selectedTeeth, setSelectedTeeth] = useState({});
   const [showTreatment, setShowTreatment] = useState(true);
   const [finalProcedures, setFinalProcedures] = useState([]);

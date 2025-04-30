@@ -43,57 +43,13 @@ const PrescriptionTab = ({ prescriptionData, patientData }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-teal-700">Prescriptions</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowDebugInfo(!showDebugInfo)}
-            className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
-          >
-            {showDebugInfo ? "Hide Debug" : "Show Debug"}
-          </button>
-          <button
-            onClick={retryFetchPrescription}
-            className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-          >
-            Retry Fetch
-          </button>
-        </div>
+       
       </div>
-
-      {/* Debug information panel */}
-      {showDebugInfo && (
-        <div className="p-4 border rounded bg-gray-50 my-4 text-xs font-mono">
-          <h3 className="font-bold mb-2">Debug Information:</h3>
-          <p>
-            <strong>Patient ID:</strong> {patientData?._id || "undefined"}
-          </p>
-          <p>
-            <strong>Examination ID (if different):</strong>{" "}
-            {patientData?.examinationId || "undefined"}
-          </p>
-          <p>
-            <strong>Data Type:</strong>{" "}
-            {prescriptionData ? typeof prescriptionData : "undefined"}
-          </p>
-          <p>
-            <strong>Has Data:</strong> {hasPrescriptions ? "Yes" : "No"}
-          </p>
-          <div className="mt-2">
-            <strong>Raw Response:</strong>
-            <pre className="bg-gray-100 p-2 mt-1 overflow-auto max-h-48">
-              {JSON.stringify(prescriptionData || {}, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
 
       {!hasPrescriptions ? (
         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-gray-500">
             No prescription records found for this patient.
-          </p>
-          <p className="text-sm text-gray-400 mt-2">
-            This could be because there are no prescriptions or because the API
-            returned a "Not found" response.
           </p>
         </div>
       ) : (

@@ -38,15 +38,35 @@ const ReusableTable = ({
         key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
     }));
 
-  const toggleDropdown = (index, e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDropdownOpen(index);
-    setDropdownPosition({
-      top: rect.bottom + window.scrollY + 10,
-      left: rect.left + window.scrollX - 120,
-    });
-  };
+ const toggleDropdown = (id, event) => {
+   if (dropdownOpen === id) {
+     setDropdownOpen(null);
+   } else {
+     const rect = event.currentTarget.getBoundingClientRect();
+     const viewportHeight = window.innerHeight;
+     const spaceBelow = viewportHeight - rect.bottom;
+     const dropdownHeight = 150;
 
+     let topPosition;
+     if (spaceBelow < dropdownHeight) {
+       topPosition = rect.top - dropdownHeight;
+     } else {
+       topPosition = rect.bottom + 5;
+     }
+
+     let leftPosition = rect.right - 190;
+     if (leftPosition < 10) {
+       leftPosition = 10;
+     }
+
+     setDropdownPosition({
+       top: topPosition,
+       left: leftPosition,
+     });
+     setDropdownOpen(id);
+   }
+  };
+  
   const handleAction = (action, item) => {
     if (action === "view") onView?.(item);
     if (action === "edit") onEdit?.(item);
