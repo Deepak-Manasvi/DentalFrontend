@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify"; // Added toast import
+import { toast } from "react-toastify";
 
 import PatientSidebar from "./patientHistory/PatientSideBar";
 import TabNavigation from "./patientHistory/TabNavigation";
@@ -18,6 +18,7 @@ const PatientHistory = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [patientData, setPatientData] = useState({});
   const [treatmentData, setTreatmentData] = useState({});
+  const [prescriptionData, setPrescriptionData] = useState({}); // Fixed variable name
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -70,33 +71,76 @@ const PatientHistory = () => {
   }, [id]);
 
   // Fetch all invoices
-     useEffect(() => {
-       const fetchInvoices = async () => {
-         try {
-           setLoading(true);
-           // Use the correct endpoint that matches your updated route
-           const { data } = await axios.get(
-             `${
-               import.meta.env.VITE_APP_BASE_URL
-             }/invoices/getInvoicesByAppointmentId/${id}`
-           );
-           setInvoices(data);
-           console.log(data, "invoices data");
-           setLoading(false);
-         } catch (err) {
-           toast.error("Failed to fetch invoices");
-           console.error(err);
-           setLoading(false);
-         }
-       };
-       fetchInvoices();
-     }, [id]);
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        // Use the correct endpoint that matches your updated route
+        const { data } = await axios.get(
+          `${
+            import.meta.env.VITE_APP_BASE_URL
+          }/invoices/getInvoicesByAppointmentId/${id}`
+        );
+        setInvoices(data);
+        console.log(data, "invoices data");
+        setLoading(false);
+      } catch (err) {
+        toast.error("Failed to fetch invoices");
+        console.error(err);
+        setLoading(false);
+      }
+    };
+    fetchInvoices();
+  }, [id]);
+
+  // Fetch prescription data - Fixed to match backend response format
+ useEffect(() => {
+   const fetchPrescriptionData = async () => {
+     try {
+       console.log("Fetching prescription data for ID:", id);
+
+       const prescriptionUrl = `${
+         import.meta.env.VITE_APP_BASE_URL
+       }/prescriptions/getPrescriptionByExaminationById/${id}`;
+
+       const response = await axios.get(prescriptionUrl);
+       console.log("Prescription API response:", response.data);
+
+       // Modified this part to correctly access the prescription property
+       if (response.data.success && response.data.prescription) {
+         setPrescriptionData(response.data.prescription);
+         console.log(
+           "Successfully set prescription data:",
+           response.data.prescription
+         );
+       } else {
+         console.warn("Prescription API returned:", response.data);
+         setPrescriptionData({});
+         toast.info("No prescription records found");
+       }
+     } catch (error) {
+       console.error("Error fetching prescription data:", error);
+       setPrescriptionData({});
+
+       if (error.response?.status === 404) {
+         toast.info("No prescriptions found for this patient");
+       } else {
+         toast.error(`Prescription data error: ${error.message}`);
+       }
+     } finally {
+       setLoading(false);
+     }
+   };
+
+   fetchPrescriptionData();
+ }, [id]);
 
   const renderContent = () => {
     const tabProps = {
       patientData,
       treatmentData,
-      invoices, // Pass invoices to tabs
+      invoices,
+      prescriptionData, // Pass prescription data to tabs
     };
 
     switch (activeTab) {
