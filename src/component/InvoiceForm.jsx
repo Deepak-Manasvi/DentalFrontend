@@ -12,11 +12,10 @@ const InvoiceGenerator = () => {
   const invoiceRef = useRef();
 
   const token = localStorage.getItem("token");
-    const decodedToken = JSON.parse(atob(token.split(".")[1]));
-    const adminId = decodedToken.id;
-   const [headerUrl, setHeaderUrl] = useState([]);
-    const [footerUrl, setFooterUrl] = useState([]);
-
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+  const [headerUrl, setHeaderUrl] = useState([]);
+  const [footerUrl, setFooterUrl] = useState([]);
 
   const [patients, setPatients] = useState([]);
   const [servicesList, setServicesList] = useState([]);
@@ -42,10 +41,12 @@ const InvoiceGenerator = () => {
   useEffect(() => {
     const getHeaderByAdminId = async (adminId) => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`
+        );
         if (response) {
-          setHeaderUrl(response.data.headerUrl)
-          setFooterUrl(response.data.footerUrl)
+          setHeaderUrl(response.data.headerUrl);
+          setFooterUrl(response.data.footerUrl);
         }
         return response.data; // { headerUrl, headerPublicId }
       } catch (error) {
@@ -54,16 +55,20 @@ const InvoiceGenerator = () => {
       }
     };
 
-    getHeaderByAdminId(adminId)
+    getHeaderByAdminId(adminId);
 
     const fetchPatients = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/receipts/getAllReceipts`
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
-        setPatients(res.data.filter((r) => r.generateInvoice === true));
-      } catch (err) {
-        console.error("Failed to fetch receipts:", err);
+        console.log("res appointment ", response);
+        const filtered = response.data.appointmentList.filter(
+          (p) => p.isPatient && p.branchId === selectedBranch
+        );
+        setPatients(filtered);
+      } catch (error) {
+        console.error("Error fetching patients", error);
       }
     };
 
@@ -72,6 +77,7 @@ const InvoiceGenerator = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/services/getAllTreatment`
         );
+
         const formatted = res.data.treatments.map((t) => ({
           _id: t._id,
           name: `${t.treatmentName} (${t.procedureName})`,
@@ -95,13 +101,16 @@ const InvoiceGenerator = () => {
 
     setFormData((f) => ({
       ...f,
-      uhid: p?.appointmentId?.uhid || "Not Found",
-      appId: p?.appointmentId?.appId || "Not Found",
+      // Fixed: Access uhid and appId directly from the patient object instead of nested appointmentId
+      uhid: p?.uhid || "Not Found",
+      appId: p?.appId || "Not Found",
       patientName: p?.patientName || "Not Found",
       mobileNumber: p?.mobileNumber || "Not Found",
-      address: p.address,
-      doctorName: p.doctorName,
-      treatmentType: p.treatmentType,
+      address: p.address || "",
+      doctorName: Array.isArray(p.doctorName)
+        ? p.doctorName[0]
+        : p.doctorName || "",
+      treatmentType: p.treatmentType || "",
     }));
   }, [selectedPatientId, patients]);
 
@@ -201,7 +210,7 @@ const InvoiceGenerator = () => {
 
   const patientOptions = patients.map((p) => ({
     value: p._id,
-    label: `${p.patientName} (${p &&  p.appointmentId && p.appointmentId.uhid || "Not Found"})`,
+    label: `${p.patientName} (${p.uhid || "No UHID"})`,
   }));
 
   return (
@@ -223,14 +232,15 @@ const InvoiceGenerator = () => {
         />
       </div>
 
-      <div
-        ref={invoiceRef}
-        className="p-6 border rounded text-black bg-white"
-      >
+      <div ref={invoiceRef} className="p-6 border rounded text-black bg-white">
         {/* Header */}
-         {headerUrl && (
+        {headerUrl && (
           <div className="w-full text-center mb-4">
-           <img src={headerUrl} alt="Header" className="w-full h-23 object-cover" />
+            <img
+              src={headerUrl}
+              alt="Header"
+              className="w-full h-23 object-cover"
+            />
           </div>
         )}
         <div className="flex justify-between my-4">
@@ -244,16 +254,19 @@ const InvoiceGenerator = () => {
             <p>
               <b>Patient Name:</b> {formData.patientName}
             </p>
-            <p>
+            {/* <p>
               <b>UHID:</b> {formData.uhid}
-            </p>
+            </p> */}
           </div>
           <div>
             <p>
               <b>Doctor Name:</b> {formData.doctorName}
             </p>
-            <p>
+            {/* <p>
               <b>Treatment Type:</b> {formData.treatmentType}
+            </p> */}
+            <p>
+              <b>UHID:</b> {formData.uhid}
             </p>
           </div>
         </div>
@@ -266,7 +279,7 @@ const InvoiceGenerator = () => {
         <table className="w-full border text-sm mb-4">
           <thead>
             <tr className="border-b">
-              <th className="p-2 border">#</th>
+              <th className="p-2 border">S.no</th>
               <th className="p-2 border">Description of service</th>
               <th className="p-2 border">Qty</th>
               <th className="p-2 border">Rate</th>
@@ -349,7 +362,7 @@ const InvoiceGenerator = () => {
         </div>
 
         <p className="text-center mt-10 font-semibold">
-          “Thank you for choosing our services.”
+          "Thank you for choosing our services."
         </p>
       </div>
 
@@ -360,18 +373,22 @@ const InvoiceGenerator = () => {
         >
           Save Invoice
         </button>
-        {/* <button
+        <button
           onClick={handlePrint}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Print Invoice
-        </button> */}
+        </button>
       </div>
-      {/* {footerUrl && (
-          <div className="w-full text-center mb-4">
-            <img src={footerUrl} alt="Footer" className="mx-auto w-full max-h-40 object-contain" />
-          </div>
-        )} */}
+      {footerUrl && (
+        <div className="w-full text-center mt-4">
+          <img
+            src={footerUrl}
+            alt="Footer"
+            className="w-full h-24 object-cover"
+          />
+        </div>
+      )}
     </div>
   );
 };
