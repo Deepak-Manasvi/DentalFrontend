@@ -38,7 +38,11 @@ const PrintableReceipt = ({ formData, headerUrl, footerUrl, receiptRef }) => {
       {/* Header */}
       {headerUrl && (
         <div className="print-header mb-4">
-          <img src={headerUrl} alt="Header" className="w-full object-cover" />
+          <img
+            src={headerUrl}
+            alt="Header"
+            className="w-full h-22 object-cover"
+          />
         </div>
       )}
 
@@ -46,32 +50,64 @@ const PrintableReceipt = ({ formData, headerUrl, footerUrl, receiptRef }) => {
       <div className="receipt border border-gray-300 p-4 max-w-3xl mx-auto bg-white">
         <div className="flex justify-between mb-4">
           <div>
-            <p><b>Date:</b> {new Date(formData.createdAt).toLocaleDateString("en-GB")}</p>
-            <p><b>Receipt No:</b> {formData.receiptId}</p>
-            <p><b>Patient Name:</b> {formData.patientName}</p>
-            <p><b>UHID:</b> {formData.uhid}</p>
+            <p>
+              <b>Date:</b>{" "}
+              {new Date(formData.createdAt).toLocaleDateString("en-GB")}
+            </p>
+            <p>
+              <b>Receipt No:</b> {formData.receiptId}
+            </p>
+            <p>
+              <b>Patient Name:</b> {formData.patientName}
+            </p>
+            <p>
+              <b>UHID:</b> {formData.uhid}
+            </p>
           </div>
           <div>
-            <p><b>Doctor Name:</b> {formData.doctorName}</p>
-            <p><b>Treatment Type:</b> {formData.treatmentType}</p>
-            <p><b>Amount:</b> ₹{formData.paidAmount}</p>
-            <p><b>Mode:</b> {formData.paymentMode}</p>
-            {formData.transactionId && <p><b>Transaction Id:</b> {formData.transactionId}</p>}
+            <p>
+              <b>Doctor Name:</b> {formData.doctorName}
+            </p>
+            <p>
+              <b>Treatment Type:</b> {formData.treatmentType}
+            </p>
+            <p>
+              <b>Amount:</b> ₹{formData.paidAmount}
+            </p>
+            <p>
+              <b>Mode:</b> {formData.paymentMode}
+            </p>
+            {formData.transactionId && (
+              <p>
+                <b>Transaction Id:</b> {formData.transactionId}
+              </p>
+            )}
           </div>
         </div>
 
         <h2 className="text-center text-red-600 my-4">Receipt</h2>
 
-        <p>Received with sincere thanks from <b>{formData.patientName}</b> towards the charges for <b>{formData.treatmentType}</b> a total amount of <b>₹{formData.paidAmount}</b>.</p>
-        <p>Amount in words: <b>{amountInWords(formData.paidAmount)}</b></p>
-        <p>Mode of Payment: <b>{formData.paymentMode}</b></p>
+        <p>
+          Received with sincere thanks from <b>{formData.patientName}</b>{" "}
+          towards the charges for <b>{formData.treatmentType}</b> a total amount
+          of <b>₹{formData.paidAmount}</b>.
+        </p>
+        <p>
+          Amount in words: <b>{amountInWords(formData.paidAmount)}</b>
+        </p>
+        <p>
+          Mode of Payment: <b>{formData.paymentMode}</b>
+        </p>
 
         <p className="text-center font-semibold mt-6">
-          “We appreciate your trust in our services and look forward to serving you again.”
+          “We appreciate your trust in our services and look forward to serving
+          you again.”
         </p>
 
         <div className="text-center mt-8">
-          <p><b>Authorized Signatory:</b></p>
+          <p>
+            <b>Authorized Signatory:</b>
+          </p>
           <p>{formData.receptionist}</p>
           <p>{new Date(formData.createdAt).toLocaleDateString("en-GB")}</p>
         </div>
@@ -80,7 +116,11 @@ const PrintableReceipt = ({ formData, headerUrl, footerUrl, receiptRef }) => {
       {/* Footer */}
       {footerUrl && (
         <div className="print-footer mt-4">
-          <img src={footerUrl} alt="Footer" className="w-full object-contain max-h-24" />
+          <img
+            src={footerUrl}
+            alt="Footer"
+            className="w-full h-24 object-cover"
+          />
         </div>
       )}
     </div>
