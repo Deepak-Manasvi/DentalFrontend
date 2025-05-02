@@ -12,7 +12,7 @@ const PatientSidebar = ({ patientData }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-80 max-w-full bg-white border-r shadow-md flex-shrink-0">
+    <div className="w-70 max-w-full bg-white border-r shadow-md flex-shrink-0">
       <div className="p-4 border-b">
         <button
           onClick={() => navigate(-1)}

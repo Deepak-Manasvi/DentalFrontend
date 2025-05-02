@@ -140,7 +140,7 @@ const PatientHistory = () => {
       patientData,
       treatmentData,
       invoices,
-      prescriptionData, // Pass prescription data to tabs
+      prescriptionData, 
     };
 
     switch (activeTab) {

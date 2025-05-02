@@ -57,9 +57,25 @@ const PatientList = () => {
       setDropdownOpen(null);
     } else {
       const rect = event.currentTarget.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const dropdownHeight = 150;
+
+      let topPosition;
+      if (spaceBelow < dropdownHeight) {
+        topPosition = rect.top - dropdownHeight;
+      } else {
+        topPosition = rect.bottom + 5;
+      }
+
+      let leftPosition = rect.right - 190;
+      if (leftPosition < 10) {
+        leftPosition = 10;
+      }
+
       setDropdownPosition({
-        top: rect.bottom + 5,
-        left: Math.min(rect.right - 190, window.innerWidth - 200),
+        top: topPosition,
+        left: leftPosition,
       });
       setDropdownOpen(id);
     }

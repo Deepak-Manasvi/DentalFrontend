@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,6 +15,12 @@ const AddAppointment = () => {
   const [drList, setDrList] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [appointmentTimeOptions, setAppointmentTimeOptions] = useState([]);
+  const [appointmentType, setAppointmentType] = useState("New");
+  const [uhid, setUhid] = useState("");
+  const [uhidSuggestions, setUhidSuggestions] = useState([]);
+  const [showUhidSuggestions, setShowUhidSuggestions] = useState(false);
+  const [isLoadingPatient, setIsLoadingPatient] = useState(false);
+
   const role = localStorage.getItem("role");
   const selectedBranch = localStorage.getItem("selectedBranch");
   const [formData, setFormData] = useState({
@@ -29,7 +34,6 @@ const AddAppointment = () => {
     medicalHistory: [],
     allergies: [],
     weight: "",
-
     systolic: "",
     diastolic: "",
     spo2: "",
@@ -41,10 +45,13 @@ const AddAppointment = () => {
     paymentMode: "Cash",
     opdAmount: "",
     branchId: selectedBranch,
+    appointmentType: "New",
+    uhid: "",
   });
 
   const medicalDropdownRef = useRef();
   const allergyDropdownRef = useRef();
+  const uhidSuggestionsRef = useRef();
 
   const medicalHistoryOptions = [
     "Diabetes",
@@ -76,6 +83,7 @@ const AddAppointment = () => {
   useEffect(() => {
     fetchNextAppointmentId();
 
+    // eslint-disable-next-line no-unused-vars
     const getDentistsByBranch = async (branchId) => {
       try {
         const res = await axios.get(
@@ -89,6 +97,234 @@ const AddAppointment = () => {
     };
     getDentistsByBranch();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        medicalDropdownRef.current &&
+        !medicalDropdownRef.current.contains(event.target)
+      ) {
+        setIsMedicalDropdownOpen(false);
+      }
+      if (
+        allergyDropdownRef.current &&
+        !allergyDropdownRef.current.contains(event.target)
+      ) {
+        setIsAllergyDropdownOpen(false);
+      }
+      if (
+        uhidSuggestionsRef.current &&
+        !uhidSuggestionsRef.current.contains(event.target)
+      ) {
+        setShowUhidSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+ const handleAppointmentTypeChange = (e) => {
+   const type = e.target.value;
+   setAppointmentType(type);
+
+   // For revisited appointments, set payment to "Free of Cost" and status to "Paid"
+   if (type === "Revisited") {
+     setPaymentMode("Free of Cost");
+     setFormData({
+       ...formData,
+       appointmentType: type,
+       paymentMode: "Free of Cost",
+       status: "Paid",
+     });
+   } else {
+     // For new appointments, reset to default payment options
+     setPaymentMode("Cash");
+     setFormData({
+       ...formData,
+       appointmentType: type,
+       paymentMode: "Cash",
+       status: "",
+       uhid: "", // Explicitly clear UHID when switching to "New"
+     });
+
+     // Clear UHID field when switching to "New"
+     setUhid("");
+     setUhidSuggestions([]);
+   }
+ };
+
+  const handleUhidChange = async (e) => {
+    const value = e.target.value;
+    setUhid(value);
+    setFormData((prev) => ({
+      ...prev,
+      uhid: value,
+    }));
+
+    if (value.length > 2) {
+      try {
+        // Fetch patients with matching UHID
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+        );
+
+        if (response.data && response.data.appointmentList) {
+          // Filter appointments by UHID that includes the input value
+          const filteredUhids = response.data.appointmentList
+            .filter(
+              (app) =>
+                app.uhid && app.uhid.toLowerCase().includes(value.toLowerCase())
+            )
+            .map((app) => app.uhid);
+
+          // Remove duplicates
+          const uniqueSuggestions = [...new Set(filteredUhids)];
+          setUhidSuggestions(uniqueSuggestions);
+          setShowUhidSuggestions(uniqueSuggestions.length > 0);
+        }
+      } catch (error) {
+        console.error("Error fetching UHID suggestions:", error);
+      }
+    } else {
+      setUhidSuggestions([]);
+      setShowUhidSuggestions(false);
+    }
+  };
+
+  const selectUhid = async (selectedUhid) => {
+    setUhid(selectedUhid);
+    setFormData((prev) => ({
+      ...prev,
+      uhid: selectedUhid,
+      appointmentType: "Revisited", // Make sure appointmentType is explicitly set
+    }));
+    setShowUhidSuggestions(false);
+    // Fetch patient data by UHID
+    try {
+      setIsLoadingPatient(true);
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_APP_BASE_URL
+        }/appointments/getPatientByUHID/${selectedUhid}`
+      );
+      console.log(response, "appointment response");
+      if (response.data && response.data.patient) {
+        const patient = response.data.patient;
+
+        // For revisited patients, maintain existing UHID and set payment as "Free of Cost"
+        setFormData((prev) => ({
+          ...prev,
+          patientType: patient.patientType || prev.patientType,
+          patientName: patient.patientName || "",
+          gender: patient.gender || "Male",
+          mobileNumber: patient.mobileNumber || "",
+          age: patient.age || "",
+          address: patient.address || "",
+          weight: patient.weight || "",
+          spo2: patient.spo2 || "",
+          bloodGroup: patient.bloodGroup || "",
+          uhid: selectedUhid, // Keep the existing UHID
+
+          // Set appointment and payment details for revisited patients
+          appointmentDate: patient.appointmentDate
+            ? new Date(patient.appointmentDate).toISOString().split("T")[0]
+            : "",
+          doctorName: Array.isArray(patient.doctorName)
+            ? patient.doctorName[0]
+            : patient.doctorName,
+          opdAmount: patient.opdAmount || "",
+          paymentMode: "Free of Cost", // Set payment mode to "Free of Cost"
+          transactionId: "", // Clear transaction ID for revisits
+          status: "Paid", // Set status to Paid automatically
+          appId: patient.appId || prev.appId,
+        }));
+
+        // Set payment mode for the UI state as well
+        setPaymentMode("Free of Cost");
+
+        // Handle BP separately since it might be an object
+        if (patient.bp) {
+          if (typeof patient.bp === "object") {
+            setFormData((prev) => ({
+              ...prev,
+              systolic: patient.bp.systolic || "",
+              diastolic: patient.bp.diastolic || "",
+              bp: `${patient.bp.systolic || ""}/${patient.bp.diastolic || ""}`,
+            }));
+          } else {
+            // If BP is a string like "120/80"
+            const bpParts = String(patient.bp).split("/");
+            if (bpParts.length === 2) {
+              setFormData((prev) => ({
+                ...prev,
+                systolic: bpParts[0] || "",
+                diastolic: bpParts[1] || "",
+                bp: patient.bp,
+              }));
+            }
+          }
+        }
+
+        // Handle medical history and allergies
+        if (patient.medicalHistory && Array.isArray(patient.medicalHistory)) {
+          setSelectedMedicalHistory(patient.medicalHistory);
+          setFormData((prev) => ({
+            ...prev,
+            medicalHistory: patient.medicalHistory,
+          }));
+        }
+
+        if (patient.allergies && Array.isArray(patient.allergies)) {
+          setSelectedAllergies(patient.allergies);
+          setFormData((prev) => ({
+            ...prev,
+            allergies: patient.allergies,
+          }));
+        }
+
+        // Handle appointment time - might be an array
+        if (patient.appointmentTime) {
+          const time = Array.isArray(patient.appointmentTime)
+            ? patient.appointmentTime[0]
+            : patient.appointmentTime;
+          setAppointmentTime(time);
+        }
+
+        // If the doctor exists in the drList, select it
+        if (patient.doctorName) {
+          const doctorName = Array.isArray(patient.doctorName)
+            ? patient.doctorName[0]
+            : patient.doctorName;
+
+          const doctor = drList.find((doc) => doc.name === doctorName);
+          if (doctor) {
+            setSelectedDoctor(doctor);
+            // Set appointment time options based on the doctor
+            setAppointmentTimeOptions(doctor.timeSlots || []);
+
+            // Make sure the opdAmount is set from the doctor if it exists
+            if (
+              doctor.opdAmount &&
+              (!patient.opdAmount || patient.opdAmount === "")
+            ) {
+              setFormData((prev) => ({
+                ...prev,
+                opdAmount: doctor.opdAmount,
+              }));
+              console.log("Setting opdAmount from doctor:", doctor.opdAmount);
+            }
+          }
+        }
+
+        toast.success("Patient data loaded successfully!");
+      }
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+      toast.error("Failed to load patient data");
+    } finally {
+      setIsLoadingPatient(false);
+    }
+  };
 
   const handleDoctorChange = (e) => {
     const selectedId = e.target.value;
@@ -107,6 +343,7 @@ const AddAppointment = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
       );
+      console.log(response, "appoitment list");
       let nextId = 1;
       if (
         response.data &&
@@ -125,25 +362,6 @@ const AddAppointment = () => {
       setFormData((prev) => ({ ...prev, appId: "1" }));
     }
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        medicalDropdownRef.current &&
-        !medicalDropdownRef.current.contains(event.target)
-      ) {
-        setIsMedicalDropdownOpen(false);
-      }
-      if (
-        allergyDropdownRef.current &&
-        !allergyDropdownRef.current.contains(event.target)
-      ) {
-        setIsAllergyDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const getValidDateRange = () => {
     const today = new Date();
@@ -206,11 +424,14 @@ const AddAppointment = () => {
   };
 
   const handlePaymentModeChange = (e) => {
-    setPaymentMode(e.target.value);
-    setFormData((prev) => ({
-      ...prev,
-      paymentMode: e.target.value,
-    }));
+    // Only allow changing payment mode for new appointments
+    if (appointmentType === "New") {
+      setPaymentMode(e.target.value);
+      setFormData((prev) => ({
+        ...prev,
+        paymentMode: e.target.value,
+      }));
+    }
   };
 
   const handleChange = (e) => {
@@ -259,8 +480,12 @@ const AddAppointment = () => {
       "bloodGroup",
       "appointmentDate",
       "doctorName",
-      "status",
     ];
+
+    // Status is required for new appointments only
+    if (appointmentType === "New") {
+      requiredFields.push("status");
+    }
 
     requiredFields.forEach((field) => {
       if (!formData[field]) newErrors[field] = "This field is required.";
@@ -296,9 +521,19 @@ const AddAppointment = () => {
       newErrors.spo2 = "SPO2 should be between 0 and 100.";
     }
 
-    if (paymentMode !== "Cash" && !formData.transactionId) {
+    // Only validate transaction ID for new appointments with non-cash payment
+    if (
+      appointmentType === "New" &&
+      paymentMode !== "Cash" &&
+      !formData.transactionId
+    ) {
       newErrors.transactionId =
         "Transaction ID is required for non-cash payments.";
+    }
+
+    // Validate UHID is provided when appointment type is "Revisited"
+    if (appointmentType === "Revisited" && !uhid) {
+      newErrors.uhid = "UHID is required for revisited patients.";
     }
 
     setErrors(newErrors);
@@ -309,6 +544,9 @@ const AddAppointment = () => {
     setSelectedMedicalHistory([]);
     setSelectedAllergies([]);
     setPaymentMode("Cash");
+    setAppointmentType("New");
+    setUhid("");
+    setUhidSuggestions([]);
 
     fetchNextAppointmentId();
 
@@ -325,7 +563,6 @@ const AddAppointment = () => {
       bp: "",
       systolic: "",
       diastolic: "",
-      bp: "",
       spo2: "",
       bloodGroup: "",
       appointmentDate: "",
@@ -335,41 +572,45 @@ const AddAppointment = () => {
       paymentMode: "Cash",
       opdAmount: "",
       branchId: selectedBranch,
+      appointmentType: "New",
+      uhid: "",
     });
   };
 
-  const handleBookAppointment = async () => {
-    if (!validateForm()) return;
+ const handleBookAppointment = async () => {
+   if (!validateForm()) return;
 
-    const currentTime = getCurrentTime();
-    setAppointmentTime(currentTime);
+   const currentTime = getCurrentTime();
+   setAppointmentTime(currentTime);
 
-    // Format BP as an object for the backend
-    const { systolic, diastolic, ...restFormData } = formData;
+   // Format BP as an object for the backend
+   const { systolic, diastolic, ...restFormData } = formData;
 
-    const finalData = {
-      ...restFormData,
-      appointmentTime: appointmentTime || currentTime,
-      paymentMode,
-      bp: {
-        systolic: Number(systolic),
-        diastolic: Number(diastolic),
-      },
-    };
+   const finalData = {
+     ...restFormData,
+     appointmentTime: appointmentTime || currentTime,
+     paymentMode,
+     appointmentType, // Ensure appointmentType is included
+     bp: {
+       systolic: Number(systolic),
+       diastolic: Number(diastolic),
+     },
+   };
 
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/appointments/addAppointment`,
-        finalData
-      );
-      console.log("Appointment booked successfully", response.data);
-      toast.success("Appointment booked successfully!");
-      resetForm();
-    } catch (error) {
-      console.error("Error booking appointment:", error);
-      toast.error("Failed to book appointment");
-    }
-  };
+   try {
+     const response = await axios.post(
+       `${import.meta.env.VITE_APP_BASE_URL}/appointments/addAppointment`,
+       finalData
+     );
+     console.log("Appointment booked successfully", response.data);
+     toast.success("Appointment booked successfully!");
+     resetForm();
+   } catch (error) {
+     console.error("Error booking appointment:", error);
+     toast.error("Failed to book appointment");
+   }
+ };
+
   useEffect(() => {
     if (formData.bp && typeof formData.bp === "object") {
       setFormData((prev) => ({
@@ -379,11 +620,67 @@ const AddAppointment = () => {
       }));
     }
   }, [formData.bp]);
+
   return (
-    <div className=" mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
+    <div className="mx-auto p-8 bg-gradient-to-br from-white to-teal-50 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-2">
         Patient Details
       </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* New fields for Appointment Type and UHID */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">
+            Appointment Type <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="appointmentType"
+            value={appointmentType}
+            onChange={handleAppointmentTypeChange}
+            className="w-full p-3 border rounded-xl bg-white"
+          >
+            <option value="New">New</option>
+            <option value="Revisited">Revisited</option>
+          </select>
+        </div>
+
+        {appointmentType === "Revisited" && (
+          <div className="relative" ref={uhidSuggestionsRef}>
+            <label className="block text-sm font-medium text-gray-600">
+              UHID <span className="text-red-500">*</span>
+            </label>
+            <input
+              name="uhid"
+              value={uhid}
+              onChange={handleUhidChange}
+              type="text"
+              className="w-full p-3 border rounded-xl"
+              placeholder="Enter UHID"
+            />
+            {errors.uhid && (
+              <p className="text-red-500 text-sm mt-1">{errors.uhid}</p>
+            )}
+            {isLoadingPatient && (
+              <div className="absolute right-3 top-9">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-teal-500"></div>
+              </div>
+            )}
+            {showUhidSuggestions && (
+              <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                {uhidSuggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => selectUhid(suggestion)}
+                  >
+                    {suggestion}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -802,10 +1099,14 @@ const AddAppointment = () => {
             value={paymentMode}
             name="paymentMode"
             onChange={handlePaymentModeChange}
+            disabled={appointmentType === "Revisited"} 
           >
             <option value="Cash">Cash</option>
             <option value="Card">Card</option>
             <option value="UPI">UPI</option>
+            {appointmentType === "Revisited" && (
+              <option value="Free of Cost">Free of Cost</option>
+            )}
           </select>
           {errors.paymentMode && (
             <p className="text-red-500 text-sm mt-1">{errors.paymentMode}</p>
@@ -842,6 +1143,7 @@ const AddAppointment = () => {
             value={formData.status}
             onChange={handleChange}
             className="w-full p-3 border rounded-xl"
+            disabled={appointmentType === "Revisited"} // Disable for Revisited appointments
           >
             <option value="">Select Status</option>
             <option value="Paid">Paid</option>

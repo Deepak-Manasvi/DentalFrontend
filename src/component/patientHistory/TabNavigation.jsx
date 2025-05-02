@@ -17,7 +17,7 @@ const TabNavigation = ({ activeTab, onTabChange }) => {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          className={`px-7 py-3 text-sm font-medium transition-colors duration-200 ${
+          className={`px-6 py-3 text-sm font-medium transition-colors duration-200 ${
             activeTab === tab.id
               ? "text-Black  bg-white border rounded"
               : "text-white hover:text-black"
