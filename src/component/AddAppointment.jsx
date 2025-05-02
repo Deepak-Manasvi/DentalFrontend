@@ -21,7 +21,7 @@ const AddAppointment = () => {
   const [showUhidSuggestions, setShowUhidSuggestions] = useState(false);
   const [isLoadingPatient, setIsLoadingPatient] = useState(false);
 
-  const role = localStorage.getItem("role");
+  
   const selectedBranch = localStorage.getItem("selectedBranch");
   const [formData, setFormData] = useState({
     patientType: "",
@@ -525,6 +525,7 @@ const AddAppointment = () => {
     if (
       appointmentType === "New" &&
       paymentMode !== "Cash" &&
+      paymentMode !== "Free of Cost" &&
       !formData.transactionId
     ) {
       newErrors.transactionId =
@@ -1099,7 +1100,7 @@ const AddAppointment = () => {
             value={paymentMode}
             name="paymentMode"
             onChange={handlePaymentModeChange}
-            disabled={appointmentType === "Revisited"} 
+            disabled={appointmentType === "Revisited"}
           >
             <option value="Cash">Cash</option>
             <option value="Card">Card</option>
@@ -1113,26 +1114,28 @@ const AddAppointment = () => {
           )}
         </div>
 
-        {paymentMode !== "Cash" && (
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Transaction ID
-            </label>
-            <input
-              name="transactionId"
-              value={formData.transactionId}
-              onChange={handleChange}
-              type="text"
-              placeholder="Enter TransactionId"
-              className="w-full p-3 border rounded-xl"
-            />
-            {errors.transactionId && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.transactionId}
-              </p>
-            )}
-          </div>
-        )}
+        {paymentMode !== "Cash" &&
+          paymentMode !== "Free of Cost" &&
+          appointmentType === "New" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Transaction ID
+              </label>
+              <input
+                name="transactionId"
+                value={formData.transactionId}
+                onChange={handleChange}
+                type="text"
+                placeholder="Enter TransactionId"
+                className="w-full p-3 border rounded-xl"
+              />
+              {errors.transactionId && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.transactionId}
+                </p>
+              )}
+            </div>
+          )}
 
         <div>
           <label className="block text-sm font-medium text-gray-600">
