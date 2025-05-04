@@ -20,9 +20,9 @@ const AddAppointment = () => {
   const [uhidSuggestions, setUhidSuggestions] = useState([]);
   const [showUhidSuggestions, setShowUhidSuggestions] = useState(false);
   const [isLoadingPatient, setIsLoadingPatient] = useState(false);
-
   
   const selectedBranch = localStorage.getItem("selectedBranch");
+
   const [formData, setFormData] = useState({
     patientType: "",
     appId: "",
@@ -87,10 +87,15 @@ const AddAppointment = () => {
     const getDentistsByBranch = async (branchId) => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_APP_BASE_URL}/dentist/branch/${1}`
+          `${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`
         );
-        console.log(res.data.dentists);
-        setDrList(res.data.dentists);
+        const receptionists = res.data.user.filter(
+          (user) =>
+            user.role === "receptionist" &&
+            user.opdAmount &&
+            user.branchId === localStorage.getItem("selectedBranch")
+        );
+        setDrList(receptionists);
       } catch (err) {
         console.error("Error fetching dentists:", err);
       }
@@ -332,7 +337,7 @@ const AddAppointment = () => {
     setSelectedDoctor(doctor);
     setFormData({
       ...formData,
-      doctorName: doctor.name,
+      doctorName: doctor.firstName,
       opdAmount: doctor.opdAmount,
     });
     setAppointmentTimeOptions(doctor.timeSlots);
@@ -1025,7 +1030,7 @@ const AddAppointment = () => {
             <option value="">Select Doctor</option>
             {drList.map((doctor) => (
               <option key={doctor._id} value={doctor._id}>
-                {doctor.name}
+               {doctor.firstName} {doctor.lastName}
               </option>
             ))}
           </select>
