@@ -20,7 +20,9 @@ export default function AdultDentistry() {
     examination: "",
     advice: "",
   });
+
   const [records, setRecords] = useState([]);
+
 
   const fetchDataForPatient = async () => {
     const res = await axios.get(
@@ -72,6 +74,7 @@ export default function AdultDentistry() {
       examinationData={examinationData}
       records={records}
       setRecords={setRecords}
+      patient={patient}
       setFinalTreatmentRecords={setFinalTreatmentRecords}
       setShowTreatment={setShowTreatment}
     />

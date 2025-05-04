@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function TreatmentProcedure({
   id,
@@ -54,8 +55,100 @@ export default function TreatmentProcedure({
   const [medicineOptions, setMedicineOptions] = useState([]);
   const [showMedicineDropdown, setShowMedicineDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [previousTreatmentData, setPreviousTreatmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState({});
+
+  // Fetch previous treatment data if patient exists
+  useEffect(() => {
+    const fetchPreviousTreatmentData = async () => {
+      const refUhid = localStorage.getItem("treatmentIdReference");
+      if (!refUhid || refUhid == "") return;
+
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${BASE_URL}/treatment/getTreatmentByUHIDId/${refUhid}`
+        );
+        const sortedTreatments = response.data.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const latestTreatment = sortedTreatments[1];
+
+        if (latestTreatment && latestTreatment._id) {
+          setPreviousTreatmentData(latestTreatment);
+          // Populate form states with previous data
+          populateFromPreviousData(latestTreatment);
+        }
+      } catch (error) {
+        console.error("Error fetching previous treatment data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPreviousTreatmentData();
+  }, [patient, BASE_URL]);
+
+  console.log("Previous Treatment Data:", previousTreatmentData);
+  console.log("Patient:", patient);
+
+  // Function to populate form states from previous data
+  const populateFromPreviousData = (data) => {
+    // Populate procedure list if available
+    if (
+      data.procedureList &&
+      Array.isArray(data.procedureList) &&
+      data.procedureList.length > 0
+    ) {
+      setProcedureList(data.procedureList);
+    }
+
+    // Populate medicine list if available
+    if (
+      data.medicines &&
+      Array.isArray(data.medicines) &&
+      data.medicines.length > 0
+    ) {
+      setMedicineList(data.medicines);
+    }
+
+    // Populate today's procedure if available
+    if (data.materialsUsed) {
+      const nextDate = data.materialsUsed.nextDate
+        ? new Date(
+            data.materialsUsed.nextDate.$date || data.materialsUsed.nextDate
+          )
+            .toISOString()
+            .split("T")[0]
+        : "";
+
+      const procedureDate = data.materialsUsed.date
+        ? new Date(data.materialsUsed.date.$date || data.materialsUsed.date)
+            .toISOString()
+            .split("T")[0]
+        : new Date().toISOString().split("T")[0];
+
+      setTodayProcedure({
+        date: procedureDate,
+        toothName: data.materialsUsed.toothName || toothName,
+        procedureDone: data.materialsUsed.procedureDone || "",
+        materialsUsed: data.materialsUsed.materialsUsed || "",
+        notes: data.materialsUsed.notes || "",
+        nextDate: nextDate,
+      });
+    }
+
+    // If final procedures exist in previously saved data, set them
+    if (
+      data.treatments &&
+      Array.isArray(data.treatments) &&
+      data.treatments.length > 0
+    ) {
+      setFinalProcedures(data.treatments);
+      setFinalTreatmentRecords(data.treatments);
+    }
+  };
 
   useEffect(() => {
     setTodayProcedure((prev) => ({
@@ -65,24 +158,36 @@ export default function TreatmentProcedure({
   }, [toothName]);
 
   const updateSave = async () => {
+    const treatmentId = localStorage.getItem("treatmentId");
+
+    if (!treatmentId) {
+      toast.error(
+        "No treatment ID found. Please create a treatment record first."
+      );
+      return;
+    }
+
     const data = {
       procedureList: procedureList,
       medicines: medicineList,
       materialsUsed: todayProcedure,
-      
     };
 
-    const response = await axios.patch(
-      `${BASE_URL}/treatment/updateTreatmentById/${localStorage.getItem(
-        "treatmentId"
-      )}`,
-      data
-    );
-    console.log("Response from updateSave:", response.data);
-    if (response.status === 200) {
-      toast.success("Data saved successfully!");
-    } else {
-      toast.error("Failed to save data.");
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/treatment/updateTreatmentById/${treatmentId}`,
+        data
+      );
+
+      console.log("Response from updateSave:", response.data);
+      if (response.status === 200) {
+        toast.success("Data saved successfully!");
+      } else {
+        toast.error("Failed to save data.");
+      }
+    } catch (error) {
+      console.error("Error updating treatment data:", error);
+      toast.error("Failed to save data. Please try again.");
     }
   };
 
@@ -186,7 +291,7 @@ export default function TreatmentProcedure({
 
   const handleDeleteTodayProcedure = (index) => {
     setTodayProceduresList((prev) => prev.filter((_, i) => i !== index));
-    
+
     // Also remove from finalProcedures
     setFinalProcedures((prev) => {
       // This is a simplified approach. In a real app, you might need a more robust way to identify which items to remove
@@ -196,10 +301,9 @@ export default function TreatmentProcedure({
     });
   };
 
-
   const handleTodayProcedureSave = () => {
     if (!validateTodayProcedure()) return;
-    
+
     // Create a new today's procedure record
     const newTodayProcedure = {
       ...todayProcedure,
@@ -207,13 +311,13 @@ export default function TreatmentProcedure({
         .map((p) => `${p.procedure} - ${p.treatment} (Cost: ${p.cost})`)
         .join(", "),
     };
-    
+
     // Add to today's procedures list
     setTodayProceduresList((prev) => [...prev, newTodayProcedure]);
-    
-    // Add to final procedures 
+
+    // Add to final procedures
     setFinalProcedures((prev) => [...prev, newTodayProcedure]);
-    
+
     // Reset today's procedure form
     setTodayProcedure({
       date: new Date().toISOString().split("T")[0],
@@ -223,16 +327,16 @@ export default function TreatmentProcedure({
       notes: "",
       nextDate: "",
     });
-    
+
     // Clear the procedure list
     setProcedureList([]);
-    
+
     // Clear errors
     setTodayErrors({});
-    
+
     toast.success("Today's procedure saved successfully!");
   };
-  
+
   const validateTodayProcedure = () => {
     const errors = {};
     if (!todayProcedure.date) errors.date = "Date is required";
@@ -240,7 +344,8 @@ export default function TreatmentProcedure({
     if (!todayProcedure.materialsUsed)
       errors.materialsUsed = "Materials used is required";
     if (!todayProcedure.nextDate) errors.nextDate = "Next date is required";
-    if (procedureList.length === 0) errors.procedureDone = "At least one procedure must be added";
+    if (procedureList.length === 0)
+      errors.procedureDone = "At least one procedure must be added";
     setTodayErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -370,10 +475,12 @@ export default function TreatmentProcedure({
     };
 
     // Only attempt to save to backend if we have an examinationId
-    if (examinationId) {
+    const treatmentId = localStorage.getItem("treatmentId") || examinationId;
+
+    if (treatmentId) {
       try {
         const response = await axios.patch(
-          `${BASE_URL}/treatment/update/${examinationId}`,
+          `${BASE_URL}/treatment/update/${treatmentId}`,
           treatmentData
         );
         console.log("All treatment data updated successfully:", response);
@@ -387,7 +494,7 @@ export default function TreatmentProcedure({
 
         // Save to localStorage as fallback
         localStorage.setItem(
-          `complete_treatment_${examinationId}`,
+          `complete_treatment_${treatmentId}`,
           JSON.stringify({
             ...treatmentData,
             timestamp: new Date().toISOString(),
@@ -396,7 +503,7 @@ export default function TreatmentProcedure({
         toast.info("Saved all treatment data locally. Please try again later.");
       }
     } else {
-      // Save to localStorage if no examinationId
+      // Save to localStorage if no treatmentId
       localStorage.setItem(
         "temp_complete_treatment",
         JSON.stringify({
@@ -529,12 +636,34 @@ export default function TreatmentProcedure({
       toast.error("Failed to sync local treatment data to server");
     }
   };
+
+  // Show loading indicator while fetching data
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
+
   return (
     <>
+      <ToastContainer />
       <div className="p-6 ml-10 bg-white">
         <h2 className="text-3xl font-bold mb-6 text-center">
           Treatment Procedure
         </h2>
+
+        {previousTreatmentData && (
+          <div className="mb-4 p-3 bg-teal-50 border border-teal-200 rounded">
+            <h3 className="text-lg font-semibold text-teal-700">
+              Previous Treatment Data Loaded
+            </h3>
+            <p className="text-sm text-gray-600">
+              Previous treatment data has been loaded and populated in the form.
+            </p>
+          </div>
+        )}
 
         {/* Procedure Section */}
         <div className="grid grid-cols-4 gap-4 mb-4">
@@ -735,6 +864,7 @@ export default function TreatmentProcedure({
               <option value="yes">Yes</option>
               <option value="no">No</option>
             </select>
+
             {medicineErrors.beforeFood && (
               <p className="text-red-500 text-sm">
                 {medicineErrors.beforeFood}
@@ -979,4 +1109,3 @@ export default function TreatmentProcedure({
     </>
   );
 }
-

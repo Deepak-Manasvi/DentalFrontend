@@ -37,41 +37,6 @@ const toothNames = [
   "Lower Right Third Molar",
 ];
 
-// const toothNames = [
-//   "1",
-//   "2",
-//   "3",
-//   "4",
-//   "5",
-//   "6",
-//   "7",
-//   "8",
-//   "9",
-//   "10",
-//   "11",
-//   "12",
-//   "13",
-//   "14",
-//   "15",
-//   "16",
-//   "17",
-//   "18",
-//   "19",
-//   "20",
-//   "21",
-//   "22",
-//   "23",
-//   "24",
-//   "25",
-//   "26",
-//   "27",
-//   "28",
-//   "29",
-//   "30",
-//   "31",
-//   "32",
-// ];
-
 const teethData = toothNames.map((name, index) => ({
   id: index + 1,
   label: name,
@@ -92,6 +57,7 @@ const FirstAdultDentistryForm = ({
   const navigate = useNavigate();
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
+  const [existingTreatment, setExistingTreatment] = useState(null);
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -127,7 +93,79 @@ const FirstAdultDentistryForm = ({
     setRecords(updated);
   };
 
+  // Fetch existing treatment data by UHID
+  const fetchTreatmentByUHID = async () => {
+    if (!patient?.uhid) {
+      localStorage.removeItem("treatmentIdReference");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/treatment/getTreatmentByUHIDId/${patient.uhid}`
+      );
+
+      if (response.data.success && response.data.data.length > 0) {
+        // Sort treatments by createdAt date in descending order to get the most recent one
+        const sortedTreatments = response.data.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const latestTreatment = sortedTreatments[0];
+
+        localStorage.setItem("treatmentIdReference", latestTreatment.uhid);
+        setExistingTreatment(latestTreatment);
+        console.log("Latest treatment:", latestTreatment);
+
+        // Populate form data from the latest treatment
+        if (latestTreatment) {
+          // Set the saved records from treatment data
+          const treatmentRecords = [];
+
+          if (latestTreatment.teethDetails?.length > 0) {
+            // Create records from teeth details
+            latestTreatment.teethDetails.forEach((tooth) => {
+              // Map toothNumber to the index in toothNames array (1-based to 0-based)
+              const toothName = toothNames[tooth.toothNumber - 1] || "";
+
+              treatmentRecords.push({
+                toothName,
+                dentalCondition: tooth.dentalCondition,
+                complaint: latestTreatment.chiefComplaint,
+                examination: latestTreatment.examinationNotes,
+                advice: latestTreatment.advice,
+              });
+
+              // Also mark the tooth as selected in the UI
+              if (tooth.toothNumber) {
+                setSelectedTeeth((prev) => ({
+                  ...prev,
+                  [tooth.toothNumber]: true,
+                }));
+              }
+            });
+
+            setRecords(treatmentRecords);
+            setSaved(treatmentRecords.length > 0);
+
+            // Pre-fill the form with the last treatment's common data
+            setFormData({
+              toothName: "", // Will be filled when teeth are selected
+              dentalCondition: "",
+              complaint: latestTreatment.chiefComplaint || "",
+              examination: latestTreatment.examinationNotes || "",
+              advice: latestTreatment.advice || "",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching treatment by UHID:", error.message);
+    }
+  };
+
   useEffect(() => {
+    // Fetch dropdown data
     axios
       .get(`${BASE_URL}/services/getAllChief`)
       .then((res) => {
@@ -152,7 +190,10 @@ const FirstAdultDentistryForm = ({
       .catch((err) =>
         console.error("Error fetching examinations:", err.message)
       );
-  }, []);
+
+    // Fetch existing treatment data
+    fetchTreatmentByUHID();
+  }, [patient?.uhid]);
 
   const handleNextClick = async () => {
     if (records.length === 0) {
@@ -161,9 +202,11 @@ const FirstAdultDentistryForm = ({
     }
 
     try {
+      // Format the data as expected by the API
       const payload = {
         appointmentId: patient?._id,
         type: "Adult",
+        // Backend expects treatments array that will be converted to teethDetails
         treatments: records.map((rec) => ({
           toothName: rec.toothName,
           dentalCondition: rec.dentalCondition,
@@ -171,7 +214,12 @@ const FirstAdultDentistryForm = ({
         chiefComplaint: formData.complaint,
         examinationNotes: formData.examination,
         advice: formData.advice,
+        // Add UHID from patient data
+        uhid: patient?.uhid,
       };
+
+      console.log("Submitting payload:", payload);
+
       const response = await axios.post(
         `${BASE_URL}/treatment/createTreatmentProcedure`,
         payload
@@ -183,7 +231,11 @@ const FirstAdultDentistryForm = ({
         return;
       }
       localStorage.setItem("treatmentId", treatmentId);
-      handleNext(formData.toothName, treatmentId);
+
+      // Use the combined tooth names when calling handleNext
+      const combinedToothNames = records.map((rec) => rec.toothName).join(", ");
+      handleNext(combinedToothNames, treatmentId);
+
       setFormData({
         toothName: "",
         dentalCondition: "",
@@ -224,6 +276,26 @@ const FirstAdultDentistryForm = ({
         <div>Allergies: {patient?.allergies}</div>
         <div>Weight: {patient?.weight}</div>
       </div>
+
+      {/* Previous Treatment Info */}
+      {existingTreatment && (
+        <div className="mb-4 p-2 bg-blue-50 border border-blue-200 rounded">
+          <h3 className="text-md font-semibold text-blue-800">
+            Previous Treatment Found
+          </h3>
+          <p className="text-xs text-blue-600">
+            Showing records from{" "}
+            {new Date(existingTreatment.createdAt).toLocaleDateString()}
+          </p>
+          <div className="text-xs text-blue-600 mt-1">
+            <span className="font-semibold">Teeth:</span>{" "}
+            {existingTreatment.toothName ||
+              existingTreatment.teethDetails
+                ?.map((t) => toothNames[t.toothNumber - 1])
+                .join(", ")}
+          </div>
+        </div>
+      )}
 
       {/* Teeth Section */}
       <h3 className="text-lg font-bold mb-2">Select Teeth</h3>
