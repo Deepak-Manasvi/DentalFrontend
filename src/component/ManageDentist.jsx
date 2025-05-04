@@ -18,14 +18,17 @@ const ManageDentist = () => {
   const fetchDentist = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_APP_BASE_URL}/dentist/getAllDentist`
+        `${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`
       );
-      const dentists = res.data.dentists.filter(
-        (user) => user.branchId === localStorage.getItem("selectedBranch")
+      const receptionists = res.data.user.filter(
+        (user) =>
+          user.role === "receptionist" &&
+          user.opdAmount &&
+          user.branchId === localStorage.getItem("selectedBranch")
       );
-      setDentist(dentists);
+      setDentist(receptionists);
     } catch (error) {
-      console.error("Error fetching dentists:", error);
+      console.error("Error fetching staff:", error);
     }
   };
 

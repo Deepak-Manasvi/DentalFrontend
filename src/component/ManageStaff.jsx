@@ -17,18 +17,17 @@ export default function ManageStaff() {
       const res = await axios.get(
         `${import.meta.env.VITE_APP_BASE_URL}/user/getAllUser`
       );
-      console.log(res, "resposen.data");
       const receptionists = res.data.user.filter(
         (user) =>
           user.role === "receptionist" &&
+          !user.opdAmount &&
           user.branchId === localStorage.getItem("selectedBranch")
       );
-      console.log(receptionists, "receptionists");
       setStaffList(receptionists);
     } catch (error) {
       console.error("Error fetching staff:", error);
     }
-  };
+  };   
 
   useEffect(() => {
     getStafs();
