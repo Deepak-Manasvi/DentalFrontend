@@ -239,7 +239,7 @@ const InvoiceGenerator = () => {
             <img
               src={headerUrl}
               alt="Header"
-              className="w-full h-23 object-cover"
+              className="w-full h-23 object-contain"
             />
           </div>
         )}
