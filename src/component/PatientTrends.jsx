@@ -21,103 +21,56 @@ const PatientTrends = ({ data = [] }) => {
   const [selectedWeek, setSelectedWeek] = useState("current");
   const [filteredData, setFilteredData] = useState([]);
 
-  // Days of the week for our chart
+  // Days of the week for our chart - include both standard and possible variations
+  const dayMappings = {
+    Mon: "Mon",
+    Monday: "Mon",
+    Mond: "Mon",
+    Tues: "Tues",
+    Tuesday: "Tues",
+    Tue: "Tues",
+    Wed: "Wed",
+    Wednesday: "Wed",
+    Wedn: "Wed",
+    Thurs: "Thurs",
+    Thursday: "Thurs",
+    Thu: "Thurs",
+    Fri: "Fri",
+    Friday: "Fri",
+    Frid: "Fri",
+    Sat: "Sat",
+    Saturday: "Sat",
+    Satu: "Sat",
+    Sun: "Sun",
+    Sunday: "Sun",
+    Sund: "Sun",
+  };
+
   const defaultDays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
 
   useEffect(() => {
-    if (!data || data.length === 0) return;
-
-    // Get current date
-    const today = new Date();
-    const currentDay = today.getDay();
-
-    // Calculate start of the current week (Sunday = 0, Monday = 1, etc)
-    // For Monday as first day of week
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(
-      today.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
-    );
-
-    // Filter data based on selected week
-    let startDate;
-
-    switch (selectedWeek) {
-      case "current":
-        startDate = startOfWeek;
-        break;
-      case "last":
-        startDate = new Date(startOfWeek);
-        startDate.setDate(startDate.getDate() - 7);
-        break;
-      case "twoWeeksAgo":
-        startDate = new Date(startOfWeek);
-        startDate.setDate(startDate.getDate() - 14);
-        break;
-      case "threeWeeksAgo":
-        startDate = new Date(startOfWeek);
-        startDate.setDate(startDate.getDate() - 21);
-        break;
-      default:
-        startDate = startOfWeek;
+    if (!data || data.length === 0) {
+      // If no data, set empty default structure
+      setFilteredData(defaultDays.map((day) => ({ day, patients: 0 })));
+      return;
     }
 
-    // End date is 6 days after start date (full week)
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-
-    // Filter data to get only records from the selected week
-    // Assuming dailyPatientCounts has a date field that we can parse
-    let weekData = [];
-
-    // Check if data is already structured by day name
-    if (data.length > 0 && data[0].day) {
-      // If we're working with simple day-based data without dates
-      // We'll just use what we have (can't filter by actual dates)
-      weekData = data;
-    } else if (Array.isArray(data)) {
-      // If data has dates, filter by the selected week date range
-      weekData = data.filter((item) => {
-        if (!item.date) return false;
-
-        const itemDate = new Date(item.date);
-        return itemDate >= startDate && itemDate <= endDate;
+    // Since the API returns day names directly, we'll use that format
+    // instead of trying to convert from dates
+    const processedData = defaultDays.map((day) => {
+      // Find matching day data by checking all possible variations
+      const matchingData = data.find((item) => {
+        const normalizedDay = dayMappings[item.day] || item.day;
+        return normalizedDay === day;
       });
 
-      // Map dates to day names
-      weekData = weekData.map((item) => {
-        const itemDate = new Date(item.date);
-        const dayIndex = itemDate.getDay();
-        // Convert day index to name (0 = Sunday, 1 = Monday, etc.)
-        const dayName = defaultDays[dayIndex === 0 ? 6 : dayIndex - 1]; // Adjust for Monday as first day
-
-        return {
-          day: dayName,
-          count: item.count || 0,
-        };
-      });
-
-      // Group by day and sum counts
-      const groupedByDay = weekData.reduce((acc, item) => {
-        if (!acc[item.day]) {
-          acc[item.day] = { day: item.day, count: 0 };
-        }
-        acc[item.day].count += item.count;
-        return acc;
-      }, {});
-
-      weekData = Object.values(groupedByDay);
-    }
-
-    // Create the final data with all days, filling in zeros for missing days
-    const mergedData = defaultDays.map((day) => {
-      const match = weekData.find((d) => d.day === day);
       return {
         day,
-        patients: match ? match.count : 0,
+        patients: matchingData ? matchingData.count : 0,
       };
     });
 
-    setFilteredData(mergedData);
+    setFilteredData(processedData);
   }, [selectedWeek, data]);
 
   const handleWeekChange = (e) => {

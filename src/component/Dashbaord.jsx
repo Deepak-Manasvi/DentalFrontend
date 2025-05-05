@@ -24,6 +24,8 @@ const Dashboard = () => {
         `${import.meta.env.VITE_APP_BASE_URL}/admin/dashboardDetails`
       );
       setData(res.data);
+      console.log(res, "resssssss");
+      console.log(res.data, "datttt");
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     }
