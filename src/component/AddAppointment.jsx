@@ -196,140 +196,167 @@ const AddAppointment = () => {
     }
   };
 
-  const selectUhid = async (selectedUhid) => {
-    setUhid(selectedUhid);
-    setFormData((prev) => ({
-      ...prev,
-      uhid: selectedUhid,
-      appointmentType: "Revisited", // Make sure appointmentType is explicitly set
-    }));
-    setShowUhidSuggestions(false);
-    // Fetch patient data by UHID
-    try {
-      setIsLoadingPatient(true);
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_APP_BASE_URL
-        }/appointments/getPatientByUHID/${selectedUhid}`
-      );
-      console.log(response, "appointment response");
-      if (response.data && response.data.patient) {
-        const patient = response.data.patient;
+ const selectUhid = async (selectedUhid) => {
+   setUhid(selectedUhid);
+   setFormData((prev) => ({
+     ...prev,
+     uhid: selectedUhid,
+     appointmentType: "Revisited", // Make sure appointmentType is explicitly set
+   }));
+   setShowUhidSuggestions(false);
 
-        // For revisited patients, maintain existing UHID and set payment as "Free of Cost"
-        setFormData((prev) => ({
-          ...prev,
-          patientType: patient.patientType || prev.patientType,
-          patientName: patient.patientName || "",
-          gender: patient.gender || "Male",
-          mobileNumber: patient.mobileNumber || "",
-          age: patient.age || "",
-          address: patient.address || "",
-          weight: patient.weight || "",
-          spo2: patient.spo2 || "",
-          bloodGroup: patient.bloodGroup || "",
-          uhid: selectedUhid, // Keep the existing UHID
+   // Fetch patient data by UHID
+   try {
+     setIsLoadingPatient(true);
+     const response = await axios.get(
+       `${
+         import.meta.env.VITE_APP_BASE_URL
+       }/appointments/getPatientByUHID/${selectedUhid}`
+     );
+     console.log(response, "appointment response");
+     if (response.data && response.data.patient) {
+       const patient = response.data.patient;
 
-          // Set appointment and payment details for revisited patients
-          appointmentDate: patient.appointmentDate
-            ? new Date(patient.appointmentDate).toISOString().split("T")[0]
-            : "",
-          doctorName: Array.isArray(patient.doctorName)
-            ? patient.doctorName[0]
-            : patient.doctorName,
-          opdAmount: patient.opdAmount || "",
-          paymentMode: "Free of Cost", // Set payment mode to "Free of Cost"
-          transactionId: "", // Clear transaction ID for revisits
-          status: "Paid", // Set status to Paid automatically
-          appId: patient.appId || prev.appId,
-        }));
+       // For revisited patients, maintain existing UHID and set payment as "Free of Cost"
+       setFormData((prev) => ({
+         ...prev,
+         patientType: patient.patientType || prev.patientType,
+         patientName: patient.patientName || "",
+         gender: patient.gender || "Male",
+         mobileNumber: patient.mobileNumber || "",
+         age: patient.age || "",
+         address: patient.address || "",
+         weight: patient.weight || "",
+         spo2: patient.spo2 || "",
+         bloodGroup: patient.bloodGroup || "",
+         uhid: selectedUhid, // Keep the existing UHID
 
-        // Set payment mode for the UI state as well
-        setPaymentMode("Free of Cost");
+         // Set appointment and payment details for revisited patients
+         appointmentDate: patient.appointmentDate
+           ? new Date(patient.appointmentDate).toISOString().split("T")[0]
+           : "",
+         paymentMode: "Free of Cost", // Set payment mode to "Free of Cost"
+         transactionId: "", // Clear transaction ID for revisits
+         status: "Paid", // Set status to Paid automatically
+         appId: patient.appId || prev.appId,
+       }));
 
-        // Handle BP separately since it might be an object
-        if (patient.bp) {
-          if (typeof patient.bp === "object") {
-            setFormData((prev) => ({
-              ...prev,
-              systolic: patient.bp.systolic || "",
-              diastolic: patient.bp.diastolic || "",
-              bp: `${patient.bp.systolic || ""}/${patient.bp.diastolic || ""}`,
-            }));
-          } else {
-            // If BP is a string like "120/80"
-            const bpParts = String(patient.bp).split("/");
-            if (bpParts.length === 2) {
-              setFormData((prev) => ({
-                ...prev,
-                systolic: bpParts[0] || "",
-                diastolic: bpParts[1] || "",
-                bp: patient.bp,
-              }));
-            }
-          }
-        }
+       // Handle BP separately since it might be an object
+       if (patient.bp) {
+         if (typeof patient.bp === "object") {
+           setFormData((prev) => ({
+             ...prev,
+             systolic: patient.bp.systolic || "",
+             diastolic: patient.bp.diastolic || "",
+             bp: `${patient.bp.systolic || ""}/${patient.bp.diastolic || ""}`,
+           }));
+         } else {
+           // If BP is a string like "120/80"
+           const bpParts = String(patient.bp).split("/");
+           if (bpParts.length === 2) {
+             setFormData((prev) => ({
+               ...prev,
+               systolic: bpParts[0] || "",
+               diastolic: bpParts[1] || "",
+               bp: patient.bp,
+             }));
+           }
+         }
+       }
 
-        // Handle medical history and allergies
-        if (patient.medicalHistory && Array.isArray(patient.medicalHistory)) {
-          setSelectedMedicalHistory(patient.medicalHistory);
-          setFormData((prev) => ({
-            ...prev,
-            medicalHistory: patient.medicalHistory,
-          }));
-        }
+       // Handle medical history and allergies
+       if (patient.medicalHistory && Array.isArray(patient.medicalHistory)) {
+         setSelectedMedicalHistory(patient.medicalHistory);
+         setFormData((prev) => ({
+           ...prev,
+           medicalHistory: patient.medicalHistory,
+         }));
+       }
 
-        if (patient.allergies && Array.isArray(patient.allergies)) {
-          setSelectedAllergies(patient.allergies);
-          setFormData((prev) => ({
-            ...prev,
-            allergies: patient.allergies,
-          }));
-        }
+       if (patient.allergies && Array.isArray(patient.allergies)) {
+         setSelectedAllergies(patient.allergies);
+         setFormData((prev) => ({
+           ...prev,
+           allergies: patient.allergies,
+         }));
+       }
 
-        // Handle appointment time - might be an array
-        if (patient.appointmentTime) {
-          const time = Array.isArray(patient.appointmentTime)
-            ? patient.appointmentTime[0]
-            : patient.appointmentTime;
-          setAppointmentTime(time);
-        }
+       // Set payment mode for the UI state as well
+       setPaymentMode("Free of Cost");
 
-        // If the doctor exists in the drList, select it
-        if (patient.doctorName) {
-          const doctorName = Array.isArray(patient.doctorName)
-            ? patient.doctorName[0]
-            : patient.doctorName;
+       // Fix: Handle appointment time properly - ensures we process array values correctly
+       if (patient.appointmentTime) {
+         const timeValue = Array.isArray(patient.appointmentTime)
+           ? patient.appointmentTime[0]
+           : patient.appointmentTime;
 
-          const doctor = drList.find((doc) => doc.name === doctorName);
-          if (doctor) {
-            setSelectedDoctor(doctor);
-            // Set appointment time options based on the doctor
-            setAppointmentTimeOptions(doctor.timeSlots || []);
+         setAppointmentTime(timeValue);
+       }
 
-            // Make sure the opdAmount is set from the doctor if it exists
-            if (
-              doctor.opdAmount &&
-              (!patient.opdAmount || patient.opdAmount === "")
-            ) {
-              setFormData((prev) => ({
-                ...prev,
-                opdAmount: doctor.opdAmount,
-              }));
-              console.log("Setting opdAmount from doctor:", doctor.opdAmount);
-            }
-          }
-        }
+       // Fix: Handle doctor name properly
+       if (patient.doctorName) {
+         // Extract the doctor name (handle array if needed)
+         const doctorNameValue = Array.isArray(patient.doctorName)
+           ? patient.doctorName[0]
+           : patient.doctorName;
 
-        toast.success("Patient data loaded successfully!");
-      }
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-      toast.error("Failed to load patient data");
-    } finally {
-      setIsLoadingPatient(false);
-    }
-  };
+         // Find the doctor in the list and set it properly
+         const matchedDoctor = drList.find(
+           (doc) =>
+             `${doc.firstName} ${doc.lastName}` === doctorNameValue ||
+             doc.firstName === doctorNameValue
+         );
+
+         if (matchedDoctor) {
+           console.log("Found matching doctor:", matchedDoctor);
+           setSelectedDoctor(matchedDoctor);
+
+           // Update the form data with the doctor information
+           setFormData((prev) => ({
+             ...prev,
+             doctorName: doctorNameValue,
+           }));
+
+           // Set appointment time options based on the doctor
+           if (matchedDoctor.timeSlots && matchedDoctor.timeSlots.length > 0) {
+             setAppointmentTimeOptions(matchedDoctor.timeSlots);
+           }
+
+           // Make sure the opdAmount is set from the doctor if it exists
+           if (
+             matchedDoctor.opdAmount &&
+             (!patient.opdAmount || patient.opdAmount === "")
+           ) {
+             setFormData((prev) => ({
+               ...prev,
+               opdAmount: matchedDoctor.opdAmount,
+             }));
+           } else if (patient.opdAmount) {
+             // Use the patient's opdAmount if available
+             setFormData((prev) => ({
+               ...prev,
+               opdAmount: patient.opdAmount,
+             }));
+           }
+         } else {
+           console.warn("Doctor not found in the list:", doctorNameValue);
+           // Handle case where doctor is not in the list
+           setFormData((prev) => ({
+             ...prev,
+             doctorName: doctorNameValue,
+           }));
+         }
+       }
+
+       toast.success("Patient data loaded successfully!");
+     }
+   } catch (error) {
+     console.error("Error fetching patient data:", error);
+     toast.error("Failed to load patient data");
+   } finally {
+     setIsLoadingPatient(false);
+   }
+ };
 
   const handleDoctorChange = (e) => {
     const selectedId = e.target.value;
