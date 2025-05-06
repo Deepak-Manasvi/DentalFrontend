@@ -10,23 +10,22 @@ const InvoiceList = () => {
   const [viewingInvoice, setViewingInvoice] = useState(null);
   const invoiceRef = useRef();
 
-
   const token = localStorage.getItem("token");
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
   const adminId = decodedToken.id;
   const [headerUrl, setHeaderUrl] = useState([]);
   const [footerUrl, setFooterUrl] = useState([]);
 
-
   // 1. Fetch invoices
   useEffect(() => {
-
     const getHeaderByAdminId = async (adminId) => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`
+        );
         if (response) {
-          setHeaderUrl(response.data.headerUrl)
-          setFooterUrl(response.data.footerUrl)
+          setHeaderUrl(response.data.headerUrl);
+          setFooterUrl(response.data.footerUrl);
         }
         return response.data; // { headerUrl, headerPublicId }
       } catch (error) {
@@ -35,8 +34,8 @@ const InvoiceList = () => {
       }
     };
 
-    getHeaderByAdminId(adminId)
-    
+    getHeaderByAdminId(adminId);
+
     const fetchInvoices = async () => {
       try {
         const { data } = await axios.get(
@@ -53,7 +52,9 @@ const InvoiceList = () => {
 
   // 2. Filtered list
   const filteredInvoices = invoices.filter((inv) =>
-    `${inv.patientName} ${inv && inv.appointmentId && inv.appointmentId.uhid} ${inv.invoiceId}`
+    `${inv.patientName} ${inv && inv.appointmentId && inv.appointmentId.uhid} ${
+      inv.invoiceId
+    }`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
@@ -75,12 +76,20 @@ const InvoiceList = () => {
             body { padding: 2rem; color: #000; background: #fff; font-family: sans-serif; }
             table, th, td { border: 1px solid #000; border-collapse: collapse; }
             th, td { padding: 8px; text-align: left; }
+            .header-image { width: 100%; height: auto; object-fit: contain; }
+            .footer-image { width: 100%; height: auto; object-fit: contain; }
           </style>
         </head>
         <body>
           ${printContents}
           <script>
             window.onload = () => {
+              // Fix image rendering in print view
+              const headerImg = document.querySelector('.header-image');
+              const footerImg = document.querySelector('.footer-image');
+              if (headerImg) headerImg.style.maxHeight = '150px';
+              if (footerImg) footerImg.style.maxHeight = '100px';
+              
               setTimeout(() => {
                 window.print();
                 window.close();
@@ -112,14 +121,14 @@ const InvoiceList = () => {
           <thead className="bg-teal-900 text-white sticky top-0 z-10 text-sm md:text-base">
             <tr>
               <th className="py-2 px-4">Date</th>
-              <th className="py-2 px-4">Invoice No</th>
+              <th className="py-2 px-4">Invoice No</th>
               <th className="py-2 px-4">Patient</th>
               <th className="py-2 px-4">Doctor</th>
               <th className="py-2 px-4">Treatment</th>
               <th className="py-2 px-4">UHID</th>
-              <th className="py-2 px-4">Sub Total</th>
+              <th className="py-2 px-4">Sub Total</th>
               <th className="py-2 px-4">Discount</th>
-              <th className="py-2 px-4">Net Payable</th>
+              <th className="py-2 px-4">Net Payable</th>
               <th className="py-2 px-4">Action</th>
             </tr>
           </thead>
@@ -143,7 +152,10 @@ const InvoiceList = () => {
                   <td className="py-2 px-4">{inv.patientName}</td>
                   <td className="py-2 px-4">{inv.doctorName}</td>
                   <td className="py-2 px-4">{inv.treatmentType}</td>
-                  <td className="py-2 px-4">{inv && inv.appointmentId && inv.appointmentId.uhid || "not found"}</td>
+                  <td className="py-2 px-4">
+                    {(inv && inv.appointmentId && inv.appointmentId.uhid) ||
+                      "not found"}
+                  </td>
                   <td className="py-2 px-4">₹{inv.subtotal}</td>
                   <td className="py-2 px-4">₹{inv.discount}</td>
                   <td className="py-2 px-4 font-semibold text-teal-600">
@@ -188,20 +200,41 @@ const InvoiceList = () => {
             <div ref={invoiceRef} className="text-black">
               {/* Header */}
               {headerUrl && (
-          <div className="w-full text-center mb-4">
-            <img src={headerUrl} alt="Header" className="w-full h-22 object-cover" />
-          </div>
-        )}
+                <div className="w-full text-center mb-4">
+                  <img
+                    src={headerUrl}
+                    alt="Header"
+                    className="header-image w-full h-auto max-h-36 object-contain"
+                  />
+                </div>
+              )}
               <div className="flex justify-between mb-6">
                 <div>
-                  <p><b>Date:</b> {viewingInvoice.createdAt}</p>
-                  <p><b>Invoice No:</b> {viewingInvoice.invoiceId}</p>
-                  <p><b>Patient:</b> {viewingInvoice.patientName}</p>
-                  <p><b>UHID:</b> {viewingInvoice && viewingInvoice.appointmentId && viewingInvoice.appointmentId.uhid || "Not Found"}</p>
+                  <p>
+                    <b>Date:</b>{" "}
+                    {new Date(viewingInvoice.createdAt).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <b>Invoice No:</b> {viewingInvoice.invoiceId}
+                  </p>
+                  <p>
+                    <b>Patient:</b> {viewingInvoice.patientName}
+                  </p>
+                  <p>
+                    <b>UHID:</b>{" "}
+                    {(viewingInvoice &&
+                      viewingInvoice.appointmentId &&
+                      viewingInvoice.appointmentId.uhid) ||
+                      "Not Found"}
+                  </p>
                 </div>
                 <div>
-                  <p><b>Doctor:</b> {viewingInvoice.doctorName}</p>
-                  <p><b>Treatment:</b> {viewingInvoice.treatmentType}</p>
+                  <p>
+                    <b>Doctor:</b> {viewingInvoice.doctorName}
+                  </p>
+                  <p>
+                    <b>Treatment:</b> {viewingInvoice.treatmentType}
+                  </p>
                 </div>
               </div>
 
@@ -213,7 +246,7 @@ const InvoiceList = () => {
               <table className="w-full border mb-4 text-sm">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="p-2 border">#</th>
+                    <th className="p-2 border">S.no</th>
                     <th className="p-2 border">Description</th>
                     <th className="p-2 border">Qty</th>
                     <th className="p-2 border">Rate</th>
@@ -235,23 +268,35 @@ const InvoiceList = () => {
 
               {/* Totals */}
               <div className="flex flex-col items-end space-y-1 text-sm">
-                <div className="flex gap-2"><span className="font-semibold">Sub Total:</span> ₹{viewingInvoice.subtotal}</div>
-                <div className="flex gap-2"><span className="font-semibold">Discount:</span> ₹{viewingInvoice.discount}</div>
-                <div className="flex gap-2"><span className="font-semibold">Net Payable:</span> ₹{viewingInvoice.netPayable}</div>
+                <div className="flex gap-2">
+                  <span className="font-semibold">Sub Total:</span> ₹
+                  {viewingInvoice.subtotal}
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-semibold">Discount:</span> ₹
+                  {viewingInvoice.discount}
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-semibold">Net Payable:</span> ₹
+                  {viewingInvoice.netPayable}
+                </div>
               </div>
 
               <p className="text-center mt-6 font-semibold">
-                “Thank you for choosing our services.”
+                "Thank you for choosing our services."
               </p>
-            </div>
-           {footerUrl && (
-  <div className="w-full text-center mt-4">
-    <img src={footerUrl} alt="Footer" className="w-full h-24 object-cover" />
-  </div>
-)}
 
+              {footerUrl && (
+                <div className="w-full text-center mt-4">
+                  <img
+                    src={footerUrl}
+                    alt="Footer"
+                    className="footer-image w-full h-auto max-h-24 object-contain"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-          
         </div>
       )}
     </div>
