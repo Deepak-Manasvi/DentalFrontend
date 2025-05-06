@@ -45,6 +45,8 @@ const FirstPediatricDentistryForm = ({
   const navigate = useNavigate();
   const [chiefComplaints, setChiefComplaints] = useState([]);
   const [examinations, setExaminations] = useState([]);
+  const [previousTreatmentLoaded, setPreviousTreatmentLoaded] = useState(false);
+  const [existingTreatment, setExistingTreatment] = useState(null);
 
   const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -79,6 +81,87 @@ const FirstPediatricDentistryForm = ({
     updated.splice(index, 1);
     setRecords(updated);
   };
+
+  // Fetch existing treatment data based on UHID
+  const fetchTreatmentByUHID = async () => {
+    if (!patient?.uhid) {
+      localStorage.removeItem("treatmentIdReference");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/treatment/getTreatmentByUHIDId/${patient.uhid}`
+      );
+
+      if (response.data.success && response.data.data.length > 0) {
+        // Sort treatments by createdAt date in descending order to get the most recent one
+        const sortedTreatments = response.data.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const latestTreatment = sortedTreatments[0];
+
+        localStorage.setItem("treatmentIdReference", latestTreatment.uhid);
+        setExistingTreatment(latestTreatment);
+        console.log("Latest treatment:", latestTreatment);
+
+        // Populate form data from the latest treatment
+        if (latestTreatment) {
+          // Set the saved records from treatment data
+          const treatmentRecords = [];
+
+          if (latestTreatment.teethDetails?.length > 0) {
+            // Create records from teeth details
+            latestTreatment.teethDetails.forEach((tooth) => {
+              // Map toothNumber to the index in toothNames array (1-based to 0-based)
+              const toothName = toothNames[tooth.toothNumber - 1] || "";
+
+              treatmentRecords.push({
+                toothName,
+                dentalCondition: tooth.dentalCondition,
+                complaint: latestTreatment.chiefComplaint,
+                examination: latestTreatment.examinationNotes,
+                advice: latestTreatment.advice,
+              });
+
+              // Also mark the tooth as selected in the UI
+              if (tooth.toothNumber) {
+                setSelectedTeeth((prev) => ({
+                  ...prev,
+                  [tooth.toothNumber]: true,
+                }));
+              }
+            });
+
+            setRecords(treatmentRecords);
+            setSaved(treatmentRecords.length > 0);
+
+            // Pre-fill the form with the last treatment's common data
+            setFormData({
+              toothName: "", // Will be filled when teeth are selected
+              dentalCondition: "",
+              complaint: latestTreatment.chiefComplaint || "",
+              examination: latestTreatment.examinationNotes || "",
+              advice: latestTreatment.advice || "",
+            });
+          }
+        }
+
+        setPreviousTreatmentLoaded(true);
+      }
+    } catch (error) {
+      console.error("Error fetching treatment by UHID:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (!patient?.uhid || previousTreatmentLoaded) {
+      return;
+    }
+
+    fetchTreatmentByUHID();
+  }, [patient?.uhid, previousTreatmentLoaded]);
 
   useEffect(() => {
     axios
@@ -116,27 +199,46 @@ const FirstPediatricDentistryForm = ({
     try {
       const payload = {
         appointmentId: patient?._id,
+        uhid: patient?.uhid,
         type: "Pediatric",
         treatments: records.map((rec) => ({
           toothName: rec.toothName,
           dentalCondition: rec.dentalCondition,
         })),
+        teethDetails: records.map((rec) => {
+          // Try to find tooth number from name
+          const tooth = teethData.find((t) => t.label === rec.toothName);
+          const toothNumber = tooth ? tooth.id : null;
+
+          return {
+            toothNumber: toothNumber,
+            toothName: rec.toothName,
+            dentalCondition: rec.dentalCondition,
+          };
+        }),
         chiefComplaint: formData.complaint,
         examinationNotes: formData.examination,
         advice: formData.advice,
+        date: new Date().toISOString(),
       };
 
-      const response = await axios.post(
+      let response;
+      let treatmentId;
+
+      response = await axios.post(
         `${BASE_URL}/treatment/createTreatmentProcedure`,
         payload
       );
-      const treatmentId = response.data?.data?._id;
+      treatmentId = response.data?.data?._id;
 
       if (!treatmentId) {
         alert("Could not retrieve treatment ID.");
         return;
       }
+
       localStorage.setItem("treatmentId", treatmentId);
+      localStorage.setItem("treatmentIdReference", patient?.uhid);
+
       console.log(formData.toothName, "formData.toothNameformData.toothName");
       handleNext(formData.toothName, treatmentId);
       setFormData({
@@ -149,7 +251,8 @@ const FirstPediatricDentistryForm = ({
     } catch (error) {
       console.error("Error submitting treatment records:", error);
       alert(
-        `Error saving treatment data: ${error.response?.data?.message || error.message
+        `Error saving treatment data: ${
+          error.response?.data?.message || error.message
         }`
       );
     }
@@ -157,7 +260,9 @@ const FirstPediatricDentistryForm = ({
 
   return (
     <div className="p-4 md:p-6">
-      <h2 className="text-2xl font-semibold mb-4">Pediatric Examination Dashboard</h2>
+      <h2 className="text-2xl font-semibold mb-4">
+        Pediatric Examination Dashboard
+      </h2>
       {/* Patient Info */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm md:text-base mb-6">
         <div>
@@ -178,7 +283,8 @@ const FirstPediatricDentistryForm = ({
         <div>
           {patient?.bp && (
             <div>
-              <strong>BP:</strong> {patient.bp.systolic}/{patient.bp.diastolic} mmHg
+              <strong>BP:</strong> {patient.bp.systolic}/{patient.bp.diastolic}{" "}
+              mmHg
             </div>
           )}
         </div>
@@ -329,7 +435,9 @@ const FirstPediatricDentistryForm = ({
             <thead className="bg-[#2B7A6F] text-white">
               <tr>
                 <th className="px-3 py-2 border border-white">Tooth Name</th>
-                <th className="px-3 py-2 border border-white">Dental Condition</th>
+                <th className="px-3 py-2 border border-white">
+                  Dental Condition
+                </th>
                 <th className="px-3 py-2 border border-white">Complaint</th>
                 <th className="px-3 py-2 border border-white">Examination</th>
                 <th className="px-3 py-2 border border-white">Advice</th>
@@ -384,7 +492,6 @@ const FirstPediatricDentistryForm = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };
