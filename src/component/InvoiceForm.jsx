@@ -48,7 +48,7 @@ const InvoiceGenerator = () => {
           setHeaderUrl(response.data.headerUrl);
           setFooterUrl(response.data.footerUrl);
         }
-        return response.data; // { headerUrl, headerPublicId }
+        return response.data;
       } catch (error) {
         console.error("Error fetching header config:", error);
         throw error;
@@ -62,7 +62,6 @@ const InvoiceGenerator = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
         );
-        console.log("res appointment ", response);
         const filtered = response.data.appointmentList.filter(
           (p) => p.isPatient && p.branchId === selectedBranch
         );

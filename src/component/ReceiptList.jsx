@@ -8,50 +8,47 @@ const ReceiptList = () => {
   const [receipts, setReceipts] = useState([]);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [invoices, setInvoices] = useState([]);
   const receiptRef = useRef(null);
 
-  // const headerUrl = "https://yourdomain.com/header.png"; // Replace with actual path
-  // const footerUrl = "https://yourdomain.com/footer.png"; // Replace with actual path
- const token = localStorage.getItem("token");
- const decodedToken = JSON.parse(atob(token.split(".")[1]));
- const adminId = decodedToken.id;
-   const [headerUrl, setHeaderUrl] = useState([]);
-    const [footerUrl, setFooterUrl] = useState([]);
-  
-    useEffect(() => {
-      const getHeaderByAdminId = async (adminId) => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
-          if (response) {
-            setHeaderUrl(response.data.headerUrl)
-            setFooterUrl(response.data.footerUrl)
-          }
-          return response.data; // { headerUrl, headerPublicId }
-        } catch (error) {
-          console.error("Error fetching header config:", error);
-          throw error;
+  const token = localStorage.getItem("token");
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const adminId = decodedToken.id;
+  const [headerUrl, setHeaderUrl] = useState([]);
+  const [footerUrl, setFooterUrl] = useState([]);
+
+  useEffect(() => {
+    const getHeaderByAdminId = async (adminId) => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_BASE_URL}/clinic-config/header/${adminId}`);
+        if (response) {
+          setHeaderUrl(response.data.headerUrl)
+          setFooterUrl(response.data.footerUrl)
         }
-      }; 
-  
-      getHeaderByAdminId(adminId)
-  
-      const fetchAppointments = async () => {
-        try {
-          const response = await axios.get(
-            `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
-          );
-          const filtered = response.data.appointmentList.filter(
-            (appointment) => appointment.InvoiceGenerate
-          );
-          setInvoices(filtered);
-        } catch (error) {
-          console.error("Error fetching appointments:", error);
-        }
-      };
-  
-      fetchAppointments();
-    }, []);
-  
+        return response.data; 
+      } catch (error) {
+        console.error("Error fetching header config:", error);
+        throw error;
+      }
+    };
+    getHeaderByAdminId(adminId)
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BASE_URL}/appointments/appointmentList`
+        );
+        const filtered = response.data.appointmentList.filter(
+          (appointment) => appointment.InvoiceGenerate
+        );
+        setInvoices(filtered);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
@@ -76,6 +73,7 @@ const ReceiptList = () => {
     if (receiptRef.current) {
       const printContents = receiptRef.current.innerHTML;
       const printWindow = window.open("", "_blank", "width=800,height=600");
+  
       printWindow.document.write(`
         <html>
           <head>
@@ -83,8 +81,21 @@ const ReceiptList = () => {
             <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
             <style>
               body { padding: 2rem; color: #000; background: #fff; font-family: sans-serif; }
-              table, th, td { border: 1px solid #000; border-collapse: collapse; }
-              th, td { padding: 8px; text-align: left; }
+              .print-header img, .print-footer img {
+                width: 100%;
+                height: 100px;
+                object-fit: contain;
+              }
+              .receipt {
+                border: 1px solid #d1d5db;
+                padding: 1rem;
+                max-width: 768px;
+                margin: 0 auto;
+                background: #fff;
+              }
+              .text-center { text-align: center; }
+              .font-semibold { font-weight: 600; }
+              p { margin: 4px 0; }
             </style>
           </head>
           <body>
@@ -102,7 +113,7 @@ const ReceiptList = () => {
       `);
       printWindow.document.close();
     }
-  };
+  };  
 
   // Filter receipts based on search term
   const filteredReceipts = receipts.filter((receipt) =>
@@ -111,7 +122,7 @@ const ReceiptList = () => {
       .includes(searchTerm.toLowerCase())
   );
 
-  return ( 
+  return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Receipt List</h2>
@@ -126,55 +137,54 @@ const ReceiptList = () => {
       </div>
 
       <div className="w-full overflow-auto">
-  <table className="w-full table-auto border-collapse bg-white shadow-md rounded-md">
-    <thead className="bg-teal-900 text-white">
-      <tr>
-        <th className="p-2 text-left whitespace-nowrap">Date</th>
-        <th className="p-2 text-left whitespace-nowrap">Receipt No</th>
-        <th className="p-2 text-left whitespace-nowrap">UHID</th>
-        <th className="p-2 text-left whitespace-nowrap">Patient</th>
-        <th className="p-2 text-left whitespace-nowrap">Doctor</th>
-        <th className="p-2 text-left whitespace-nowrap">Treatment</th>
-        <th className="p-2 text-left whitespace-nowrap">Amount</th>
-        <th className="p-2 text-left whitespace-nowrap">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredReceipts.length > 0 ? (
-        filteredReceipts.map((receipt) => (
-          <tr key={receipt._id} className="border-b text-sm text-gray-700">
-            <td className="p-2 whitespace-nowrap">
-              {new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString()}
-            </td>
-            <td className="p-2 whitespace-nowrap">{receipt.receiptId}</td>
-            <td className="p-2 whitespace-nowrap">{receipt.appointmentId?.uhid}</td>
-            <td className="p-2 whitespace-nowrap">{receipt.patientName}</td>
-            <td className="p-2 whitespace-nowrap">
-              {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
-            </td>
-            <td className="p-2 whitespace-nowrap">{receipt.treatmentType}</td>
-            <td className="p-2 whitespace-nowrap">₹{receipt.opdAmount}</td>
-            <td className="p-2 whitespace-nowrap">
-              <button
-                onClick={() => handleView(receipt)}
-                className="bg-teal-700 text-white px-3 py-1 rounded hover:bg-teal-600 flex items-center gap-1"
-              >
-                <Eye size={16} /> View
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td colSpan={8} className="text-center text-gray-500 p-4">
-            No receipts found.
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</div>
-
+        <table className="w-full table-auto border-collapse bg-white shadow-md rounded-md">
+          <thead className="bg-teal-900 text-white">
+            <tr>
+              <th className="p-2 text-left whitespace-nowrap">Date</th>
+              <th className="p-2 text-left whitespace-nowrap">Receipt No</th>
+              <th className="p-2 text-left whitespace-nowrap">UHID</th>
+              <th className="p-2 text-left whitespace-nowrap">Patient</th>
+              <th className="p-2 text-left whitespace-nowrap">Doctor</th>
+              <th className="p-2 text-left whitespace-nowrap">Treatment</th>
+              <th className="p-2 text-left whitespace-nowrap">Amount</th>
+              <th className="p-2 text-left whitespace-nowrap">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredReceipts.length > 0 ? (
+              filteredReceipts.map((receipt) => (
+                <tr key={receipt._id} className="border-b text-sm text-gray-700">
+                  <td className="p-2 whitespace-nowrap">
+                    {new Date(receipt.appointmentId?.appointmentDate).toLocaleDateString()}
+                  </td>
+                  <td className="p-2 whitespace-nowrap">{receipt.receiptId}</td>
+                  <td className="p-2 whitespace-nowrap">{receipt.appointmentId?.uhid}</td>
+                  <td className="p-2 whitespace-nowrap">{receipt.patientName}</td>
+                  <td className="p-2 whitespace-nowrap">
+                    {Array.isArray(receipt.doctorName) ? receipt.doctorName[0] : receipt.doctorName}
+                  </td>
+                  <td className="p-2 whitespace-nowrap">{receipt.treatmentType}</td>
+                  <td className="p-2 whitespace-nowrap">₹{receipt.opdAmount}</td>
+                  <td className="p-2 whitespace-nowrap">
+                    <button
+                      onClick={() => handleView(receipt)}
+                      className="bg-teal-700 text-white px-3 py-1 rounded hover:bg-teal-600 flex items-center gap-1"
+                    >
+                      <Eye size={16} /> View
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8} className="text-center text-gray-500 p-4">
+                  No receipts found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modal for Viewing Receipt */}
       {selectedReceipt && (
