@@ -23,8 +23,8 @@ const PatientTrends = ({ data = [] }) => {
 
   // Days of the week for our chart - include both standard and possible variations
   const dayMappings = {
-    Mon: "Mon",
-    Monday: "Mon",
+    Mon: "Mond",
+    Monday: "Mond",
     Mond: "Mon",
     Tues: "Tues",
     Tuesday: "Tues",
@@ -32,8 +32,8 @@ const PatientTrends = ({ data = [] }) => {
     Wed: "Wed",
     Wednesday: "Wed",
     Wedn: "Wed",
-    Thurs: "Thurs",
-    Thursday: "Thurs",
+    Thur: "Thur",
+    Thursday: "Thur",
     Thu: "Thurs",
     Fri: "Fri",
     Friday: "Fri",
@@ -42,11 +42,12 @@ const PatientTrends = ({ data = [] }) => {
     Saturday: "Sat",
     Satu: "Sat",
     Sun: "Sun",
-    Sunday: "Sun",
-    Sund: "Sun",
+    Sunday: "Sund",
+    Sund: "Sund",
   };
 
-  const defaultDays = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
+  const defaultDays = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sund"];
+
 
   useEffect(() => {
     if (!data || data.length === 0) {
