@@ -95,6 +95,7 @@ const AddDentist = () => {
 
         if (res.status === 200 || res.status === 201) {
           toast.success("Dentist added successfully!");
+          navigate("/admin/manage-dentist");
         } else {
           toast.error("Failed to add dentist. Please try again.");
         }
