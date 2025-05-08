@@ -97,34 +97,34 @@ const AdminAppointmentList = () => {
     }
   };
 
- const toggleDropdown = (id, event) => {
-   if (dropdownOpen === id) {
-     setDropdownOpen(null);
-   } else {
-     const rect = event.currentTarget.getBoundingClientRect();
-     const viewportHeight = window.innerHeight;
-     const spaceBelow = viewportHeight - rect.bottom;
-     const dropdownHeight = 150;
+  const toggleDropdown = (id, event) => {
+    if (dropdownOpen === id) {
+      setDropdownOpen(null);
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const dropdownHeight = 150;
 
-     let topPosition;
-     if (spaceBelow < dropdownHeight) {
-       topPosition = rect.top - dropdownHeight;
-     } else {
-       topPosition = rect.bottom + 5;
-     }
+      let topPosition;
+      if (spaceBelow < dropdownHeight) {
+        topPosition = rect.top - dropdownHeight;
+      } else {
+        topPosition = rect.bottom + 5;
+      }
 
-     let leftPosition = rect.right - 190;
-     if (leftPosition < 10) {
-       leftPosition = 10;
-     }
+      let leftPosition = rect.right - 190;
+      if (leftPosition < 10) {
+        leftPosition = 10;
+      }
 
-     setDropdownPosition({
-       top: topPosition,
-       left: leftPosition,
-     });
-     setDropdownOpen(id);
-   }
- };
+      setDropdownPosition({
+        top: topPosition,
+        left: leftPosition,
+      });
+      setDropdownOpen(id);
+    }
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this appointment?")) {
@@ -197,7 +197,7 @@ const AdminAppointmentList = () => {
           <input
             type="text"
             placeholder="Search patients..."
-            className="p-2 pl-10 border rounded w-full"
+            className="p-2 pl-10 border rounded w-2/3"
             value={searchTerm}
             onChange={handleSearchChange}
           />
@@ -219,94 +219,98 @@ const AdminAppointmentList = () => {
           </button>
         </div>
       )}
-
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-auto max-h-[70vh]">
-          <table className="w-full border-collapse text-sm md:text-base">
-            <thead className="bg-teal-900 text-white sticky top-0 z-10">
-              <tr>
-                {tableHeaders.map((header) => (
-                  <th
-                    key={header}
-                    className="py-3 px-2 md:px-4 text-left whitespace-nowrap"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAppointments.length > 0 ? (
-                filteredAppointments.map((app, index) => (
-                  <tr
-                    key={app._id || index}
-                    className={`border-b text-gray-700 hover:bg-gray-100 ${
-                      app.isCheckedIn ? "bg-teal-50" : ""
-                    }`}
-                  >
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {index + 1}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.patientName || "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.mobileNumber || "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.address || "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.doctorName || "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.appointmentTime || "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.opdAmount ?? "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      {app.payAmount ?? app.opdAmount ?? "N/A"}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap font-semibold">
-                      {app.isCheckedIn ? (
-                        <span className="text-teal-600">Checked In</span>
-                      ) : (
-                        <span
-                          className={
-                            app.status === "Paid"
-                              ? "text-teal-600"
-                              : "text-red-600"
-                          }
-                        >
-                          {app.status || "N/A"}
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 whitespace-nowrap">
-                      <button
-                        className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
-                        onClick={(e) => toggleDropdown(app._id || index, e)}
+      
+      <div className="flex flex-col justify-center items-center w-[92%] border bg-white px-4 py-5 rounded-lg shadow">
+        <div className="w-full overflow-auto border rounded-lg">
+          <div className="min-w-max bg-white shadow-md rounded-lg">
+            <div className="h-full overflow-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-teal-900 text-white text-xs sm:text-xs md:text-sm">
+                  <tr>
+                    {tableHeaders.map((header) => (
+                      <th
+                        key={header}
+                        className="py-3 px-2 md:px-4 whitespace-nowrap"
                       >
-                        Actions
-                      </button>
-                    </td>
+                        {header}
+                      </th>
+                    ))}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={tableHeaders.length}
-                    className="py-4 text-center text-gray-500"
-                  >
-                    No appointments found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {filteredAppointments.length > 0 ? (
+                    filteredAppointments.map((app, index) => (
+                      <tr
+                        key={app._id || index}
+                        className={`border-b text-gray-700 hover:bg-gray-100 ${app.isCheckedIn ? "bg-teal-50" : ""
+                          }`}
+                      >
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {index + 1}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.patientName || "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.mobileNumber || "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.address || "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.doctorName || "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.appointmentTime || "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.opdAmount ?? "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          {app.payAmount ?? app.opdAmount ?? "N/A"}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap font-semibold">
+                          {app.isCheckedIn ? (
+                            <span className="text-teal-600">Checked In</span>
+                          ) : (
+                            <span
+                              className={
+                                app.status === "Paid"
+                                  ? "text-teal-600"
+                                  : "text-red-600"
+                              }
+                            >
+                              {app.status || "N/A"}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2 px-2 md:px-4 whitespace-nowrap">
+                          <button
+                            className="bg-teal-900 text-white px-3 py-1 rounded-md hover:bg-teal-600"
+                            onClick={(e) => toggleDropdown(app._id || index, e)}
+                          >
+                            Actions
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={tableHeaders.length}
+                        className="py-4 text-center text-gray-500"
+                      >
+                        No appointments found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
+
 
       {dropdownOpen && (
         <div
