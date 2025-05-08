@@ -48,7 +48,7 @@ const InvoiceGenerator = () => {
           setHeaderUrl(response.data.headerUrl);
           setFooterUrl(response.data.footerUrl);
         }
-        return response.data;
+        return response.data; 
       } catch (error) {
         console.error("Error fetching header config:", error);
         throw error;
@@ -192,6 +192,11 @@ const InvoiceGenerator = () => {
             body { padding:2rem; color:#000; background:#fff; font-family:sans-serif;}
             table, th, td { border:1px solid #000; border-collapse:collapse;}
             th, td { padding:8px; text-align:left;}
+             .print-header img, .print-footer img {
+                width: 100%;
+                height: 100px;
+                object-fit: contain;
+              }
           </style>
         </head>
         <body>
@@ -234,11 +239,11 @@ const InvoiceGenerator = () => {
       <div ref={invoiceRef} className="p-6 border rounded text-black bg-white">
         {/* Header */}
         {headerUrl && (
-          <div className="w-full text-center mb-4">
+          <div className="print-header mb-4">
             <img
               src={headerUrl}
               alt="Header"
-              className="w-full h-23 object-contain"
+              className="w-full h-[100px] object-contain"
             />
           </div>
         )}
@@ -379,15 +384,6 @@ const InvoiceGenerator = () => {
           Print Invoice
         </button>
       </div>
-      {footerUrl && (
-        <div className="w-full text-center mt-4">
-          <img
-            src={footerUrl}
-            alt="Footer"
-            className="w-full h-24 object-cover"
-          />
-        </div>
-      )}
     </div>
   );
 };
